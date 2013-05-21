@@ -125,13 +125,13 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'grappelli',
     'django.contrib.admin',
     'kadist',
     'taggit',
     'taggit_autosuggest',
     'rest_framework',
     'haystack',
-    'grappelli',
 )
 
 # A sample logging configuration. The only tangible logging
