@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import re
 
 from django.core.management.base import BaseCommand, CommandError
-from django.core import exceptions
 
 from kadist.models import Artist, Work
 
@@ -28,11 +28,18 @@ class Command(BaseCommand):
                 value = value.strip()
                 if field == 'Index' and data:
                     # Save previous work
-                    w = Work(title=data.get('Title', ""),
+                    title = data.get('Title', '')
+                    year = 0
+                    m = re.search('(.+)\s*\((\d+)', title)
+                    if m:
+                        title = m.group(1).strip()
+                        year = long(m.group(2))
+                    w = Work(title=title,
+                             year=year,
                              worktype=data.get('Work type', ''),
                              technique=data.get('Technique', ''),
                              dimensions=data.get('Measurements', ''),
-                             description=data.get('Description', ''))
+                             description=data.get('Work Description', ''))
 
                     # Only take the first 2 words
                     cname = " ".join(data.get('Creator', "").split()[:2])
@@ -40,13 +47,17 @@ class Command(BaseCommand):
                         creator = Artist.objects.get(name=cname)
                     except Artist.DoesNotExist:
                         # Have to create one
-                        creator = Artist(name=cname)
+                        creator = Artist(name=cname, description=data.get('Artist Description', ''))
                         creator.save()
 
                     w.creator = creator
                     w.save()
-                    w.tags.add( t for t in data.get('Tags', '').split(',') )
+                    tags = list(t.strip() for t in re.split('\s*,\s*', data.get('Tags', '')))
+                    w.tags.add(*tags)
                     data = {}
+
+                if field == 'Description':
+                    data['Artist Description'], data['Work Description'] = value.split('||', 2)
 
                 data[field] = value
             
