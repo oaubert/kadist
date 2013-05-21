@@ -13,6 +13,10 @@ body {
     display: none;
 }
 
+h1 {
+    text-align: center;
+}
+
 ul.description {
     list-style-type: none;
 }
@@ -45,6 +49,6 @@ a:hover {
 }
 
 .related_category {
-    width: 30%;
+    width: 20%;
     float: left;
 }

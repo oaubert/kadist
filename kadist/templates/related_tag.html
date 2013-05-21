@@ -1,0 +1,8 @@
+    <div class="related_category">
+      <h2>{{ title }} ({{ tags|length }})</h2>
+      <ul class="description">
+        {% for kw in tags %}
+        <li><a class="{% if kw.1 %}synonym{% else %}nosynonym{% endif %}" href="{{ kw.0 }}">{{ kw.0 }}</a> ({{ kw.1 }})</li>
+        {% endfor %}
+      </ul>
+    </div>

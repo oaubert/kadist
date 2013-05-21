@@ -1,4 +1,5 @@
 import operator
+import itertools
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
@@ -39,29 +40,24 @@ def tag(request, kw=None):
 
     synsets = wn.synsets(kw)
 
-    synonyms = []
-    names = set(n for s in synsets for n in s.lemma_names)
-    for n in names:
-        c = Work.objects.filter(tags__name__in=[n]).count()
-        if c or True:
-            synonyms.append( (n, c) )
-    synonyms.sort(key=operator.itemgetter(1), reverse=True)
+    def related_tags(func):
+        rel = []
+        names = set(n
+                    for s in synsets
+                    for r in func(s)
+                    for n in r.lemma_names)
+        for n in names:
+            c = Work.objects.filter(tags__name__in=[n]).count()
+            if c or True:
+                rel.append( (n, c) )
+        rel.sort(key=operator.itemgetter(1), reverse=True)
+        return rel
 
-    hypernyms = []
-    names = set(h for s in synsets for n in s.hypernyms() for h in n.lemma_names)
-    for n in names:
-        c = Work.objects.filter(tags__name__in=[n]).count()
-        if c or True:
-            hypernyms.append( (n, c) )
-    hypernyms.sort(key=operator.itemgetter(1), reverse=True)
-
-    hyponyms = []
-    names = set(h for s in synsets for n in s.hyponyms() for h in n.lemma_names)
-    for n in names:
-        c = Work.objects.filter(tags__name__in=[n]).count()
-        if c or True:
-            hyponyms.append( (n, c) )
-    hyponyms.sort(key=operator.itemgetter(1), reverse=True)
+    synonyms = related_tags(lambda s: [s])
+    hypernyms = related_tags(lambda s: itertools.chain(s.hypernyms(), s.instance_hypernyms()))
+    hyponyms = related_tags(lambda s: itertools.chain(s.hyponyms(), s.instance_hyponyms()))
+    holonyms = related_tags(lambda s: itertools.chain(s.member_holonyms(), s.substance_holonyms(), s.part_holonyms()))
+    meronyms = related_tags(lambda s: itertools.chain(s.member_meronyms(), s.substance_meronyms(), s.part_meronyms()))
 
     return render_to_response('tag.html', {
             'kw': kw,
@@ -70,6 +66,8 @@ def tag(request, kw=None):
             'synonyms': synonyms,
             'hypernyms': hypernyms,
             'hyponyms': hyponyms,
+            'holonyms': holonyms,
+            'meronyms': meronyms,
             }, context_instance=RequestContext(request))
 
 class WorkList(generics.ListCreateAPIView):
