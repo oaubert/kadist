@@ -1,6 +1,6 @@
 from django.db import models
 
-from taggit.managers import TaggableManager
+from taggit_autosuggest.managers import TaggableManager
 
 from gettext import gettext as _
 

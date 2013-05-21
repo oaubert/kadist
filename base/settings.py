@@ -112,6 +112,8 @@ HAYSTACK_SITECONF = 'base.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'solr'
 HAYSTACK_SOLR_URL = 'http://127.0.0.1:8989/solr'
 
+GRAPPELLI_ADMIN_TITLE = "Kadist - interface d'administration"
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -122,12 +124,10 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'kadist',
     'taggit',
+    'taggit_autosuggest',
     'rest_framework',
     'haystack',
-    'xadmin',
-    'crispy_forms',
-    'reversion',
-
+    'grappelli',
 )
 
 # A sample logging configuration. The only tangible logging

@@ -1,2 +1,3 @@
 django-taggit
-django-xadmin
+django-taggit-autosuggest
+django-grappelli
