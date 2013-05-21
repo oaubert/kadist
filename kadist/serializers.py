@@ -1,16 +1,16 @@
 from rest_framework import serializers
-from kadist import models
+from .models import Work, Artist
 
 class WorkSerializer(serializers.HyperlinkedModelSerializer):
-    num = serializers.IntegerField(read_only=True)
-    creator = serializers.CharField()
-    title = serializers.CharField()
-    worktype = serializers.CharField()
-    technique = serializers.CharField()
-    dimensions = serializers.CharField()
-    description = serializers.CharField()
-    tags = serializers.CharField()
+    id = serializers.IntegerField(source='pk', read_only=True)
 
     class Meta:
-        model = models.Work
-        fields = ('num', 'creator', 'title', 'worktype', 'technique','dimensions', 'description', 'tags')
+        model = Work
+        fields = ('id', 'creator', 'title', 'worktype', 'technique','dimensions', 'description')
+
+class ArtistSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.IntegerField(source='pk', read_only=True)
+
+    class Meta:
+        model = Artist
+        fields = ('name', 'country', 'description')

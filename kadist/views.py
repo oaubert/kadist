@@ -3,8 +3,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
-from .models import Work
-from .serializers import WorkSerializer
+from .models import Artist, Work
+from .serializers import ArtistSerializer, WorkSerializer
 
 @api_view(('GET',))
 def api_root(request, format=None):
@@ -19,3 +19,11 @@ class WorkList(generics.ListCreateAPIView):
 class WorkDetail(generics.RetrieveUpdateDestroyAPIView):
     model = Work
     serializer_class = WorkSerializer
+
+class ArtistList(generics.ListCreateAPIView):
+    model = Artist
+    serializer_class = ArtistSerializer
+
+class ArtistDetail(generics.RetrieveUpdateDestroyAPIView):
+    model = Artist
+    serializer_class = ArtistSerializer
