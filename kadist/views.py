@@ -3,6 +3,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.conf import settings
 from django.db.models.loading import get_model
+from django.db.models import Count
 
 from rest_framework import generics
 from rest_framework.decorators import api_view
@@ -23,9 +24,9 @@ def api_root(request, format=None):
 
 @login_required
 def taglist(request):
-    keywords = TAG_MODEL.objects.all().values_list('name', flat=True)
+    tags = TAG_MODEL.objects.annotate(count=Count('taggit_taggeditem_items')).values_list('name', 'count')
     return render_to_response('main.html', {
-            'keywords': keywords
+            'tags': tags
             }, context_instance=RequestContext(request))
 
 @login_required

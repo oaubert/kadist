@@ -17,15 +17,12 @@
     <input type="submit" id="form_submit" value="" />
   </form>
   <div class="part_name">Available keywords</div>
-  <ul class="description" id="keywords">
-    {% for kw in keywords %}
-    <li><a href="{{ kw }}">{{ kw }}</a></li>
+  <ul class="description" id="tags">
+    {% for tag in tags %}
+    <li><a href="{{ tag.0 }}">{{ tag.0 }}</a> ({{ tag.1 }})</li>
     {% endfor %}
   </ul>
 
-  <div class="part_name">Selected works</div>
-  <ul id="works">
-  </ul>
   <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}js/kadist.js"></script>
 </body>
