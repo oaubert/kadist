@@ -28,7 +28,7 @@ def api_root(request, format=None):
 
 @login_required
 def taglist(request):
-    tags = TAG_MODEL.objects.annotate(count=Count('taggit_taggeditem_items')).values_list('name', 'count')
+    tags = TAG_MODEL.objects.annotate(count=Count('taggit_taggeditem_items')).values_list('name', 'count').order_by('-count')
     return render_to_response('main.html', {
             'tags': tags
             }, context_instance=RequestContext(request))
