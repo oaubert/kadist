@@ -37,8 +37,9 @@ def tag(request, kw=None):
     works = Work.objects.filter(tags__name__in=[kw])
     artists = Artist.objects.filter(tags__name__in=[kw])
 
-    synonyms = []
     synsets = wn.synsets(kw)
+
+    synonyms = []
     names = set(n for s in synsets for n in s.lemma_names)
     for n in names:
         c = Work.objects.filter(tags__name__in=[n]).count()
@@ -46,11 +47,29 @@ def tag(request, kw=None):
             synonyms.append( (n, c) )
     synonyms.sort(key=operator.itemgetter(1), reverse=True)
 
+    hypernyms = []
+    names = set(h for s in synsets for n in s.hypernyms() for h in n.lemma_names)
+    for n in names:
+        c = Work.objects.filter(tags__name__in=[n]).count()
+        if c or True:
+            hypernyms.append( (n, c) )
+    hypernyms.sort(key=operator.itemgetter(1), reverse=True)
+
+    hyponyms = []
+    names = set(h for s in synsets for n in s.hyponyms() for h in n.lemma_names)
+    for n in names:
+        c = Work.objects.filter(tags__name__in=[n]).count()
+        if c or True:
+            hyponyms.append( (n, c) )
+    hyponyms.sort(key=operator.itemgetter(1), reverse=True)
+
     return render_to_response('tag.html', {
             'kw': kw,
             'works': works,
             'artists': artists,
             'synonyms': synonyms,
+            'hypernyms': hypernyms,
+            'hyponyms': hyponyms,
             }, context_instance=RequestContext(request))
 
 class WorkList(generics.ListCreateAPIView):

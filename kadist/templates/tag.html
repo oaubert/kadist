@@ -26,12 +26,34 @@
     {% endfor %}
   </ul>
 
-  <h2>Synonyms ({{ synonyms|length }})</h2>
-  <ul class="description">
-    {% for kw in synonyms %}
-    <li><a class="{% if kw.1 %}synonym{% else %}nosynonym{% endif %}" href="{{ kw.0 }}">{{ kw.0 }}</a> ({{ kw.1 }})</li>
-    {% endfor %}
-  </ul>
+  <div class="related_tags">
+    <div class="related_category">
+      <h2>Synonyms ({{ synonyms|length }})</h2>
+      <ul class="description">
+        {% for kw in synonyms %}
+        <li><a class="{% if kw.1 %}synonym{% else %}nosynonym{% endif %}" href="{{ kw.0 }}">{{ kw.0 }}</a> ({{ kw.1 }})</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="related_category">
+      <h2>More general ({{ hypernyms|length }})</h2>
+      <ul class="description">
+        {% for kw in hypernyms %}
+        <li><a class="{% if kw.1 %}synonym{% else %}nosynonym{% endif %}" href="{{ kw.0 }}">{{ kw.0 }}</a> ({{ kw.1 }})</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="related_category">
+      <h2>More specific ({{ hyponyms|length }})</h2>
+      <ul class="description">
+        {% for kw in hyponyms %}
+        <li><a class="{% if kw.1 %}synonym{% else %}nosynonym{% endif %}" href="{{ kw.0 }}">{{ kw.0 }}</a> ({{ kw.1 }})</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
 
   <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}js/kadist.js"></script>

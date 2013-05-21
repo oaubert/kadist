@@ -39,3 +39,12 @@ a:hover {
 .nosynonym {
     color: #bbb;
 }
+
+.related_tags {
+    position: relative;
+}
+
+.related_category {
+    width: 30%;
+    float: left;
+}
