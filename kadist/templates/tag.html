@@ -29,7 +29,7 @@
   <h2>Synonyms ({{ synonyms|length }})</h2>
   <ul class="description">
     {% for kw in synonyms %}
-    <li>{{ kw }}</li>
+    <li><a class="{% if kw.1 %}synonym{% else %}nosynonym{% endif %}" href="{{ kw.0 }}">{{ kw.0 }}</a> ({{ kw.1 }})</li>
     {% endfor %}
   </ul>
 

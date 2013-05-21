@@ -1,3 +1,5 @@
+import operator
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -9,6 +11,7 @@ from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from nltk.corpus import wordnet as wn
 
 from .models import Artist, Work
 from .serializers import ArtistSerializer, WorkSerializer
@@ -33,7 +36,16 @@ def taglist(request):
 def tag(request, kw=None):
     works = Work.objects.filter(tags__name__in=[kw])
     artists = Artist.objects.filter(tags__name__in=[kw])
+
     synonyms = []
+    synsets = wn.synsets(kw)
+    names = set(n for s in synsets for n in s.lemma_names)
+    for n in names:
+        c = Work.objects.filter(tags__name__in=[n]).count()
+        if c or True:
+            synonyms.append( (n, c) )
+    synonyms.sort(key=operator.itemgetter(1), reverse=True)
+
     return render_to_response('tag.html', {
             'kw': kw,
             'works': works,

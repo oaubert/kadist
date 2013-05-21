@@ -35,3 +35,7 @@ a:hover {
     font-size: x-small;
     color: #999;
 }
+
+.nosynonym {
+    color: #bbb;
+}
