@@ -21,7 +21,8 @@ class Artist(models.Model):
 # Create your models here.
 class Work(models.Model):
     creator = models.ForeignKey(Artist,
-                                verbose_name="artist")
+                                verbose_name="artist",
+                                related_name='works')
     title = models.CharField(_("title"),
                              max_length=255,
                              blank=True)
