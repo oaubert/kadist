@@ -1,0 +1,32 @@
+{% load admin_urls %}
+{% load url from future %}
+
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>Kadist catalogue navigator</title>
+  <meta name="description" content="Kadist catalogue navigator"/>
+  <meta name="viewport" content="width=device-width"/>
+  <link href="{{ STATIC_URL }}css/kadist.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+  <form>
+    <label for="keyword_input">Keyword</label>
+    <input id="keyword_input" name="keyword" type="text" />
+    <input type="submit" id="form_submit" value="" />
+  </form>
+  <div class="part_name">Available keywords</div>
+  <ul class="description" id="keywords">
+    {% for kw in keywords %}
+    <li><a href="{{ kw }}">{{ kw }}</a></li>
+    {% endfor %}
+  </ul>
+
+  <div class="part_name">Selected works</div>
+  <ul id="works">
+  </ul>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/kadist.js"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{% load admin_urls %}
+{% load url from future %}
+
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>KCN - {{ kw }}</title>
+  <meta name="description" content="KCN - {{ kw }}"/>
+  <meta name="viewport" content="width=device-width"/>
+  <link href="{{ STATIC_URL }}css/kadist.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+  <h1>Keyword <em>{{ kw }}</em></h1>
+  <h2>Works ({{ works|length }})</h2>
+  <ul class="description">
+    {% for w in works %}
+    <li><a href="{{ w.get_absolute_url }}">{{ w.title }}</a> (<a href="{{ w.creator.get_absolute_url }}">{{ w.creator }}</a>) <span class="taglist">{% for t in w.tags.all %}<a class="tagref" href="{{ t.name }}">{{ t.name }}</a> -{% endfor %}</span></li>
+    {% endfor %}
+  </ul>
+
+  <h2>Artists ({{ artists|length }})</h2>
+  <ul class="description">
+    {% for a in artists %}
+    <li><a href="{{ a.get_absolute_url }}">{{ a.name }}</a> - {% for t in a.tags.all %}<a href="{{ t.name }}">{{ t.name }}</a> -{% endfor %}</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Synonyms ({{ synonyms|length }})</h2>
+  <ul class="description">
+    {% for kw in synonyms %}
+    <li>{{ kw }}</li>
+    {% endfor %}
+  </ul>
+
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/kadist.js"></script>
+</body>
+</html>
