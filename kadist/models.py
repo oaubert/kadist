@@ -8,6 +8,9 @@ class Artist(models.Model):
     name = models.CharField("name",
                             max_length=200,
                             unique=True)
+    url = models.URLField(verbose_name='Artist URL on the Kadist website',
+                          max_length=255,
+                          blank=True)
     country = models.CharField("country",
                                max_length=200,
                                blank=True)
@@ -23,6 +26,9 @@ class Work(models.Model):
     creator = models.ForeignKey(Artist,
                                 verbose_name="artist",
                                 related_name='works')
+    url = models.URLField(verbose_name='Work URL on the Kadist website',
+                          max_length=255,
+                          blank=True)
     title = models.CharField(_("title"),
                              max_length=255,
                              blank=True)
