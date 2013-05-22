@@ -2,7 +2,8 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>{% block title %}Base document{% endblock %}</title>
-    <link href="{{ STATIC_URL }}css/kadist.css" rel="stylesheet" type="text/css" media="screen" />
+    <meta name="viewport" content="width=device-width"/>
+    <link href="{{ STATIC_URL }}css/kadist.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico" />
     {% block extra_header %}
     {% endblock %}
