@@ -1,0 +1,12 @@
+      <ul class="navbar">
+        <li><a id="menu_home" href="/kadist/">Home</a></li>
+{% if user.is_active and user.is_staff %}
+        <li><a id="menu_admin" href="/admin/kadist/">Admin</a>
+          <ul id="submenu_admin" class="submenu">
+            <li><a href="/admin/kadist/work/">Works</a></li>
+            <li><a href="/admin/kadist/artist/">Artists</a></li>
+        </ul></li>
+{% endif %}
+        <li><a id="menu_taglist" href="/kadist/tag/">Tag list</a></li>
+        <li><a id="menu_logout" title="Connecté en tant que {{ user }}" href="/accounts/logout">Logout</a></li>
+      </ul>
