@@ -4,6 +4,16 @@
 	padding: 0;
 }
 
+#header {
+    height: 1.2em;
+    width: 100%;
+    background-color: #fff;
+}
+
+#content {
+    margin-top: 1.2em;
+}
+
 body {
     font-family: helvetica, sans-serif;
     font-size: 9pt;
@@ -126,3 +136,27 @@ ul.navbar .submenu li {
 }
 
 /* End navbar */
+
+@media only screen and (max-width: 1000px) {
+    h2 {
+        font-size: 10pt;
+    }
+    .tagcount {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 601px) {
+    .nosynonym {
+        display: none;
+    }
+    .related_category {
+        width: 30%;
+    }
+}
+
+@media only screen and (max-width: 481px) {
+    .related_category {
+        width: 50%;
+    }
+}

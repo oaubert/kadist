@@ -6,7 +6,7 @@
 {% block title %}Kadist catalogue navigator - available tags{% endblock %}
 
 {% block content %}
-  <h1>Available tags</h1>
+  <h1>Tags</h1>
   <ul class="description taglist" id="tags">
     {% for tag in tags %}
     <li><a style="font-size: {{ tag.1 }}0pt" title="{{ tag.1 }} element{{ tag.1|pluralize }}" href="{{ tag.0 }}">{{ tag.0 }}</a></li>
