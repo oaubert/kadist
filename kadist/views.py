@@ -42,13 +42,11 @@ def tag(request, kw=None):
 
     if ' ' in kw:
         kwl = kw.split()
-        try:
-            kwl.remove('and')
-        except ValueError:
-            pass
         synsets = [ s
                     for k in kwl
-                    for s in wn.synsets(k.strip('()"')) ]
+                    if k not in ['and', 'or']
+                    for s in wn.synsets(k.strip('()"')) 
+                    ]
     else:
         synsets = wn.synsets(kw)
     print kw, len(synsets)
