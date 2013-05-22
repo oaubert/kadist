@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% load admin_urls %}
+{% load url from future %}
+
+{% block title %}Kadist catalogue navigator - home{% endblock %}
+
+{% block content %}
+<h1>Kadist catalogue navigator</h1>
+
+<p>This is a prototype to allow to experiment with semantic navigation
+inside a collection of tagged items from the Kadist foundation.</p>
+
+<p>Possible actions:</p>
+<ul class="description">
+  <li><a href="tag/">Display list of tags</a></li>
+  <li><a href="artist/">Display list of artists</a></li>
+  <li><a href="work/">Display list of works</a></li>
+  <li><a href="/admin/kadist/work">Edition interface for works</a></li>
+  <li><a href="/admin/kadist/artist">Edition interface for artists</a></li>
+</ul>
+{% endblock %}
