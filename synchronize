@@ -1,0 +1,14 @@
+#! /bin/sh
+#
+# Very basic deployment script
+#
+
+APPPATH=src/kadist/base
+BASE=${HOME}/${APPPATH}
+
+. $HOME/env/django/bin/activate
+
+$BASE/manage.py collectstatic --noinput
+git stash
+rsync --bwlimit=90 -av -F ${BASE}/ gnozyme:${APPPATH}/
+git stash pop
