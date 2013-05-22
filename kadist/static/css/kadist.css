@@ -19,6 +19,7 @@ h1 {
 
 ul.description {
     list-style-type: none;
+    max-width: 60em;
 }
 
 ul.description li {
@@ -38,6 +39,14 @@ a {
 
 a:hover {
     background-color: #ddd;
+}
+
+.editlink {
+    opacity: .1;
+}
+
+.editlink:hover {
+    opacity: .5;
 }
 
 .taglist {
