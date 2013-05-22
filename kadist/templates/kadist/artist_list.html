@@ -9,7 +9,7 @@
   <h1>Artists</h1>
   <ul class="description">
     {% for a in object_list %}
-    <li><a href="{{ a.get_absolute_url }}">{{ a.name }}</a> - <span class="taglist">{% for t in w.tags.all %}<a class="tagref" href="../tag/{{ t.name }}">{{ t.name }}</a> -{% endfor %}</span></li>
+    <li><a href="{{ a.get_absolute_url }}">{{ a.name }}</a> - <span class="taglist">{% for t in a.tags.all %}<a class="tagref" href="../tag/{{ t.name }}">{{ t.name }}</a> -{% endfor %}</span></li>
     {% endfor %}
   </ul>
 {% endblock %}
