@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.core.urlresolvers import reverse
 from taggit_autosuggest.managers import TaggableManager
 
 from gettext import gettext as _
@@ -20,6 +20,9 @@ class Artist(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('artist-detail', args=[str(self.pk)])
 
 # Create your models here.
 class Work(models.Model):
@@ -51,3 +54,5 @@ class Work(models.Model):
     def __unicode__(self):
         return "%s (%s)" % (self.title, self.creator)
 
+    def get_absolute_url(self):
+        return reverse('work-detail', args=[str(self.pk)])
