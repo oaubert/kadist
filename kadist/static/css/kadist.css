@@ -69,6 +69,9 @@ a:hover {
 
 /* Navbar */
 ul.navbar {
+    position: fixed;
+    top: 0px;
+    left: 0px;
     margin: 0px;
     padding: 0px;
     background-color: #fff;
