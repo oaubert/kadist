@@ -2,3 +2,4 @@ djangorestframework
 django-taggit
 django-taggit-autosuggest
 django-grappelli
+nltk
