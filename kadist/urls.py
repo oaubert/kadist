@@ -1,19 +1,19 @@
 from django.conf.urls import patterns, url, include
 from rest_framework.urlpatterns import format_suffix_patterns
-from django.views.generic import RedirectView, simple, ListView, DetailView
-from django.contrib import admin
+from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView, ListView, DetailView
 from kadist import views
 from .models import Work, Artist
 
 urlpatterns = patterns('',
-                       url(r'^$', simple.direct_to_template, {'template': 'root.html'}),
+                       url(r'^$', login_required(TemplateView.as_view(template_name='root.html')), name='root'),
                        url(r'^tag/$', views.taglist, name='tag-list'),
                        url(r'^tag/(?P<kw>.+)$', views.tag, name='tag-detail'),
-                       url(r'^work/$', ListView.as_view(model=Work), name='work-list'),
-                       url(r'^work/(?P<pk>[0-9]+)/$', DetailView.as_view(model=Work, context_object_name='work'),
+                       url(r'^work/$', login_required(ListView.as_view(model=Work)), name='work-list'),
+                       url(r'^work/(?P<pk>[0-9]+)/$', login_required(DetailView.as_view(model=Work, context_object_name='work')),
                            name='work-detail'),
-                       url(r'^artist/$', ListView.as_view(model=Artist), name='artist-list'),
-                       url(r'^artist/(?P<pk>.+)/$', DetailView.as_view(model=Artist, context_object_name='artist'),
+                       url(r'^artist/$', login_required(ListView.as_view(model=Artist)), name='artist-list'),
+                       url(r'^artist/(?P<pk>.+)/$', login_required(DetailView.as_view(model=Artist, context_object_name='artist')),
                            name='artist-detail'),
 
                        # REST API
