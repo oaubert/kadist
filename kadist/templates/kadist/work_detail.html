@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% load admin_urls %}
+{% load url from future %}
+
+{% block title %}KCN - {{ work.title }}{% endblock %}
+
+{% block content %}
+<h1>{{ work.title }} <a class="editlink" href="{% url "admin:kadist_work_change" work.pk %}">Edit</a></h1>
+<ul class="description">
+  <li>Artist: <a href="/kadist/artist/{{ work.creator.pk }}">{{ work.creator }}</a></li>
+  <li>Year: {{ work.year }}</li>
+  <li>Worktype: {{ work.worktype }}</li>
+  <li>Technique: {{ work.technique }}</li>
+  <li>Description: {{ work.description }}</li>
+  <li>Tags: {% for kw in work.tags.all %}<a href="/kadist/tag/{{ kw }}">{{ kw }}</a> - {% endfor %}
+  </ul>
+{% endblock %}

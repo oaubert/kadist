@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% load admin_urls %}
+{% load url from future %}
+
+{% block title %}Kadist catalogue navigator - artists{% endblock %}
+
+{% block content %}
+  <h1>Artists</h1>
+  <ul class="description">
+    {% for a in object_list %}
+    <li><a href="{{ a.get_absolute_url }}">{{ a.name }}</a> - <span class="taglist">{% for t in w.tags.all %}<a class="tagref" href="../tag/{{ t.name }}">{{ t.name }}</a> -{% endfor %}</span></li>
+    {% endfor %}
+  </ul>
+{% endblock %}
