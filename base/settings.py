@@ -8,8 +8,10 @@ import os
 APPROOT = os.path.dirname(os.path.dirname(__file__)) + os.sep
 
 ADMINS = (
-    ('Olivier Aubert', 'contact@olivieraubert.net'),
+    ('Olivier Aubert', 'admin@olivieraubert.net'),
 )
+
+SERVER_EMAIL = ADMINS[0][1]
 
 MANAGERS = ADMINS
 
