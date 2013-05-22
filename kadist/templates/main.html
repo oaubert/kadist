@@ -17,9 +17,9 @@
     <input type="submit" id="form_submit" value="" />
   </form>
   <div class="part_name">Available keywords</div>
-  <ul class="description" id="tags">
+  <ul class="description taglist" id="tags">
     {% for tag in tags %}
-    <li><a href="{{ tag.0 }}">{{ tag.0 }}</a> ({{ tag.1 }})</li>
+    <li><a style="font-size: 1{{ tag.1 }}pt" title="{{ tag.1 }} element{{ tag.1|pluralize }}" href="{{ tag.0 }}">{{ tag.0 }}</a></li>
     {% endfor %}
   </ul>
 

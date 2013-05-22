@@ -28,10 +28,12 @@ def api_root(request, format=None):
 
 @login_required
 def taglist(request):
-    tags = TAG_MODEL.objects.annotate(count=Count('taggit_taggeditem_items')).values_list('name', 'count').order_by('-count')
+    tags = TAG_MODEL.objects.annotate(count=Count('taggit_taggeditem_items')).values_list('name', 'count').order_by('name')
     return render_to_response('main.html', {
             'tags': tags
             }, context_instance=RequestContext(request))
+
+# TODO: factorize tag info extraction into struct and use it in tag method + api/tag (JSON version) + angular view
 
 @login_required
 def tag(request, kw=None):

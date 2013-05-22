@@ -21,9 +21,14 @@ ul.description {
     list-style-type: none;
 }
 
-li {
-    margin-left: 2em;
-    margin-top: .4em;
+ul.description li {
+    margin: 1em;
+}
+
+ul.taglist li {
+    list-style-type: none;
+    display: inline;
+    margin: 1em;
 }
 
 a {

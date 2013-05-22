@@ -11,7 +11,8 @@
   <link href="{{ STATIC_URL }}css/kadist.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-  <h1>Keyword <em>{{ kw }}</em></h1>
+  <a href="..">Full tag list</a>
+  <h1><em>{{ kw }}</em></h1>
   <h2>Works ({{ works|length }})</h2>
   <ul class="description">
     {% for w in works %}
