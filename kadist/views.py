@@ -29,6 +29,16 @@ def api_root(request, format=None):
 @login_required
 def taglist(request):
     tags = TAG_MODEL.objects.annotate(count=Count('taggit_taggeditem_items')).values_list('name', 'count').order_by('name')
+    maxcount = max( t[1] for t in tags )
+    mincount = 6
+    minsize = 10
+    maxsize = 48
+    factor = 1. * (maxsize - minsize) / (maxcount - mincount)
+    def tagsize(c):
+        return long(minsize + factor * (c - mincount))
+    tags = [ (t[0], t[1], tagsize(t[1]))
+             for t in tags
+             if t[1] >= mincount ]
     return render_to_response('main.html', {
             'tags': tags
             }, context_instance=RequestContext(request))

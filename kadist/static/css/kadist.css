@@ -36,6 +36,10 @@ ul.description li {
     margin: 1em;
 }
 
+ul.taglist {
+    list-style-type: none;
+}
+
 ul.taglist li {
     list-style-type: none;
     display: inline;
