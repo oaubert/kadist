@@ -1,12 +1,16 @@
       <ul class="navbar">
-        <li><a id="menu_home" href="/kadist/">Home</a></li>
+        <li><a title="Home page - main menu" id="menu_home" href="/kadist/">Home</a>
+          <ul id="submenu_home" class="submenu">
+            <li><a title="List of works" href="/kadist/work/">Works</a></li>
+            <li><a title="List of artists" href="/kadist/artist/">Artists</a></li>
+        </ul></li>
 {% if user.is_active and user.is_staff %}
-        <li><a id="menu_admin" href="/admin/kadist/">Admin</a>
+        <li><a title="General administration" id="menu_admin" href="/admin/kadist/">Admin</a>
           <ul id="submenu_admin" class="submenu">
-            <li><a href="/admin/kadist/work/">Works</a></li>
-            <li><a href="/admin/kadist/artist/">Artists</a></li>
+            <li><a title="Edition of works" href="/admin/kadist/work/">Works</a></li>
+            <li><a title="Edition of artists" href="/admin/kadist/artist/">Artists</a></li>
         </ul></li>
 {% endif %}
-        <li><a id="menu_taglist" href="/kadist/tag/">Tag list</a></li>
-        <li><a id="menu_logout" title="Connecté en tant que {{ user }}" href="/accounts/logout">Logout</a></li>
+        <li><a title="Tag cloud" id="menu_taglist" href="/kadist/tag/">Tag list</a></li>
+        <li><a title="Logout" id="menu_logout" title="Connecté en tant que {{ user }}" href="/accounts/logout">Logout</a></li>
       </ul>
