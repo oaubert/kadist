@@ -20,6 +20,10 @@ from .serializers import ArtistSerializer, WorkSerializer
 # define the default models for tags and tagged items
 TAG_MODEL = get_model('taggit', 'Tag')
 
+MIN_RELATED_TAGS_COUNT = 2
+DISPLAY_ALL_RELATED_TAGS = False
+MAX_SEARCHED_TAGS_COUNT = 200
+
 @api_view(('GET',))
 def api_root(request, format=None):
     return Response({
@@ -67,9 +71,11 @@ def tag(request, kw=None):
                     for s in synsets
                     for r in func(s)
                     for n in r.lemma_names)
+        if len(names) > MAX_SEARCHED_TAGS_COUNT:
+            names = list(names)[:MAX_SEARCHED_TAGS_COUNT]
         for n in names:
             c = Work.objects.filter(tags__name__in=[n]).count()
-            if c or True:
+            if c > MIN_RELATED_TAGS_COUNT or DISPLAY_ALL_RELATED_TAGS:
                 rel.append( (n, c) )
         rel.sort(key=operator.itemgetter(1), reverse=True)
         return rel
