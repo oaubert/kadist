@@ -10,7 +10,7 @@
   <h2>Works <span class="tagcount">({{ works|length }})</span></h2>
   <ul class="description">
     {% for w in works %}
-    <li><a href="{{ w.get_absolute_url }}">{{ w.title }}</a> <a class="editlink" href="{% url "admin:kadist_work_change" w.pk %}">Edit</a>(<a href="{{ w.creator.get_absolute_url }}">{{ w.creator }}</a> <a class="editlink" href="{% url "admin:kadist_artist_change" w.creator.pk %}">Edit</a>) <span class="taglist">{% for t in w.tags.all %}<a class="tagref" href="{{ t.name }}">{{ t.name }}</a> -{% endfor %}</span></li>
+    <li><a href="{{ w.get_absolute_url }}">{{ w.title }}</a> <a class="editlink" href="{% url "admin:kadist_work_change" w.pk %}">Edit</a>(<a href="{{ w.creator.get_absolute_url }}">{{ w.creator }}</a> <a class="editlink" href="{% url "admin:kadist_artist_change" w.creator.pk %}">Edit</a>)</li>
     {% endfor %}
   </ul>
 
