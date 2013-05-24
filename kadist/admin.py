@@ -14,12 +14,17 @@ admin.site.register(Work, WorkAdmin)
 
 class ArtistAdmin(admin.ModelAdmin):
     fields = ('name', 'tags', 'country', 'url', 'description' )
-    list_display = ('name', 'tags_as_string', 'country', 'description' )
+    list_display = ('name', 'tags_as_string', 'country', 'description', 'worklist' )
     list_display_links = ('name',)
     list_filter = ( 'country', )
     search_fields = [ 'name', 'country', 'description' ]
     def tags_as_string(self, obj):
         return ", ".join(t.name for t in obj.tags.all())
     tags_as_string.short_description = 'Tags'
+
+    def worklist(self, obj):
+        return ", ".join(w.title for w in obj.works.all())
+    worklist.short_description = 'Works'
+
 admin.site.register(Artist, ArtistAdmin)
 
