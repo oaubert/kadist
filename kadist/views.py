@@ -3,12 +3,10 @@ import itertools
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.conf import settings
 from django.db.models.loading import get_model
 from django.db.models import Count
-from django.views.generic import RedirectView
 
 from rest_framework import generics
 from rest_framework.decorators import api_view
@@ -18,6 +16,7 @@ from nltk.corpus import wordnet as wn
 
 from .models import Artist, Work
 from .serializers import ArtistSerializer, WorkSerializer
+from .templatetags.kadist import tagsize, TAG_MINCOUNT
 
 # define the default models for tags and tagged items
 TAG_MODEL = get_model('taggit', 'Tag')
@@ -40,16 +39,9 @@ def taglist(request):
         return HttpResponseRedirect('/kadist/tag/%s' % kw)
 
     tags = TAG_MODEL.objects.annotate(count=Count('taggit_taggeditem_items')).values_list('name', 'count').order_by('name')
-    maxcount = max( t[1] for t in tags )
-    mincount = 6
-    minsize = 10
-    maxsize = 48
-    factor = 1. * (maxsize - minsize) / (maxcount - mincount)
-    def tagsize(c):
-        return long(minsize + factor * (c - mincount))
     tags = [ (t[0], t[1], tagsize(t[1]))
              for t in tags
-             if t[1] >= mincount ]
+             if t[1] >= TAG_MINCOUNT ]
     return render_to_response('main.html', {
             'tags': tags
             }, context_instance=RequestContext(request))
