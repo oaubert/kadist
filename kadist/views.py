@@ -2,11 +2,13 @@ import operator
 import itertools
 
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.conf import settings
 from django.db.models.loading import get_model
 from django.db.models import Count
+from django.views.generic import RedirectView
 
 from rest_framework import generics
 from rest_framework.decorators import api_view
@@ -32,6 +34,11 @@ def api_root(request, format=None):
 
 @login_required
 def taglist(request):
+    kw = request.REQUEST.get('keyword', '')
+    if kw:
+        # Redirect
+        return HttpResponseRedirect('/kadist/tag/%s' % kw)
+
     tags = TAG_MODEL.objects.annotate(count=Count('taggit_taggeditem_items')).values_list('name', 'count').order_by('name')
     maxcount = max( t[1] for t in tags )
     mincount = 6
