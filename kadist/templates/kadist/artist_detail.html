@@ -14,7 +14,7 @@
   <li>Works:
     <ul>
       {% for w in artist.works.all %}
-      <li><a href="{{ w.get_absolute_url }}">{{ w.title }}</a> <span class="taglist">{% for t in w.tags.all %}<a class="tagref" href="/kadist/tag/{{ t.name }}">{{ t.name }}</a> -{% endfor %}</span></li>
+      <li><a href="{{ w.get_absolute_url }}">{{ w.title }}</a> <a class="editlink" href="{% url "admin:kadist_work_change" w.pk %}">Edit</a> <span class="taglist">{% for t in w.tags.all %}<a class="tagref" href="/kadist/tag/{{ t.name }}">{{ t.name }}</a> -{% endfor %}</span></li>
       {% endfor %}
     </ul>
   </li>
