@@ -10,4 +10,4 @@ backup:
 	$(MANAGE) dumpdata kadist taggit | gzip -c > kadist.json.gz
 
 restore:
-	$(MANAGE) loadata kadist.json
+	$(MANAGE) loaddata kadist.json.gz
