@@ -96,7 +96,7 @@ class Command(BaseCommand):
                      year=year,
                      description=data[DESCRIPTION])
             # Only take the first 2 words
-            cname = data[FIRSTNAME] + " " + data[SURNAME]
+            cname = (data[FIRSTNAME].capitalize() + " " + data[SURNAME].capitalize()).strip()
             try:
                 creator = Artist.objects.get(name=cname)
             except Artist.DoesNotExist:
