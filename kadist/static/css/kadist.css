@@ -50,12 +50,14 @@ ul.worklist {
 }
 
 ul.worklist li {
-    margin: 5px;
     display: table-cell;
     width: 140px;
     height: 100px;
+    margin: 5px;
+    padding: 3px;
     float: left;
     border: solid #ddd 1px;
+    border-radius: 10px;
 }
 
 ul.worklist.detailed li {
