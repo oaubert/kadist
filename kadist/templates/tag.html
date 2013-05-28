@@ -8,14 +8,14 @@
 {% block content %}
   <h1><em>{{ kw }}</em></h1>
   <h2>Works <span class="tagcount">({{ works|length }})</span></h2>
-  <ul class="description">
+  <ul class="description worklist">
     {% for w in works %}
     <li><a href="{{ w.get_absolute_url }}">{{ w.title }}</a> <a class="editlink" href="{% url "admin:kadist_work_change" w.pk %}">Edit</a>(<a href="{{ w.creator.get_absolute_url }}">{{ w.creator }}</a> <a class="editlink" href="{% url "admin:kadist_artist_change" w.creator.pk %}">Edit</a>)</li>
     {% endfor %}
   </ul>
 
   <h2>Artists <span class="tagcount">({{ artists|length }})</span></h2>
-  <ul class="description">
+  <ul class="description worklist">
     {% for a in artists %}
     <li><a href="{{ a.get_absolute_url }}">{{ a.name }}</a> - {% for t in a.tags.all %}<a href="{{ t.name }}">{{ t.name }}</a> -{% endfor %}</li>
     {% endfor %}
