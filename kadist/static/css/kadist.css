@@ -83,11 +83,14 @@ a:hover {
 }
 
 .editlink {
-    opacity: .1;
+    display: none;
 }
 
-.editlink:hover {
-    opacity: .5;
+li:hover .editlink {
+    display: inline;
+    margin-left: .3em;
+    margin-right: .3em;
+    color: #999;
 }
 
 .taglist {
