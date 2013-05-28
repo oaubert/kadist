@@ -7,19 +7,38 @@
 
 {% block content %}
 <h1>{{ work.title }} <a class="editlink" href="{% url "admin:kadist_work_change" work.pk %}">Edit</a></h1>
-<ul class="description">
-  <li>Artist: <a href="/kadist/artist/{{ work.creator.pk }}">{{ work.creator }}</a></li>
-  <li>Year: {{ work.year }}</li>
-  <li>Worktype: {{ work.worktype }}</li>
-  <li>Technique: {{ work.technique }}</li>
-  <li>Description: {{ work.description }}</li>
-  <li>Tags: {% for kw in work.tags.all %}<a href="/kadist/tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</li>
-  <li>Similar works (based on tags):
+<dl class="description">
+
+  <dt>Artist</dt>
+  <dd><a href="/kadist/artist/{{ work.creator.pk }}">{{ work.creator }}</a></dd>
+
+  <dt>Year</dt>
+  <dd>{{ work.year }}</dd>
+
+  {% if work.worktype %}
+  <dt>Worktype</dt>
+  <dd>{{ work.worktype }}</dd>
+  {% endif %}
+
+  {% if work.technique %}
+  <dt>Technique</dt>
+  <dd>{{ work.technique }}</dd>
+  {% endif %}
+
+  <dt>Description</dt>
+  <dd>{{ work.description }}</dd>
+
+  <dt>Tags</dt>
+  <dd>{% for kw in work.tags.all %}<a href="/kadist/tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</dd>
+
+  <dt>Similar works (based on tags)</dt>
+  <dd>
     <ul class="worklist">
       {% for w in work.tags.similar_objects|slice:":10" %}
       <li><a href="/kadist/work/{{ w.pk }}">{{ w }}</a> ({{ w.similar_tags }})</li>
       {% endfor %}
     </ul>
-  </li>
-  </ul>
+  </dd>
+
+</dl>
 {% endblock %}

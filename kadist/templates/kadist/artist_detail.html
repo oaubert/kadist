@@ -7,16 +7,28 @@
 
 {% block content %}
 <h1>{{ artist.name }} <a class="editlink" href="{% url "admin:kadist_artist_change" artist.pk %}">Edit</a></h1>
-<ul class="description">
-  <li>Country: {{ artist.country }}</li>
-  <li>Description: {{ artist.description }}</li>
-  <li>Tags: {% for kw in artist.tags.all %}<a href="/kadist/tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</li>
-  <li>Works:
-    <ul>
+
+<dl class="description">
+
+  <dt>Country</dt>
+  <dd> {{ artist.country }}</dd>
+
+  {% if artist.description %}
+  <dt>Description</dt>
+  <dd> {{ artist.description }}</dd>
+  {% endif %}
+
+  <dt>Tags</dt>
+  <dd> {% for kw in artist.tags.all %}<a href="/kadist/tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</dd>
+
+  <dt>Works</dt>
+  <dd>
+    <ul class="worklist detailed">
       {% for w in artist.works.all %}
       <li><a href="{{ w.get_absolute_url }}">{{ w.title }}</a> <a class="editlink" href="{% url "admin:kadist_work_change" w.pk %}">Edit</a> <span class="taglist">{% for t in w.tags.all %}<a class="tagref" href="/kadist/tag/{{ t.name }}">{{ t.name }}</a> -{% endfor %}</span></li>
       {% endfor %}
     </ul>
-  </li>
-  </ul>
+  </dd>
+</dl>
+
 {% endblock %}
