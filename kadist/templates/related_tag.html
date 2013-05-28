@@ -2,7 +2,7 @@
 
     <div class="related_category{% if not tags %} empty_category{% endif %}">
       <h2>{{ title }} <span class="tagcount">({{ tags|length }})</span></h2>
-      <ul class="description">
+      <ul class="description taglist">
         {% for kw in tags %}
         <li><a title="{{ kw.1 }} element{{ kw.1|pluralize }} tagged with {{ kw.0 }}" class="{% if kw.1 %}synonym{% else %}nosynonym{% endif %}" style="font-size: {{ kw.1|tagsize }}pt" href="{{ kw.0 }}">{{ kw.0 }}</a></li>
         {% endfor %}
