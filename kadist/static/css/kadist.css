@@ -45,6 +45,24 @@ ul.description li {
     margin: 1em;
 }
 
+ul.worklist {
+    clear: both;
+}
+
+ul.worklist li {
+    margin: 5px;
+    display: table-cell;
+    width: 140px;
+    height: 100px;
+    float: left;
+    border: solid #ddd 1px;
+}
+
+ul.worklist.detailed li {
+    width: 200px;
+    height: 200px;
+}
+
 ul.taglist {
     list-style-type: none;
 }
