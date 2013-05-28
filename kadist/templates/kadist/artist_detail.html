@@ -29,6 +29,16 @@
       {% endfor %}
     </ul>
   </dd>
+
+  <dt>Similar artists (based on tags)</dt>
+  <dd>
+    <ul class="worklist">
+      {% for a in artist.tags.similar_objects|slice:":10" %}
+      <li><a title="{{ a.similar_tags }} similar tags" href="/kadist/artist/{{ a.pk }}">{{ a }}</a></li>
+      {% endfor %}
+    </ul>
+  </dd>
+
 </dl>
 
 {% endblock %}
