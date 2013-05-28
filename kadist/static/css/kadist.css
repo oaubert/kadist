@@ -31,6 +31,14 @@ h2 {
     clear: both;
 }
 
+.related_category h2 {
+    text-align: center;
+    background-color: #eee;
+    width: 100%;
+    border-corner: 4px;
+    color: #333;
+}
+
 dt {
     font-weight: bold;
     float: left;
