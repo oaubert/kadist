@@ -98,6 +98,10 @@ li:hover .editlink {
     color: #999;
 }
 
+.tagcount {
+    display: none;
+}
+
 .nosynonym {
     color: #bbb;
 }
@@ -178,9 +182,6 @@ ul.navbar .submenu li {
 @media only screen and (max-width: 1000px) {
     h2 {
         font-size: 10pt;
-    }
-    .tagcount {
-        display: none;
     }
 }
 
