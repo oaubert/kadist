@@ -113,8 +113,12 @@ li:hover .editlink {
 }
 
 .related_category {
+    margin: 3px;
+    padding: 3px;
     width: 20%;
     float: left;
+    border: 1px solid #ddd;
+    border-radius: 8px;
 }
 
 .empty_category {
