@@ -13,6 +13,13 @@
   <li>Worktype: {{ work.worktype }}</li>
   <li>Technique: {{ work.technique }}</li>
   <li>Description: {{ work.description }}</li>
-  <li>Tags: {% for kw in work.tags.all %}<a href="/kadist/tag/{{ kw }}">{{ kw }}</a> - {% endfor %}
+  <li>Tags: {% for kw in work.tags.all %}<a href="/kadist/tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</li>
+  <li>Similar works (based on tags):
+    <ul class="worklist">
+      {% for w in work.tags.similar_objects|slice:":10" %}
+      <li><a href="/kadist/work/{{ w.pk }}">{{ w }}</a> ({{ w.similar_tags }})</li>
+      {% endfor %}
+    </ul>
+  </li>
   </ul>
 {% endblock %}
