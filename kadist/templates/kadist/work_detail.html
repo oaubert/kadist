@@ -29,13 +29,13 @@
   <dd>{{ work.description }}</dd>
 
   <dt>Tags</dt>
-  <dd>{% for kw in work.tags.all %}<a href="/kadist/tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</dd>
+  <dd>{% for kw in work.tags.all %}<a href="../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</dd>
 
   <dt>Similar works (based on tags)</dt>
   <dd>
     <ul class="worklist">
       {% for w in work.tags.similar_objects|slice:":10" %}
-      <li><a title="{{ w.similar_tags }} common tags" href="/kadist/work/{{ w.pk }}">{{ w }}</a></li>
+      <li><a title="{{ w.similar_tags }} common tags" href="{{ w.get_absolute_url }}">{{ w }}</a></li>
       {% endfor %}
     </ul>
   </dd>
