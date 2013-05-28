@@ -35,7 +35,7 @@
   <dd>
     <ul class="worklist">
       {% for w in work.tags.similar_objects|slice:":10" %}
-      <li><a href="/kadist/work/{{ w.pk }}">{{ w }}</a> ({{ w.similar_tags }})</li>
+      <li><a title="{{ w.similar_tags }} similar tags" href="/kadist/work/{{ w.pk }}">{{ w }}</a></li>
       {% endfor %}
     </ul>
   </dd>
