@@ -62,7 +62,6 @@ def tag(request, kw=None):
                     ]
     else:
         synsets = wn.synsets(kw)
-    print kw, len(synsets)
 
     def related_tags(func):
         rel = []
