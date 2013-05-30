@@ -2,19 +2,32 @@ from rest_framework import serializers
 from .models import Work, Artist
 
 class WorkSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.IntegerField(source='pk', read_only=True)
     tags = serializers.ManyRelatedField(source='tags')
 
     class Meta:
         model = Work
-        fields = ('id', 'creator', 'title', 'worktype', 'technique','dimensions', 'description', 'tags')
+        fields = ('url', 'creator', 'title', 'worktype', 'technique','dimensions', 'description', 'tags')
+
+class WorkReferenceSerializer(serializers.HyperlinkedModelSerializer):
+    """Minimal serialization for a work reference.
+    """
+    creatorname = serializers.CharField(source='creator.name', read_only=True)
+    class Meta:
+        model = Work
+        fields = ('url', 'creatorname', 'title')
 
 class ArtistSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.IntegerField(source='pk', read_only=True)
     works = serializers.HyperlinkedRelatedField(many=True, read_only=True,
                                                 view_name='work-detail')
     tags = serializers.ManyRelatedField(source='tags')
 
     class Meta:
         model = Artist
-        fields = ('name', 'country', 'description', 'works', 'tags')
+        fields = ('url', 'name', 'country', 'description', 'works', 'tags')
+
+class ArtistReferenceSerializer(serializers.HyperlinkedModelSerializer):
+    """Minimal serialization for an artist reference.
+    """
+    class Meta:
+        model = Artist
+        fields = ('url', 'name', )
