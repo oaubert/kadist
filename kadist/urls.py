@@ -7,7 +7,7 @@ from .models import Work, Artist
 
 urlpatterns = patterns('',
                        url(r'^$', login_required(TemplateView.as_view(template_name='root.html')), name='root'),
-                       url(r'^tag/$', views.taglist, name='tag-list'),
+                       url(r'^tag/$', views.taglist_as_html, name='tag-list'),
                        url(r'^tag/(?P<kw>.+)$', views.tag, name='tag-detail'),
                        url(r'^work/$', login_required(ListView.as_view(model=Work)), name='work-list'),
                        url(r'^work/(?P<pk>[0-9]+)/$', login_required(DetailView.as_view(model=Work, context_object_name='work')),
@@ -21,6 +21,8 @@ urlpatterns = patterns('',
                        url(r'^api/work/(?P<pk>[0-9]+)/$', views.WorkDetail.as_view(), name='api-work-detail'),
                        url(r'^api/artist/$', views.ArtistList.as_view(), name='api-artist-list'),
                        url(r'^api/artist/(?P<pk>[0-9]+)/$', views.ArtistDetail.as_view(), name='api-artist-detail'),
+                       url(r'^api/tag/$', views.taglist_as_json, name='api-tag-list'),
+                       url(r'^api/tag/(?P<kw>.+)$', views.tag_as_json, name='api-tag-detail'),
                        )
 
 urlpatterns = format_suffix_patterns(urlpatterns)

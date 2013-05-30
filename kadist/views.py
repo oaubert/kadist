@@ -9,13 +9,14 @@ from django.db.models.loading import get_model
 from django.db.models import Count
 
 from rest_framework import generics
-from rest_framework.decorators import api_view
+from rest_framework.renderers import UnicodeJSONRenderer
+from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from nltk.corpus import wordnet as wn
 
 from .models import Artist, Work
-from .serializers import ArtistSerializer, WorkSerializer
+from .serializers import ArtistSerializer, WorkSerializer, ArtistReferenceSerializer, WorkReferenceSerializer
 from .templatetags.kadist import tagsize, TAG_MINCOUNT
 
 # define the default models for tags and tagged items
@@ -31,34 +32,42 @@ def api_root(request, format=None):
             'works': reverse('work-list', request=request),
             })
 
-@login_required
-def taglist(request):
-    kw = request.REQUEST.get('keyword', '')
-    if kw:
-        # Redirect
-        return HttpResponseRedirect('/kadist/tag/%s' % kw)
+def taglist():
+    """Return the decorated list of existing tags.
 
+    The list is decorated with the item count for each tag, and the corresponding tagsize in points.
+    """
     tags = TAG_MODEL.objects.annotate(count=Count('taggit_taggeditem_items')).values_list('name', 'count').order_by('name')
     tags = [ (t[0], t[1], tagsize(t[1]))
              for t in tags
              if t[1] >= TAG_MINCOUNT ]
-    return render_to_response('main.html', {
-            'tags': tags
-            }, context_instance=RequestContext(request))
+    return tags
 
 # TODO: factorize tag info extraction into struct and use it in tag method + api/tag (JSON version) + angular view
+def taginfo(kw):
+    """Return information about a tag.
 
-@login_required
-def tag(request, kw=None):
-    works = Work.objects.filter(tags__name__in=[kw])
-    artists = Artist.objects.filter(tags__name__in=[kw])
+    It returns a dict with the following keys:
+            'tag': tag
+            'works': list of works
+            'artists': list of artists,
+            'synonyms': list of synonyms
+            'hypernyms': list of hypernyms
+            'hyponyms': list of hyponyms
+            'holonyms': list of holonyms
+            'meronyms': list of meronyms
+    """
+    info = { 'tag': kw }
+
+    info['works'] = Work.objects.filter(tags__name__in=[kw])
+    info['artists'] = Artist.objects.filter(tags__name__in=[kw])
 
     if ' ' in kw:
         kwl = kw.split()
         synsets = [ s
                     for k in kwl
                     if k not in ['and', 'or']
-                    for s in wn.synsets(k.strip('()"')) 
+                    for s in wn.synsets(k.strip('()"'))
                     ]
     else:
         synsets = wn.synsets(kw)
@@ -78,22 +87,44 @@ def tag(request, kw=None):
         rel.sort(key=operator.itemgetter(1), reverse=True)
         return rel
 
-    synonyms = related_tags(lambda s: [s])
-    hypernyms = related_tags(lambda s: itertools.chain(s.hypernyms(), s.instance_hypernyms()))
-    hyponyms = related_tags(lambda s: itertools.chain(s.hyponyms(), s.instance_hyponyms()))
-    holonyms = related_tags(lambda s: itertools.chain(s.member_holonyms(), s.substance_holonyms(), s.part_holonyms()))
-    meronyms = related_tags(lambda s: itertools.chain(s.member_meronyms(), s.substance_meronyms(), s.part_meronyms()))
+    info['synonyms'] = related_tags(lambda s: [s])
+    info['hypernyms'] = related_tags(lambda s: itertools.chain(s.hypernyms(), s.instance_hypernyms()))
+    info['hyponyms'] = related_tags(lambda s: itertools.chain(s.hyponyms(), s.instance_hyponyms()))
+    info['holonyms'] = related_tags(lambda s: itertools.chain(s.member_holonyms(), s.substance_holonyms(), s.part_holonyms()))
+    info['meronyms'] = related_tags(lambda s: itertools.chain(s.member_meronyms(), s.substance_meronyms(), s.part_meronyms()))
 
-    return render_to_response('tag.html', {
-            'kw': kw,
-            'works': works,
-            'artists': artists,
-            'synonyms': synonyms,
-            'hypernyms': hypernyms,
-            'hyponyms': hyponyms,
-            'holonyms': holonyms,
-            'meronyms': meronyms,
-            }, context_instance=RequestContext(request))
+    return info
+
+@login_required
+def taglist_as_html(request):
+    kw = request.REQUEST.get('keyword', '')
+    if kw:
+        # Redirect
+        return HttpResponseRedirect('/kadist/tag/%s' % kw)
+    else:
+        return render_to_response('main.html', {
+                'tags': taglist(kw)
+                }, context_instance=RequestContext(request))
+
+@api_view(['GET'])
+@renderer_classes((UnicodeJSONRenderer, ))
+@login_required
+def taglist_as_json(request):
+    return Response(taglist())
+
+@api_view(['GET'])
+@renderer_classes((UnicodeJSONRenderer, ))
+@login_required
+def tag_as_json(request, kw=None):
+    info = taginfo(kw)
+    info['works'] = WorkReferenceSerializer(info['works']).data
+    info['artists'] = ArtistReferenceSerializer(info['artists']).data
+    return Response(info)
+
+@login_required
+def tag(request, kw=None):
+    return render_to_response('tag.html', taginfo(kw),
+                              context_instance=RequestContext(request))
 
 class WorkList(generics.ListCreateAPIView):
     model = Work
