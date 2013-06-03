@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% load admin_urls %}
+{% load url from future %}
+
+{% block title %}KCN - {{ kw }}{% endblock %}
+
+{% block extra_header %}
+    <style type="text/css">
+body > svg {
+  position: absolute;
+  top: -80px;
+  left: -160px;
+}
+
+circle.node {
+  cursor: pointer;
+  stroke: #000;
+  stroke-width: .5px;
+}
+
+line.link {
+  fill: none;
+  stroke: #9ecae1;
+  stroke-width: 1.5px;
+}
+    </style>
+{% endblock %}
+
+{% block content %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/d3.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/d3.geom.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/d3.layout.js"></script>
+    <script type="text/javascript">
+
+      /* FIXME: remove constants. Cf http://stackoverflow.com/questions/11942500/how-to-make-force-layout-graph-in-d3-js-responsive-to-screen-browser-size */
+      var w = 1024,
+      h = 800,
+      node,
+      link,
+      root;
+
+      var force = d3.layout.force()
+      .on("tick", tick)
+      .charge(function(d) { return d._children ? -d.size / 100 : -30; })
+      .linkDistance(function(d) { return d.target._children ? 80 : 30; })
+      .size([w, h - 160]);
+
+      var vis = d3.select("body").append("svg:svg")
+      .attr("width", w)
+      .attr("height", h);
+
+      d3.json("/kadist/api/tag/" + document.location.hash.replace('#', ''), function(json) {
+          if (json.hasOwnProperty('tag')) {
+              var clusters = [
+                           { name: "works",
+                             children: json.works.map( function(w) {
+                                 return { name: w.title,
+                                          size: 200,
+                                          author: w.creatorname,
+                                          type: 'work'
+                                        };
+                             })
+                           },
+                           { name: 'artists',
+                             children: json.artists.map( function(a) {
+                                 return { name: a.name,
+                                          size: 200,
+                                          type: 'artist'
+                                        };
+                             })
+                           } ];
+              ['synonyms', 'hypernyms', 'hyponyms', 'holonyms', 'meronyms'].forEach( function(cat) {
+                  clusters.push( { name: cat,
+                                   children: json[cat].map( function(t) {
+                                       return { name: t[0],
+                                                size: 10 * t[1],
+                                                type: 'tag'
+                                              }
+                                   })
+                                 });
+              });
+              
+              // Single tag info
+              root = { name: json.tag,
+                       children: clusters }
+          } else {
+              // Tag list
+              var l = []
+              for (var i = 0; i++; i < json.length) {
+                  l.push( { "name": json[i][0],
+                            "size": json[i][2] } );
+              }
+              root = { "name": "tags",
+                       children: l }
+          }
+          root.fixed = true;
+          root.x = w / 2;
+          root.y = h / 2 - 80;
+          update();
+      });
+
+      function update() {
+          var nodes = flatten(root),
+          links = d3.layout.tree().links(nodes);
+
+          // Restart the force layout.
+          force
+              .nodes(nodes)
+              .links(links)
+              .start();
+
+          // Update the links…
+          link = vis.selectAll("line.link")
+              .data(links, function(d) { return d.target.id; });
+
+          // Enter any new links.
+          link.enter().insert("svg:line", ".node")
+              .attr("class", "link")
+              .attr("x1", function(d) { return d.source.x; })
+              .attr("y1", function(d) { return d.source.y; })
+              .attr("x2", function(d) { return d.target.x; })
+              .attr("y2", function(d) { return d.target.y; });
+
+          // Exit any old links.
+          link.exit().remove();
+
+          // Update the nodes…
+          node = vis.selectAll("circle.node")
+              .data(nodes, function(d) { return d.id; })
+              .style("fill", color);
+
+          node.transition()
+              .attr("r", function(d) { return d.children ? 4.5 : Math.sqrt(d.size) / 10; });
+
+          // Enter any new nodes.
+          // Symbols: http://bl.ocks.org/mbostock/1062383
+          // Text: http://www.dashingd3js.com/svg-text-element
+          // Text: http://stackoverflow.com/questions/15714738/d3-js-force-graph-cannot-display-text-label-of-nodes
+          node.enter().append("svg:circle")
+              .attr("class", "node")
+              .attr("cx", function(d) { return d.x; })
+              .attr("cy", function(d) { return d.y; })
+              .attr("r", function(d) { return d.children ? Math.max(10, d.children.length) : d.size; })
+              .style("fill", color)
+              .on("click", click)
+              .on("mouseover", over)
+              .call(force.drag);
+
+          // Exit any old nodes.
+          node.exit().remove();
+      }
+
+      function tick() {
+          link.attr("x1", function(d) { return d.source.x; })
+              .attr("y1", function(d) { return d.source.y; })
+              .attr("x2", function(d) { return d.target.x; })
+              .attr("y2", function(d) { return d.target.y; });
+
+          node.attr("cx", function(d) { return d.x; })
+              .attr("cy", function(d) { return d.y; });
+      }
+
+      // Color leaf nodes orange, and packages white or blue.
+      function color(d) {
+          return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
+      }
+
+      // Toggle children on click.
+      function click(d) {
+          if (d.children) {
+              d._children = d.children;
+              d.children = null;
+          } else {
+              d.children = d._children;
+              d._children = null;
+          }
+          update();
+      }
+
+      function over(d) {
+          console.log(d);
+      }
+      // Returns a list of all nodes under the root.
+      function flatten(root) {
+          var nodes = [], i = 0;
+
+          function recurse(node) {
+              if (node.children) node.size = node.children.reduce(function(p, v) { return p + recurse(v); }, 0);
+              if (!node.id) node.id = ++i;
+                  nodes.push(node);
+              return node.size;
+          }
+
+          root.size = recurse(root);
+          return nodes;
+      }
+    </script>
+{% endblock %}
+
