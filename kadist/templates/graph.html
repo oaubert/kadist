@@ -166,7 +166,7 @@ line.link {
           // Text: http://www.dashingd3js.com/svg-text-element
           // Text: http://stackoverflow.com/questions/15714738/d3-js-force-graph-cannot-display-text-label-of-nodes
           var wg = wnode.enter().append("g")
-              .attr("class", "work element")
+              .attr("class", "node work element")
               .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
               .on("click", click)
               .call(force.drag);
@@ -199,10 +199,11 @@ line.link {
           // Text: http://www.dashingd3js.com/svg-text-element
           // Text: http://stackoverflow.com/questions/15714738/d3-js-force-graph-cannot-display-text-label-of-nodes
           var tg = tnode.enter().append("g")
-              .attr("class", "tag element")
+              .attr("class", "node tag element")
               .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
               .on("click", click)
               .call(force.drag);
+
           tg.append("svg:rect")
               .attr("width", 80)
               .attr("height", 40)
@@ -226,7 +227,7 @@ line.link {
               .data(nodes.filter(is_artist), function(d) { return d.id; })
               .style("fill", color);
           anode.enter().append("svg:rect")
-              .attr("class", "artist element")
+              .attr("class", "node artist element")
               .attr("x", function(d) { return d.x; })
               .attr("y", function(d) { return d.y; })
               .attr("width", 80)
