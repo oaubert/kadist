@@ -13,7 +13,7 @@ body > svg {
   left: -160px;
 }
 
-circle.node {
+.node {
   cursor: pointer;
   stroke: #000;
   stroke-width: .5px;
@@ -35,6 +35,9 @@ line.link {
       /* FIXME: remove constants. Cf http://stackoverflow.com/questions/11942500/how-to-make-force-layout-graph-in-d3-js-responsive-to-screen-browser-size */
       var w = $(window).width() - 50,
       h = $(window).height() - 50,
+      anode,
+      wnode,
+      tnode,
       link,
       root;
 
@@ -94,7 +97,7 @@ line.link {
           }
           root.fixed = true;
           root.x = w / 2;
-          root.y = h / 2 - 80;
+          root.y = h / 2;
           update();
       });
 
@@ -123,45 +126,121 @@ line.link {
           // Exit any old links.
           link.exit().remove();
 
-          // Update the nodes…
-          node = vis.selectAll("circle.node")
-              .data(nodes, function(d) { return d.id; })
+          // Update the work nodes…
+          wnode = vis.selectAll(".work")
+              .data(nodes.filter(is_work), function(d) { return d.id; })
               .style("fill", color);
 
-          node.transition()
-              .attr("r", function(d) { return d.children ? 4.5 : Math.sqrt(d.size) / 10; });
+          // Transition existing nodes
+          //node.transition()
+          //    .attr("r", function(d) { return d.children ? 4.5 : Math.sqrt(d.size) / 10; });
 
           // Enter any new nodes.
           // Symbols: http://bl.ocks.org/mbostock/1062383
           // Text: http://www.dashingd3js.com/svg-text-element
           // Text: http://stackoverflow.com/questions/15714738/d3-js-force-graph-cannot-display-text-label-of-nodes
-          node.enter().append("svg:circle")
-              .attr("class", "node")
-              .attr("cx", function(d) { return d.x; })
-              .attr("cy", function(d) { return d.y; })
-              .attr("r", function(d) { return d.children ? Math.max(10, d.children.length) : d.size; })
+          var wg = wnode.enter().append("g")
+              .attr("class", "work element")
+              .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+              .on("click", click)
+              .call(force.drag);
+
+          wg.append("svg:circle")
+              .attr("r", function(d) { return 20; })
+              .style("fill", color)
+
+          wg.append("svg:text")
+              .attr("text-anchor", "middle")
+              .attr("dy", ".35em")
+              .text(function(d) { return d.name; });
+
+          // Exit any old nodes.
+          wnode.exit().remove();
+
+          // TAG nodes
+          // Update the tag nodes…
+          tnode = vis.selectAll(".tag")
+              .data(nodes.filter(is_tag), function(d) { return d.id; })
+              .style("fill", color);
+
+          // Transition existing nodes
+          //node.transition()
+          //    .attr("r", function(d) { return d.children ? 4.5 : Math.sqrt(d.size) / 10; });
+
+          // Enter any new nodes.
+          // Symbols: http://bl.ocks.org/mbostock/1062383
+          // Text: http://www.dashingd3js.com/svg-text-element
+          // Text: http://stackoverflow.com/questions/15714738/d3-js-force-graph-cannot-display-text-label-of-nodes
+          var tg = tnode.enter().append("g")
+              .attr("class", "tag element")
+              .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+              .on("click", click)
+              .call(force.drag);
+          tg.append("svg:rect")
+              .attr("width", 80)
+              .attr("height", 40)
+              .attr("rx", 5)
+              .attr("ry", 8)
+              .attr("x", -40)
+              .attr("y", -20)
+              .style("fill", color);
+          tg.append("svg:text")
+              .attr("text-anchor", "middle")
+              .attr("dy", ".35em")
+              .text(function(d) { return d.name; });
+
+          // FIXME: add text
+          // Exit any old nodes.
+          tnode.exit().remove();
+
+          // Artist nodes
+          anode = vis.selectAll(".artist")
+              .data(nodes.filter(is_artist), function(d) { return d.id; })
+              .style("fill", color);
+          anode.enter().append("svg:rect")
+              .attr("class", "artist element")
+              .attr("x", function(d) { return d.x; })
+              .attr("y", function(d) { return d.y; })
+              .attr("width", 80)
+              .attr("height", 60)
               .style("fill", color)
               .on("click", click)
-              .on("mouseover", over)
               .call(force.drag);
 
           // Exit any old nodes.
-          node.exit().remove();
+          anode.exit().remove();
       }
 
+      function is_artist(n) {
+          return n.type === 'artist';
+      }
+      function is_work(n) {
+          return n.type === 'work';
+      }
+      function is_tag(n) {
+          return n.type === 'tag';
+      }
       function tick() {
           link.attr("x1", function(d) { return d.source.x; })
               .attr("y1", function(d) { return d.source.y; })
               .attr("x2", function(d) { return d.target.x; })
               .attr("y2", function(d) { return d.target.y; });
 
-          node.attr("cx", function(d) { return d.x; })
+          wnode.attr("cx", function(d) { return d.x; })
               .attr("cy", function(d) { return d.y; });
+          tnode.attr("x", function(d) { return d.x; })
+              .attr("y", function(d) { return d.y; });
+          anode.attr("x", function(d) { return d.x; })
+              .attr("y", function(d) { return d.y; });
       }
 
-      // Color leaf nodes orange, and packages white or blue.
+      color_mapping = {
+          tag: "#3182bd",
+          work: "#c6dbef",
+          artist: "#fd8d3c"
+      }
       function color(d) {
-          return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
+          return color_mapping[d.type] || "#77f";
       }
 
       // Toggle children on click.
