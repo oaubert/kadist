@@ -53,46 +53,54 @@ line.link {
 
       d3.json("/kadist/api/tag/" + document.location.hash.replace('#', ''), function(json) {
           if (json.hasOwnProperty('tag')) {
-              var clusters = [
-                           { name: "works",
-                             fixed: true,
-                             x: w / 2,
-                             y: h / 4,
-                             type: 'cluster',
-                             children: json.works.map( function(w) {
-                                 return { name: w.title,
-                                          size: 200,
-                                          author: w.creatorname,
-                                          type: 'work'
-                                        };
-                             })
-                           },
-                           { name: 'artists',
-                             type: 'cluster',
-                             fixed: true,
-                             x: w / 2,
-                             y: 3 * h / 4,
-                             children: json.artists.map( function(a) {
-                                 return { name: a.name,
-                                          size: 200,
-                                          type: 'artist'
-                                        };
-                             })
-                           } ];
+              var clusters = [ ];
+
+              if (json.works.length) {
+                  clusters.push({ name: "works",
+                                  fixed: true,
+                                  x: w / 2,
+                                  y: h / 4,
+                                  type: 'cluster',
+                                  children: json.works.map( function(w) {
+                                      return { name: w.title,
+                                               size: 200,
+                                               author: w.creatorname,
+                                               type: 'work'
+                                             };
+                                  })
+                                });
+              }
+              if (json.artists.length) {
+                  cluster.push({ name: 'artists',
+                                 type: 'cluster',
+                                 fixed: true,
+                                 x: w / 2,
+                                 y: 3 * h / 4,
+                                 children: json.artists.map( function(a) {
+                                     return { name: a.name,
+                                              size: 200,
+                                              type: 'artist'
+                                            };
+                                 })
+                               });
+              }
+
               var i = 0;
               ['synonyms', 'hypernyms', 'hyponyms', 'holonyms', 'meronyms'].forEach( function(cat) {
-                  clusters.push( { name: cat,
-                                   type: 'cluster',
-                                   fixed: true,
-                                   x: (1 + 2 * (i % 2)) * (w / 4),
-                                   y: (1 + 2 * (i / 2)) * (h / 4),
+                  if (json[cat].length) {
+                      clusters.push( { name: cat,
+                                       type: 'cluster',
+                                       fixed: true,
+                                       x: (1 + 2 * (i % 2)) * (w / 4),
+                                       y: (1 + 2 * (i / 2)) * (h / 4),
                                    children: json[cat].map( function(t) {
                                        return { name: t[0],
                                                 size: 10 * t[1],
                                                 type: 'tag'
                                               }
                                    })
-                                 });
+                                     });
+                  }
               });
 
               // Single tag info
