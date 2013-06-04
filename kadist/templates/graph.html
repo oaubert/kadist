@@ -55,6 +55,10 @@ line.link {
           if (json.hasOwnProperty('tag')) {
               var clusters = [
                            { name: "works",
+                             fixed: true,
+                             x: w / 2,
+                             y: h / 4,
+                             type: 'cluster',
                              children: json.works.map( function(w) {
                                  return { name: w.title,
                                           size: 200,
@@ -64,6 +68,10 @@ line.link {
                              })
                            },
                            { name: 'artists',
+                             type: 'cluster',
+                             fixed: true,
+                             x: w / 2,
+                             y: 3 * h / 4,
                              children: json.artists.map( function(a) {
                                  return { name: a.name,
                                           size: 200,
@@ -71,8 +79,13 @@ line.link {
                                         };
                              })
                            } ];
+              var i = 0;
               ['synonyms', 'hypernyms', 'hyponyms', 'holonyms', 'meronyms'].forEach( function(cat) {
                   clusters.push( { name: cat,
+                                   type: 'cluster',
+                                   fixed: true,
+                                   x: (1 + 2 * (i % 2)) * (w / 4),
+                                   y: (1 + 2 * (i / 2)) * (h / 4),
                                    children: json[cat].map( function(t) {
                                        return { name: t[0],
                                                 size: 10 * t[1],
@@ -81,9 +94,10 @@ line.link {
                                    })
                                  });
               });
-              
+
               // Single tag info
               root = { name: json.tag,
+                       type: 'tag',
                        children: clusters }
           } else {
               // Tag list
