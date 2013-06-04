@@ -249,17 +249,17 @@ line.link {
           return n.type === 'tag';
       }
       function tick() {
-          link.attr("x1", function(d) { return d.source.x; })
-              .attr("y1", function(d) { return d.source.y; })
-              .attr("x2", function(d) { return d.target.x; })
-              .attr("y2", function(d) { return d.target.y; });
-
           wnode.attr("x", function(d) { return d.x; })
               .attr("y", function(d) { return d.y; });
           tnode.attr("x", function(d) { return d.x; })
               .attr("y", function(d) { return d.y; });
           anode.attr("x", function(d) { return d.x; })
               .attr("y", function(d) { return d.y; });
+
+          link.attr("x1", function(d) { return d.source.x; })
+              .attr("y1", function(d) { return d.source.y; })
+              .attr("x2", function(d) { return d.target.x; })
+              .attr("y2", function(d) { return d.target.y; });
       }
 
       color_mapping = {
@@ -271,21 +271,11 @@ line.link {
           return color_mapping[d.type] || "#77f";
       }
 
-      // Toggle children on click.
       function click(d) {
-          if (d.children) {
-              d._children = d.children;
-              d.children = null;
-          } else {
-              d.children = d._children;
-              d._children = null;
-          }
+          // Activate new link
           update();
       }
 
-      function over(d) {
-          console.log(d);
-      }
       // Returns a list of all nodes under the root.
       function flatten(root) {
           var nodes = [], i = 0;
