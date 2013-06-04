@@ -28,15 +28,15 @@ line.link {
 {% endblock %}
 
 {% block content %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/d3.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/d3.geom.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/d3.layout.js"></script>
     <script type="text/javascript">
 
       /* FIXME: remove constants. Cf http://stackoverflow.com/questions/11942500/how-to-make-force-layout-graph-in-d3-js-responsive-to-screen-browser-size */
-      var w = 1024,
-      h = 800,
-      node,
+      var w = $(window).width() - 50,
+      h = $(window).height() - 50,
       link,
       root;
 
