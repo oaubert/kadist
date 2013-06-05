@@ -60,13 +60,14 @@
     </div>
 
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.mousewheel.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/d3.v3.min.js"></script>
     <script type="text/javascript">
-
       var w = $(window).width() - 50;
       var h = $(window).height() - 50;
       var root = null;
       var diameter = Math.min(w, h);
+      var angle = 0;
 
       var tree = d3.layout.tree()
                    .size([360, diameter / 2 - 60])
@@ -79,7 +80,10 @@
                   .attr("width", w)
                   .attr("height", h)
                   .append("g")
-                  .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+                  .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")")
+                  .append("g")
+                  .attr("id", "box")
+                  .attr("transform", "rotate(" + angle + ")");
 
       function update() {
           // Update the graph according to what is loaded in the root variable
@@ -203,6 +207,14 @@
 
       load("{{ params.kw }}");
 
+      $("body").on("mousewheel", function (evt, delta, deltaX, deltaY) {
+          evt.preventDefault()
+          if (deltaY > 0)
+              angle += 3;
+          else
+              angle -= 3;
+          $("#box").attr("transform", "rotate(" + angle + ")");
+      });
     </script>
 {% endblock %}
 
