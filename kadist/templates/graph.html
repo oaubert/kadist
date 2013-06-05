@@ -152,9 +152,11 @@
               } else {
                   // Tag list
                   var l = []
-                  for (var i = 0; i++; i < json.length) {
-                      l.push( { "name": json[i][0],
-                                "size": json[i][2] } );
+                  for (var i = 0; i < json.length ; i++) {
+                      l.push( { name: json[i][0],
+                                type: "tag",
+                                count: json[i][1],
+                                size: json[i][2] } );
                   }
                   root = { "name": "Tags",
                            type: 'root',
