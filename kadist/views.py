@@ -103,7 +103,7 @@ def taglist_as_html(request):
         return HttpResponseRedirect('/kadist/tag/%s' % kw)
     else:
         return render_to_response('main.html', {
-                'tags': taglist(kw)
+                'tags': taglist()
                 }, context_instance=RequestContext(request))
 
 @api_view(['GET'])
