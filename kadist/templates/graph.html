@@ -12,7 +12,6 @@
     }
 
     .shape {
-        fill: #fff;
         stroke: steelblue;
         stroke-width: 1.5px;
     }
@@ -98,7 +97,8 @@
 
           node.append("circle")
               .attr("class", "shape")
-              .attr("r", function (d) { return (d.type == 'root' ? 30. : 4.5) });
+              .attr("fill", function (d) { return (d.type == 'tag' ? d3.rgb('#9cf').brighter(d.size / 48.0).toString() : '#fff') })
+              .attr("r", function (d) { return (d.type == 'root' ? 50.0 : 4.5) });
 
           node.append("text")
               .attr("dy", ".31em")
