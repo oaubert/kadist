@@ -117,7 +117,7 @@
               .attr("class", "label")
               .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
               .attr("transform", function(d) { if (d.type == 'root') {
-                  return "rotate(" + (90 - d.x) + ")translate(-25)"
+                  return "rotate(" + (90 - d.x) + ")translate(" + (d.x < 180 ? -25 : 25) + ")"
               } else {
                   return d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)";
               }})
