@@ -3,7 +3,7 @@
 {% load admin_urls %}
 {% load url from future %}
 
-{% block title %}KCN - {{ kw }}{% endblock %}
+{% block title %}KCN - {{ params.kw }}{% endblock %}
 
 {% block extra_header %}
     <style type="text/css">
@@ -56,7 +56,7 @@ line.link {
       .attr("width", w)
       .attr("height", h);
 
-      d3.json("/kadist/api/tag/" + document.location.hash.replace('#', ''), function(json) {
+      d3.json("/kadist/api/tag/{{ params.kw }}", function(json) {
           if (json.hasOwnProperty('tag')) {
               var clusters = [ ];
 
