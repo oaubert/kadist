@@ -158,7 +158,7 @@
                                            type: 'cluster',
                                            children: json[cat].map( function(t) {
                                                return { name: t[0],
-                                                        size: 10 * t[1],
+                                                        size: t[1],
                                                         type: 'tag'
                                                       }
                                            })
