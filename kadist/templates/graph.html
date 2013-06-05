@@ -7,7 +7,7 @@
 
 {% block extra_header %}
     <style type="text/css">
-    .node {
+    .tag, .work {
         cursor: pointer;
     }
 
@@ -88,7 +88,11 @@
           var node = svg.selectAll(".node")
               .data(nodes)
               .enter().append("g")
-              .on("click", function(d) { document.location.pathname = "/kadist/graph/" + d.name })
+              .on("click", function(d) { if (d.type == 'tag')
+                                             document.location.pathname = "/kadist/graph/" + d.name
+                                         else if (d.type == 'work')
+                                             document.location.pathname = d.url;
+                                       })
               .attr("class", function(d) { return "node " + d.type })
               .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
 
@@ -121,7 +125,7 @@
                                       type: 'cluster',
                                       children: json.works.map( function(w) {
                                           return { name: w.title,
-                                                   size: 200,
+                                                   url: w.url,
                                                    author: w.creatorname,
                                                    type: 'work'
                                                  };
@@ -133,14 +137,13 @@
                                      type: 'cluster',
                                      children: json.artists.map( function(a) {
                                          return { name: a.name,
-                                                  size: 200,
+                                                  url: a.url,
                                                   type: 'artist'
                                                 };
                                      })
                                    });
                   }
 
-                  var i = 0;
                   var translation = {
                       synonyms: "Synonyms",
                       hypernyms: "More general",
