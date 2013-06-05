@@ -179,9 +179,14 @@
                            type: 'root',
                            children: clusters }
               } else {
-                  // Tag list
-                  var l = []
-                  for (var i = 0; i < json.length ; i++) {
+                  // Tag list: sort along count to truncate, then sort again name
+                  if (json.length > 180) {
+                      json.sort(function(a, b) { return b[1] - a[1]; })
+                      json = json.slice(0, 180);
+                      json.sort(function(a, b) { return a[0].localeCompare(b[0]) });
+                  }
+                  var l = [];
+                  for (var i = 0; i < json.length; i++) {
                       l.push( { name: json[i][0],
                                 type: "tag",
                                 count: json[i][1],
