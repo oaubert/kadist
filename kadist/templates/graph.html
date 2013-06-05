@@ -30,10 +30,28 @@
     .label {
         font-size: 8pt;
     }
+
+    #loading {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-corner: 4px;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        padding: 10px;
+        opacity: .8;
+        text-align: center;
+        display: none;
+    }
     </style>
 {% endblock %}
 
 {% block content %}
+    <div id="loading">
+      <img width="24" height="24" src="{{ STATIC_URL }}img/loading.gif" alt="Loading...">
+      <p>Loading...</p>
+    </div>
+
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/d3.v3.min.js"></script>
     <script type="text/javascript">
@@ -93,7 +111,7 @@
       }
 
       function load(kw) {
-          // FIXME: display a spinning wheel
+          $("#loading").show();
           d3.json("/kadist/api/tag/"  + kw, function(json) {
               if (json.hasOwnProperty('tag')) {
                   var clusters = [ ];
@@ -163,6 +181,7 @@
                            children: l }
               }
               update();
+              $("#loading").hide();
           });
       }
 
