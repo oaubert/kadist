@@ -7,27 +7,29 @@
 
 {% block extra_header %}
     <style type="text/css">
-body > svg {
-  position: absolute;
-  top: -80px;
-  left: -160px;
-}
+    .node {
+        cursor: pointer;
+    }
 
-.node {
-  cursor: pointer;
-  stroke: #000;
-  stroke-width: .5px;
-}
+    .shape {
+        fill: #fff;
+        stroke: steelblue;
+        stroke-width: 1.5px;
+    }
 
-line.link {
-  fill: none;
-  stroke: #9ecae1;
-  stroke-width: 1.5px;
-}
+    .cluster .shape {
+        display: none;
+    }
 
-  .label {
-      font-size: 20pt;
-}
+    .link {
+        fill: none;
+        stroke: #9ecae1;
+        stroke-width: 1.5px;
+    }
+
+    .label {
+        font-size: 8pt;
+    }
     </style>
 {% endblock %}
 
@@ -36,262 +38,134 @@ line.link {
     <script type="text/javascript" src="{{ STATIC_URL }}js/d3.v3.min.js"></script>
     <script type="text/javascript">
 
-      /* FIXME: remove constants. Cf http://stackoverflow.com/questions/11942500/how-to-make-force-layout-graph-in-d3-js-responsive-to-screen-browser-size */
-      var w = $(window).width() - 50,
-      h = $(window).height() - 50,
-      anode,
-      wnode,
-      tnode,
-      link,
-      root;
+      var w = $(window).width() - 50;
+      var h = $(window).height() - 50;
+      var root = null;
+      var diameter = Math.min(w, h);
 
-      var force = d3.layout.force()
-      .on("tick", tick)
-      .gravity(.05)
-      .charge(-100)
-      .linkDistance(100)
-      .size([w, h]);
+      var tree = d3.layout.tree()
+                   .size([360, diameter / 2 - 60])
+                   .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
 
-      var vis = d3.select("body").append("svg:svg")
-      .attr("width", w)
-      .attr("height", h);
+      var diagonal = d3.svg.diagonal.radial()
+                       .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
 
-      d3.json("/kadist/api/tag/{{ params.kw }}", function(json) {
-          if (json.hasOwnProperty('tag')) {
-              var clusters = [ ];
-
-              if (json.works.length) {
-                  clusters.push({ name: "works",
-                                  fixed: true,
-                                  x: w / 2,
-                                  y: h / 4,
-                                  type: 'cluster',
-                                  children: json.works.map( function(w) {
-                                      return { name: w.title,
-                                               size: 200,
-                                               author: w.creatorname,
-                                               type: 'work'
-                                             };
-                                  })
-                                });
-              }
-              if (json.artists.length) {
-                  cluster.push({ name: 'artists',
-                                 type: 'cluster',
-                                 fixed: true,
-                                 x: w / 2,
-                                 y: 3 * h / 4,
-                                 children: json.artists.map( function(a) {
-                                     return { name: a.name,
-                                              size: 200,
-                                              type: 'artist'
-                                            };
-                                 })
-                               });
-              }
-
-              var i = 0;
-              ['synonyms', 'hypernyms', 'hyponyms', 'holonyms', 'meronyms'].forEach( function(cat) {
-                  if (json[cat].length) {
-                      clusters.push( { name: cat,
-                                       type: 'cluster',
-                                       fixed: true,
-                                       x: (1 + 2 * (i % 2)) * (w / 4),
-                                       y: (1 + 2 * (i / 2)) * (h / 4),
-                                   children: json[cat].map( function(t) {
-                                       return { name: t[0],
-                                                size: 10 * t[1],
-                                                type: 'tag'
-                                              }
-                                   })
-                                     });
-                  }
-              });
-
-              // Single tag info
-              root = { name: json.tag,
-                       type: 'tag',
-                       children: clusters }
-          } else {
-              // Tag list
-              var l = []
-              for (var i = 0; i++; i < json.length) {
-                  l.push( { "name": json[i][0],
-                            "size": json[i][2] } );
-              }
-              root = { "name": "tags",
-                       children: l }
-          }
-          root.fixed = true;
-          root.x = w / 2;
-          root.y = h / 2;
-          update();
-      });
+      var svg = d3.select("body").append("svg")
+                  .attr("width", w)
+                  .attr("height", h)
+                  .append("g")
+                  .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
       function update() {
-          var nodes = flatten(root),
-          links = d3.layout.tree().links(nodes);
+          // Update the graph according to what is loaded in the root variable
+          var nodes = tree.nodes(root);
+          var links = tree.links(nodes);
 
-          // Restart the force layout.
-          force
-              .nodes(nodes)
-              .links(links)
-              .start();
-
-          // Update the links…
-          link = vis.selectAll("line.link")
-              .data(links, function(d) { return d.target.id; });
-
-          // Enter any new links.
-          link.enter().insert("svg:line", ".node")
+          var link = svg.selectAll(".link")
+              .data(links)
+              .enter().append("path")
               .attr("class", "link")
-              .attr("x1", function(d) { return d.source.x; })
-              .attr("y1", function(d) { return d.source.y; })
-              .attr("x2", function(d) { return d.target.x; })
-              .attr("y2", function(d) { return d.target.y; });
+              .attr("d", diagonal);
 
-          // Exit any old links.
-          link.exit().remove();
+          var node = svg.selectAll(".node")
+              .data(nodes)
+              .enter().append("g")
+              .on("click", function(d) { document.location.pathname = "/kadist/graph/" + d.name })
+              .attr("class", function(d) { return "node " + d.type })
+              .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
 
-          // Update the work nodes…
-          wnode = vis.selectAll(".work")
-              .data(nodes.filter(is_work), function(d) { return d.id; })
-              .style("fill", color);
+          node.append("circle")
+              .attr("class", "shape")
+              .attr("r", function (d) { return (d.type == 'root' ? 30. : 4.5) });
 
-          // Transition existing nodes
-          //node.transition()
-          //    .attr("r", function(d) { return d.children ? 4.5 : Math.sqrt(d.size) / 10; });
-
-          // Enter any new nodes.
-          // Symbols: http://bl.ocks.org/mbostock/1062383
-          // Text: http://www.dashingd3js.com/svg-text-element
-          // Text: http://stackoverflow.com/questions/15714738/d3-js-force-graph-cannot-display-text-label-of-nodes
-          var wg = wnode.enter().append("g")
-              .attr("class", "node work element")
-              .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-              .on("click", click)
-              .call(force.drag);
-
-          wg.append("svg:circle")
-              .attr("r", function(d) { return 20; })
-              .style("fill", color)
-
-          wg.append("svg:text")
-              .attr("class", "label work")
-              .attr("text-anchor", "middle")
-              .attr("dy", ".35em")
+          node.append("text")
+              .attr("dy", ".31em")
+              .attr("class", "label")
+              .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+              .attr("transform", function(d) { if (d.type == 'root') {
+                  return "rotate(" + (90 - d.x) + ")"
+              } else {
+                  return d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)";
+              }})
               .text(function(d) { return d.name; });
 
-          // Exit any old nodes.
-          wnode.exit().remove();
-
-          // TAG nodes
-          // Update the tag nodes…
-          tnode = vis.selectAll(".tag")
-              .data(nodes.filter(is_tag), function(d) { return d.id; })
-              .style("fill", color);
-
-          // Transition existing nodes
-          //node.transition()
-          //    .attr("r", function(d) { return d.children ? 4.5 : Math.sqrt(d.size) / 10; });
-
-          // Enter any new nodes.
-          // Symbols: http://bl.ocks.org/mbostock/1062383
-          // Text: http://www.dashingd3js.com/svg-text-element
-          // Text: http://stackoverflow.com/questions/15714738/d3-js-force-graph-cannot-display-text-label-of-nodes
-          var tg = tnode.enter().append("g")
-              .attr("class", "node tag element")
-              .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-              .on("click", click)
-              .call(force.drag);
-
-          tg.append("svg:rect")
-              .attr("width", 80)
-              .attr("height", 40)
-              .attr("rx", 5)
-              .attr("ry", 8)
-              .attr("x", -40)
-              .attr("y", -20)
-              .style("fill", color);
-          tg.append("svg:text")
-              .attr("class", "label tag")
-              .attr("text-anchor", "middle")
-              .attr("dy", ".35em")
-              .text(function(d) { return d.name; });
-
-          // FIXME: add text
-          // Exit any old nodes.
-          tnode.exit().remove();
-
-          // Artist nodes
-          anode = vis.selectAll(".artist")
-              .data(nodes.filter(is_artist), function(d) { return d.id; })
-              .style("fill", color);
-          anode.enter().append("svg:rect")
-              .attr("class", "node artist element")
-              .attr("x", function(d) { return d.x; })
-              .attr("y", function(d) { return d.y; })
-              .attr("width", 80)
-              .attr("height", 60)
-              .style("fill", color)
-              .on("click", click)
-              .call(force.drag);
-
-          // Exit any old nodes.
-          anode.exit().remove();
+          d3.select(self.frameElement).style("height", diameter - 150 + "px");
       }
 
-      function is_artist(n) {
-          return n.type === 'artist';
-      }
-      function is_work(n) {
-          return n.type === 'work';
-      }
-      function is_tag(n) {
-          return n.type === 'tag';
-      }
-      function tick() {
-          wnode.attr("x", function(d) { return d.x; })
-              .attr("y", function(d) { return d.y; });
-          tnode.attr("x", function(d) { return d.x; })
-              .attr("y", function(d) { return d.y; });
-          anode.attr("x", function(d) { return d.x; })
-              .attr("y", function(d) { return d.y; });
+      function load(kw) {
+          // FIXME: display a spinning wheel
+          d3.json("/kadist/api/tag/"  + kw, function(json) {
+              if (json.hasOwnProperty('tag')) {
+                  var clusters = [ ];
 
-          link.attr("x1", function(d) { return d.source.x; })
-              .attr("y1", function(d) { return d.source.y; })
-              .attr("x2", function(d) { return d.target.x; })
-              .attr("y2", function(d) { return d.target.y; });
+                  if (json.works.length) {
+                      clusters.push({ name: "Works",
+                                      type: 'cluster',
+                                      children: json.works.map( function(w) {
+                                          return { name: w.title,
+                                                   size: 200,
+                                                   author: w.creatorname,
+                                                   type: 'work'
+                                                 };
+                                      })
+                                    });
+                  }
+                  if (json.artists.length) {
+                      cluster.push({ name: 'artists',
+                                     type: 'cluster',
+                                     children: json.artists.map( function(a) {
+                                         return { name: a.name,
+                                                  size: 200,
+                                                  type: 'artist'
+                                                };
+                                     })
+                                   });
+                  }
+
+                  var i = 0;
+                  var translation = {
+                      synonyms: "Synonyms",
+                      hypernyms: "More general",
+                      hyponyms: "More specific",
+                      holonyms: "Part of",
+                      meronyms: "Contained in"
+                  };
+
+                  ['synonyms', 'hypernyms', 'hyponyms', 'holonyms', 'meronyms'].forEach( function(cat) {
+                      if (json[cat].length) {
+                          clusters.push( { name: translation[cat],
+                                           type: 'cluster',
+                                           children: json[cat].map( function(t) {
+                                               return { name: t[0],
+                                                        size: 10 * t[1],
+                                                        type: 'tag'
+                                                      }
+                                           })
+                                         });
+                      }
+                  });
+
+                  // Single tag info
+                  root = { name: json.tag,
+                           type: 'root',
+                           children: clusters }
+              } else {
+                  // Tag list
+                  var l = []
+                  for (var i = 0; i++; i < json.length) {
+                      l.push( { "name": json[i][0],
+                                "size": json[i][2] } );
+                  }
+                  root = { "name": "Tags",
+                           type: 'root',
+                           children: l }
+              }
+              update();
+          });
       }
 
-      color_mapping = {
-          tag: "#3182bd",
-          work: "#c6dbef",
-          artist: "#fd8d3c"
-      }
-      function color(d) {
-          return color_mapping[d.type] || "#77f";
-      }
+      load("{{ params.kw }}");
 
-      function click(d) {
-          // Activate new link
-          update();
-      }
-
-      // Returns a list of all nodes under the root.
-      function flatten(root) {
-          var nodes = [], i = 0;
-
-          function recurse(node) {
-              if (node.children) node.size = node.children.reduce(function(p, v) { return p + recurse(v); }, 0);
-              if (!node.id) node.id = ++i;
-                  nodes.push(node);
-              return node.size;
-          }
-
-          root.size = recurse(root);
-          return nodes;
-      }
     </script>
 {% endblock %}
 
