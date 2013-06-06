@@ -88,6 +88,8 @@
       function update(default_angle) {
           // Update the graph according to what is loaded in the root variable
           var nodes = tree.nodes(root);
+          if (isNaN(nodes[0].x))
+              nodes.forEach( function(n) { n.x = 0 });
           if (default_angle === undefined && root.children)
               default_angle = 90 - root.children[0].x;
           // Normalize angles
