@@ -104,7 +104,7 @@
                                          else if (d.type == 'work')
                                              document.location.pathname = d.url;
                                        })
-              .attr("class", function(d) { return "node " + d.type })
+              .attr("class", function(d) { return "node " + d.type + (d == root ? " root " : "")})
               .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
 
           // Different shapes according to node type
@@ -118,15 +118,15 @@
                  
           node.filter(function(n) { return n.type != 'work' }).append("circle")
               .attr("class", "shape")
-              .attr("fill", function (d) { return (d.type == 'tag' ? d3.rgb('#9cf').brighter(d.size / 48.0).toString() : '#fff') })
-              .attr("r", function (d) { return (d.type == 'root' ? 50.0 : 4.5) });
+              .attr("fill", function (d) { return ((d != root && d.type == 'tag') ? d3.rgb('#9cf').brighter(d.size / 48.0).toString() : '#fff') })
+              .attr("r", function (d) { return (d == root ? 50.0 : 4.5) });
 
           // Append the text to all nodes
           node.append("text")
               .attr("dy", ".31em")
               .attr("class", "label")
               .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-              .attr("transform", function(d) { if (d.type == 'root') {
+              .attr("transform", function(d) { if (d == root) {
                   return "rotate(" + (90 - d.x) + ")translate(" + (d.x < 180 ? -25 : 25) + ")"
               } else {
                   return d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)";
@@ -190,7 +190,7 @@
 
                   // Single tag info
                   root = { name: json.tag,
-                           type: 'root',
+                           type: 'tag',
                            children: clusters }
               } else {
                   // Tag list: sort along count to truncate, then sort again name
@@ -207,7 +207,7 @@
                                 size: json[i][2] } );
                   }
                   root = { "name": "Tags",
-                           type: 'root',
+                           type: 'tag',
                            children: l }
               }
               update();
