@@ -213,10 +213,12 @@
                   }
               } else if (type == 'work') {
                   if (kw) {
-                      clusters.push({ name: json.artist.name,
-                                      type: 'artist',
-                                      id: json.artist.id,
-                                      url: json.artist.url });
+                      clusters.push({ name: 'artist',
+                                      type: 'cluster',
+                                      children: [ { name: json.artist.name,
+                                                    type: 'artist',
+                                                    id: json.artist.id,
+                                                    url: json.artist.url } ] });
                       if (json.tags.length) {
                           var l = [];
                           for (var i = 0; i < json.tags.length; i++)
