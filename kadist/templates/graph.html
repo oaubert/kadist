@@ -220,6 +220,7 @@
           else
               angle -= 3;
           $("#box").attr("transform", "rotate(" + angle + ")");
+          $(".root").attr("transform", "rotate(" + (- angle) + ")")
       });
     </script>
 {% endblock %}
