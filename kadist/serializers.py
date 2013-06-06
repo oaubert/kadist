@@ -25,8 +25,7 @@ class WorkSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'artist', 'title', 'worktype', 'technique','dimensions', 'description', 'tags', 'similar')
 
 class ArtistSerializer(serializers.HyperlinkedModelSerializer):
-    works = serializers.HyperlinkedRelatedField(many=True, read_only=True,
-                                                view_name='work-detail')
+    works = WorkReferenceSerializer(source='works')
     tags = serializers.ManyRelatedField(source='tags')
 
     class Meta:
