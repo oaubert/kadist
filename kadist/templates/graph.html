@@ -105,16 +105,16 @@
                                              document.location.pathname = d.url;
                                        })
               .attr("class", function(d) { return "node " + d.type + (d == root ? " root " : "")})
-              .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+              .attr("transform", function(d) { return d == root ? "": "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
 
           // Different shapes according to node type
           node.filter(function(n) { return n.type == 'work' }).append("rect")
               .attr("class", "shape")
               .attr("fill", '#fff')
-              .attr("width", 12)
-              .attr("height", 8)
+              .attr("width", function (d) { return (d == root ? 60 : 12) })
+              .attr("height", function (d) { return (d == root ? 30 : 6) })
               .attr("rx", 2)
-              .attr("transform", "translate(-6, -4)");
+              .attr("transform", function (d) { return (d == root ? "translate(-30, -15)" : "translate(-6, -4)") });
                  
           node.filter(function(n) { return n.type != 'work' }).append("circle")
               .attr("class", "shape")
@@ -125,12 +125,8 @@
           node.append("text")
               .attr("dy", ".31em")
               .attr("class", "label")
-              .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-              .attr("transform", function(d) { if (d == root) {
-                  return "rotate(" + (90 - d.x) + ")translate(" + (d.x < 180 ? -25 : 25) + ")"
-              } else {
-                  return d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)";
-              }})
+              .attr("text-anchor", function(d) { return d == root ? "middle" : (d.x < 180 ? "start" : "end"); })
+              .attr("transform", function(d) { return d == root ? "" : d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)"; })
               .text(function(d) { return d.name; });
 
           d3.select(self.frameElement).style("height", diameter - 150 + "px");
