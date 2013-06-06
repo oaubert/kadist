@@ -113,10 +113,10 @@
           node.filter(function(n) { return n.type == 'work' }).append("rect")
               .attr("class", "shape")
               .attr("fill", '#fff')
-              .attr("width", function (d) { return (d == root ? 60 : 12) })
+              .attr("width", function (d) { return (d == root ? 120 : 12) })
               .attr("height", function (d) { return (d == root ? 30 : 6) })
               .attr("rx", 2)
-              .attr("transform", function (d) { return (d == root ? "translate(-30, -15)" : "translate(-6, -4)") });
+              .attr("transform", function (d) { return (d == root ? "translate(-60, -15)" : "translate(-6, -4)") });
 
           node.filter(function(n) { return n.type != 'work' }).append("circle")
               .attr("class", "shape")
