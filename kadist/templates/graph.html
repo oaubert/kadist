@@ -100,9 +100,11 @@
               .data(nodes)
               .enter().append("g")
               .on("click", function(d) { if (d.type == 'tag')
-                                             document.location.pathname = "/kadist/graph/" + d.name
+                                             document.location.pathname = "/kadist/graph/tag/" + d.name
                                          else if (d.type == 'work')
-                                             document.location.pathname = d.url;
+                                             document.location.pathname = "/kadist/graph/work/" + d.id
+                                         else if (d.type == 'artist')
+                                             document.location.pathname = "/kadist/graph/artist/" + d.id
                                        })
               .attr("class", function(d) { return "node " + d.type + (d == root ? " root " : "")})
               .attr("transform", function(d) { return d == root ? "": "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
@@ -115,7 +117,7 @@
               .attr("height", function (d) { return (d == root ? 30 : 6) })
               .attr("rx", 2)
               .attr("transform", function (d) { return (d == root ? "translate(-30, -15)" : "translate(-6, -4)") });
-                 
+
           node.filter(function(n) { return n.type != 'work' }).append("circle")
               .attr("class", "shape")
               .attr("fill", function (d) { return ((d != root && d.type == 'tag') ? d3.rgb('#9cf').brighter(d.size / 48.0).toString() : '#fff') })
@@ -132,86 +134,123 @@
           d3.select(self.frameElement).style("height", diameter - 150 + "px");
       }
 
-      function load(kw) {
+      function load(kw, type) {
+          var clusters = [ ];
+
           $("#loading").show();
-          d3.json("/kadist/api/tag/"  + kw, function(json) {
-              if (json.hasOwnProperty('tag')) {
-                  var clusters = [ ];
-
-                  if (json.works.length) {
-                      clusters.push({ name: "Works",
-                                      type: 'cluster',
-                                      children: json.works.map( function(w) {
-                                          return { name: w.title,
-                                                   url: w.url,
-                                                   author: w.creatorname,
-                                                   type: 'work'
-                                                 };
-                                      })
-                                    });
-                  }
-                  if (json.artists.length) {
-                      cluster.push({ name: 'artists',
-                                     type: 'cluster',
-                                     children: json.artists.map( function(a) {
-                                         return { name: a.name,
-                                                  url: a.url,
-                                                  type: 'artist'
-                                                };
-                                     })
-                                   });
-                  }
-
-                  var translation = {
-                      synonyms: "Synonyms",
-                      hypernyms: "More general",
-                      hyponyms: "More specific",
-                      holonyms: "Part of",
-                      meronyms: "Contained in"
-                  };
-
-                  ['synonyms', 'hypernyms', 'hyponyms', 'holonyms', 'meronyms'].forEach( function(cat) {
-                      if (json[cat].length) {
-                          clusters.push( { name: translation[cat],
-                                           type: 'cluster',
-                                           children: json[cat].map( function(t) {
-                                               return { name: t[0],
-                                                        size: t[1],
-                                                        type: 'tag'
-                                                      }
-                                           })
-                                         });
+          d3.json("/kadist/api/" + type + "/"  + kw, function(json) {
+              if (type == 'tag') {
+                  if (kw) {
+                      if (json.works.length) {
+                          clusters.push({ name: "Works",
+                                          type: 'cluster',
+                                          children: json.works.map( function(w) {
+                                              return { name: w.title,
+                                                       url: w.url,
+                                                       id: w.id,
+                                                       author: w.creatorname,
+                                                       type: 'work'
+                                                     };
+                                          })
+                                        });
                       }
-                  });
+                      if (json.artists.length) {
+                          cluster.push({ name: 'artists',
+                                         type: 'cluster',
+                                         children: json.artists.map( function(a) {
+                                             return { name: a.name,
+                                                      url: a.url,
+                                                      id: a.id,
+                                                      type: 'artist'
+                                                    };
+                                         })
+                                       });
+                      }
 
-                  // Single tag info
-                  root = { name: json.tag,
-                           type: 'tag',
-                           children: clusters }
-              } else {
-                  // Tag list: sort along count to truncate, then sort again name
-                  if (json.length > 180) {
-                      json.sort(function(a, b) { return b[1] - a[1]; })
-                      json = json.slice(0, 180);
-                      json.sort(function(a, b) { return a[0].localeCompare(b[0]) });
+                      var translation = {
+                          synonyms: "Synonyms",
+                          hypernyms: "More general",
+                          hyponyms: "More specific",
+                          holonyms: "Part of",
+                          meronyms: "Contained in"
+                      };
+
+                      ['synonyms', 'hypernyms', 'hyponyms', 'holonyms', 'meronyms'].forEach( function(cat) {
+                          if (json[cat].length) {
+                              clusters.push( { name: translation[cat],
+                                               type: 'cluster',
+                                               children: json[cat].map( function(t) {
+                                                   return { name: t[0],
+                                                            size: t[1],
+                                                            type: 'tag'
+                                                          }
+                                               })
+                                             });
+                          }
+                      });
+
+                      // Single tag info
+                      root = { name: json.tag,
+                               type: 'tag',
+                               children: clusters }
+                  } else {
+                      // Tag list: sort along count to truncate, then sort again name
+                      if (json.length > 180) {
+                          json.sort(function(a, b) { return b[1] - a[1]; })
+                          json = json.slice(0, 180);
+                          json.sort(function(a, b) { return a[0].localeCompare(b[0]) });
+                      }
+                      var l = [];
+                      for (var i = 0; i < json.length; i++) {
+                          l.push( { name: json[i][0],
+                                    type: "tag",
+                                    count: json[i][1],
+                                    size: json[i][2] } );
+                      }
+                      root = { "name": "Tags",
+                               type: 'tag',
+                               children: l }
                   }
-                  var l = [];
-                  for (var i = 0; i < json.length; i++) {
-                      l.push( { name: json[i][0],
-                                type: "tag",
-                                count: json[i][1],
-                                size: json[i][2] } );
+              } else if (type == 'work') {
+                  if (kw) {
+                      clusters.push({ name: json.artist.name,
+                                      type: 'artist',
+                                      id: json.artist.id,
+                                      url: json.artist.url });
+                      if (json.tags.length) {
+                          var l = [];
+                          for (var i = 0; i < json.tags.length; i++)
+                              l.push({ name: json.tags[i],
+                                       type: "tag",
+                                       size: 24 });
+                          clusters.push({ name: 'Tags',
+                                          type: 'cluster',
+                                          children: l });
+                      }
+                      if (json.similar.length) {
+                          var l = [];
+                          for (var i = 0; i < Math.min(json.similar.length, 12); i++) {
+                              l.push({ name: json.similar[i].title,
+                                       type: 'work',
+                                       id: json.similar[i].id,
+                                       url: json.similar[i].url });
+                          }
+                          clusters.push({ name: 'Similar works',
+                                          type: 'cluster',
+                                          children: l.slice() });
+                      }
                   }
-                  root = { "name": "Tags",
-                           type: 'tag',
-                           children: l }
+
+                  root = { name: json.title,
+                           type: 'work',
+                           children: clusters };
               }
               update();
               $("#loading").hide();
           });
       }
 
-      load("{{ params.kw }}");
+      load("{{ params.kw }}", "{{ params.type }}");
 
       $("body").on("mousewheel", function (evt, delta, deltaX, deltaY) {
           evt.preventDefault()
