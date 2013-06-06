@@ -107,11 +107,21 @@
               .attr("class", function(d) { return "node " + d.type })
               .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
 
-          node.append("circle")
+          // Different shapes according to node type
+          node.filter(function(n) { return n.type == 'work' }).append("rect")
+              .attr("class", "shape")
+              .attr("fill", '#fff')
+              .attr("width", 12)
+              .attr("height", 8)
+              .attr("rx", 2)
+              .attr("transform", "translate(-6, -4)");
+                 
+          node.filter(function(n) { return n.type != 'work' }).append("circle")
               .attr("class", "shape")
               .attr("fill", function (d) { return (d.type == 'tag' ? d3.rgb('#9cf').brighter(d.size / 48.0).toString() : '#fff') })
               .attr("r", function (d) { return (d.type == 'root' ? 50.0 : 4.5) });
 
+          // Append the text to all nodes
           node.append("text")
               .attr("dy", ".31em")
               .attr("class", "label")
