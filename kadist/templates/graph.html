@@ -91,7 +91,7 @@
           if (default_angle === undefined && root.children)
               default_angle = 90 - root.children[0].x;
           // Normalize angles
-          nodes.forEach(function(n) { n.x = n.x + default_angle });
+          nodes.forEach(function(n) { n.x = (n.x + default_angle) % 360 });
           var links = tree.links(nodes);
 
           var link = svg.selectAll(".link")
@@ -217,6 +217,18 @@
                   }
               } else if (type == 'work') {
                   if (kw) {
+                      if (json.similar.length) {
+                          var l = [];
+                          for (var i = 0; i < Math.min(json.similar.length, 12); i++) {
+                              l.push({ name: json.similar[i].title,
+                                       type: 'work',
+                                       id: json.similar[i].id,
+                                       url: json.similar[i].url });
+                          }
+                          clusters.push({ name: 'Similar works',
+                                          type: 'cluster',
+                                          children: l.slice() });
+                      }
                       clusters.push({ name: 'artist',
                                       type: 'cluster',
                                       children: [ { name: json.artist.name,
@@ -232,18 +244,6 @@
                           clusters.push({ name: 'Tags',
                                           type: 'cluster',
                                           children: l });
-                      }
-                      if (json.similar.length) {
-                          var l = [];
-                          for (var i = 0; i < Math.min(json.similar.length, 12); i++) {
-                              l.push({ name: json.similar[i].title,
-                                       type: 'work',
-                                       id: json.similar[i].id,
-                                       url: json.similar[i].url });
-                          }
-                          clusters.push({ name: 'Similar works',
-                                          type: 'cluster',
-                                          children: l.slice() });
                       }
                   }
 
