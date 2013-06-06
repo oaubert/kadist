@@ -85,9 +85,13 @@
                   .attr("id", "box")
                   .attr("transform", "rotate(" + angle + ")");
 
-      function update() {
+      function update(default_angle) {
           // Update the graph according to what is loaded in the root variable
           var nodes = tree.nodes(root);
+          if (default_angle === undefined && root.children)
+              default_angle = 90 - root.children[0].x;
+          // Normalize angles
+          nodes.forEach(function(n) { n.x = n.x + default_angle });
           var links = tree.links(nodes);
 
           var link = svg.selectAll(".link")
