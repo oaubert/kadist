@@ -77,7 +77,8 @@ def taginfo(kw):
         names = set(n
                     for s in synsets
                     for r in func(s)
-                    for n in r.lemma_names)
+                    for n in r.lemma_names
+                    if n != kw)
         if len(names) > MAX_SEARCHED_TAGS_COUNT:
             names = list(names)[:MAX_SEARCHED_TAGS_COUNT]
         for n in names:
