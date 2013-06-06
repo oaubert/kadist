@@ -246,6 +246,35 @@
                   root = { name: json.title,
                            type: 'work',
                            children: clusters };
+              } else if (type == 'artist') {
+                  if (kw) {
+                      if (json.tags.length) {
+                          var l = [];
+                          for (var i = 0; i < json.tags.length; i++)
+                              l.push({ name: json.tags[i],
+                                       type: "tag",
+                                       size: 24 });
+                          clusters.push({ name: 'Tags',
+                                          type: 'cluster',
+                                          children: l.slice() });
+                      }
+                      if (json.works.length) {
+                          var l = [];
+                          for (var i = 0; i < json.works.length; i++)
+                              l.push({ name: json.works[i].title,
+                                       type: "work",
+                                       url: json.works[i].url,
+                                       id: json.works[i].id
+                                     });
+                          clusters.push({ name: 'Works',
+                                          type: 'cluster',
+                                          children: l.slice() });
+                      }
+                  }
+
+                  root = { name: json.name,
+                           type: 'artist',
+                           children: clusters };                  
               }
               update();
               $("#loading").hide();
