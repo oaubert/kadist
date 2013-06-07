@@ -22,7 +22,7 @@ class WorkSerializer(serializers.HyperlinkedModelSerializer):
     artist = ArtistReferenceSerializer(source='creator')
     class Meta:
         model = Work
-        fields = ('url', 'artist', 'title', 'worktype', 'technique','dimensions', 'description', 'tags', 'similar')
+        fields = ('url', 'id', 'artist', 'title', 'worktype', 'technique','dimensions', 'description', 'tags', 'similar')
 
 class ArtistSerializer(serializers.HyperlinkedModelSerializer):
     works = WorkReferenceSerializer(source='works')
@@ -30,4 +30,4 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Artist
-        fields = ('url', 'name', 'country', 'description', 'works', 'tags')
+        fields = ('url', 'id', 'name', 'country', 'description', 'works', 'tags')
