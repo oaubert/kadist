@@ -34,6 +34,11 @@
         font-size: 10pt;
     }
 
+    .work .wrapped {
+        text-align: center;
+        font-size: 8pt !important;
+    }
+
     .cluster .label {
         opacity: 0.6;
     }
@@ -169,10 +174,13 @@
                                            return dim.textwidth; })
               .attr("height", function(d) { var dim = (d.type == 'work' ? node_dimensions.rootrect : node_dimensions.rootcircle);
                                             return dim.textheight; })
-              .attr("transform", function (d) { var dim = (d == root ? node_dimensions.rootrect : node_dimensions.rect);
-                                                return "translate(" + (-dim.width / 2) + ", " + (-dim.height/2) + ")"; })
+              .attr("transform", function (d) { if (d.type == 'work')
+                  return "translate(" + (-node_dimensions.rootrect.width / 2) + ", " + (-node_dimensions.rootrect.height/2) + ")";
+                                                else
+                                                    return "translate(" + (-node_dimensions.rootcircle.diameter / 2) + ", " + (-node_dimensions.rootcircle.diameter / 2) + ")"; })
               .append("xhtml:body")
               .append("p")
+              .attr("class", "wrapped label")
               .text(function(d) { return d.name; });
           
           d3.select(self.frameElement).style("height", diameter - 150 + "px");
@@ -289,6 +297,8 @@
 
                   root = { name: json.title,
                            type: 'work',
+                           url: json.url,
+                           id: json.id,
                            children: clusters };
               } else if (type == 'artist') {
                   if (kw) {
