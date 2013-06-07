@@ -182,7 +182,7 @@
               .append("p")
               .attr("class", "wrapped label")
               .text(function(d) { return d.name; });
-          
+
           d3.select(self.frameElement).style("height", diameter - 150 + "px");
       }
 
@@ -207,7 +207,7 @@
                                         });
                       }
                       if (json.artists.length) {
-                          cluster.push({ name: 'artists',
+                          clusters.push({ name: 'Artists',
                                          type: 'cluster',
                                          children: json.artists.map( function(a) {
                                              return { name: a.name,
@@ -252,84 +252,106 @@
                           json = json.slice(0, 180);
                           json.sort(function(a, b) { return a[0].localeCompare(b[0]) });
                       }
-                      var l = [];
-                      for (var i = 0; i < json.length; i++) {
-                          l.push( { name: json[i][0],
-                                    type: "tag",
-                                    count: json[i][1],
-                                    size: json[i][2] } );
-                      }
-                      root = { "name": "Tags",
-                               type: 'tag',
-                               children: l }
+                      root = { name: "Tags",
+                               type: 'cluster',
+                               children: json.map( function(t) {
+                                   return { name: t[0],
+                                            type: "tag",
+                                            count: t[1],
+                                            size: t[2] }
+                               })
+                             };
                   }
               } else if (type == 'work') {
                   if (kw) {
-                      if (json.similar.length) {
-                          var l = [];
-                          for (var i = 0; i < Math.min(json.similar.length, 12); i++) {
-                              l.push({ name: json.similar[i].title,
-                                       type: 'work',
-                                       id: json.similar[i].id,
-                                       url: json.similar[i].url });
-                          }
+                      if (json.similar.length)
                           clusters.push({ name: 'Similar works',
                                           type: 'cluster',
-                                          children: l.slice() });
-                      }
-                      clusters.push({ name: 'artist',
+                                          children: json.similar.slice(0, 12).map( function(w) {
+                                              return { name: w.title,
+                                                       url: w.url,
+                                                       id: w.id,
+                                                       author: w.creatorname,
+                                                       type: 'work'
+                                                     };
+                                          })
+                                        });
+
+                      clusters.push({ name: 'Artist',
                                       type: 'cluster',
                                       children: [ { name: json.artist.name,
                                                     type: 'artist',
                                                     id: json.artist.id,
                                                     url: json.artist.url } ] });
-                      if (json.tags.length) {
-                          var l = [];
-                          for (var i = 0; i < json.tags.length; i++)
-                              l.push({ name: json.tags[i],
-                                       type: "tag",
-                                       size: 24 });
+                      if (json.tags.length)
                           clusters.push({ name: 'Tags',
                                           type: 'cluster',
-                                          children: l });
-                      }
-                  }
+                                          children: json.tags.map( function(t) {
+                                              return { name: t,
+                                                       type: "tag",
+                                                       size: 24 };
+                                          })
+                                        });
 
-                  root = { name: json.title,
-                           type: 'work',
-                           url: json.url,
-                           id: json.id,
-                           children: clusters };
+                      root = { name: json.title,
+                               type: 'work',
+                               url: json.url,
+                               id: json.id,
+                               children: clusters };
+                  } else {
+                      root = { name: 'Works',
+                               type: 'cluster',
+                               children: json.map( function(w) {
+                                   return { name: w.title,
+                                            url: w.url,
+                                            id: w.id,
+                                            author: w.creatorname,
+                                            type: 'work'
+                                          };
+                               })
+                             };
+                  }
               } else if (type == 'artist') {
                   if (kw) {
-                      if (json.tags.length) {
-                          var l = [];
-                          for (var i = 0; i < json.tags.length; i++)
-                              l.push({ name: json.tags[i],
-                                       type: "tag",
-                                       size: 24 });
+                      if (json.tags.length)
                           clusters.push({ name: 'Tags',
                                           type: 'cluster',
-                                          children: l.slice() });
-                      }
-                      if (json.works.length) {
-                          var l = [];
-                          for (var i = 0; i < json.works.length; i++)
-                              l.push({ name: json.works[i].title,
-                                       type: "work",
-                                       url: json.works[i].url,
-                                       id: json.works[i].id
-                                     });
+                                          children: json.tags.map( function(t) {
+                                              return { name: t,
+                                                       type: "tag",
+                                                       size: 24 };
+                                          })
+                                        });
+
+                      if (json.works.length)
                           clusters.push({ name: 'Works',
                                           type: 'cluster',
-                                          children: l.slice() });
-                      }
+                                          children: json.works.map( function(w) {
+                                              return { name: w.title,
+                                                       type: "work",
+                                                       url: w.url,
+                                                       id: w.id };
+                                          })
+                                        });
+
+                      root = { name: json.name,
+                               type: 'artist',
+                               children: clusters }
+                  };
+
+                  } else {
+                      root = { name: "Artists",
+                               type: 'cluster',
+                               children: json.map( function(a) {
+                                   return { name: a.name,
+                                            url: a.url,
+                                            id: a.id,
+                                            type: 'artist'
+                                          };
+                               })
+                             }
                   }
 
-                  root = { name: json.name,
-                           type: 'artist',
-                           children: clusters };                  
-              }
               update();
               $("#loading").hide();
           });
