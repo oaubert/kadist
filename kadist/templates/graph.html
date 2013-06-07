@@ -126,7 +126,7 @@
 
           node.filter(function(n) { return n.type != 'work' }).append("circle")
               .attr("class", "shape")
-              .attr("fill", function (d) { return ((d != root && d.type == 'tag') ? d3.rgb('#9cf').brighter(d.size / 48.0).toString() : '#fff') })
+              .attr("fill", function (d) { return ((d != root && d.type == 'tag') ? d3.rgb('#9cf').brighter((48 - d.size) / 48.0).toString() : '#fff') })
               .attr("r", function (d) { return (d == root ? 50.0 : 4.5) });
 
           // Append the text to all nodes
