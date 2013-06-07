@@ -69,6 +69,27 @@
       var diameter = Math.min(w, h);
       var angle = 0;
 
+      var node_dimensions = {
+          circle: {
+              diameter: 4.5
+          },
+          rootcircle: {
+              diameter: 50,
+              textwidth: 48,
+              textheight: 24
+          },
+          rect: {
+              width: 12,
+              height: 6
+          },
+          rootrect: {
+              width: 120,
+              height: 60,
+              textwidth: 116,
+              textheight: 54
+          }
+      };
+
       var tree = d3.layout.tree()
                    .size([360, diameter / 2 - 60])
                    .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
@@ -119,24 +140,41 @@
           node.filter(function(n) { return n.type == 'work' }).append("rect")
               .attr("class", "shape")
               .attr("fill", '#fff')
-              .attr("width", function (d) { return (d == root ? 120 : 12) })
-              .attr("height", function (d) { return (d == root ? 30 : 6) })
+              .attr("width", function (d) { var dim = (d == root ? node_dimensions.rootrect : node_dimensions.rect);
+                                            return dim.width; })
+              .attr("height", function (d) { var dim = (d == root ? node_dimensions.rootrect : node_dimensions.rect);
+                                             return dim.height; })
               .attr("rx", 2)
-              .attr("transform", function (d) { return (d == root ? "translate(-60, -15)" : "translate(-6, -4)") });
+              .attr("transform", function (d) { var dim = (d == root ? node_dimensions.rootrect : node_dimensions.rect);
+                                                return "translate(" + (-dim.width / 2) + ", " + (-dim.height/2) + ")"; });
 
           node.filter(function(n) { return n.type != 'work' }).append("circle")
               .attr("class", "shape")
               .attr("fill", function (d) { return ((d != root && d.type == 'tag') ? d3.rgb('#9cf').brighter((48 - d.size) / 48.0).toString() : '#fff') })
-              .attr("r", function (d) { return (d == root ? 50.0 : 4.5) });
+              .attr("r", function (d) { return (d == root ? node_dimensions.rootcircle.diameter : node_dimensions.circle.diameter) });
 
           // Append the text to all nodes
-          node.append("text")
+          node.filter(function(n) { return n != root }).append("text")
               .attr("dy", ".31em")
               .attr("class", "label")
               .attr("text-anchor", function(d) { return d == root ? "middle" : (d.x < 180 ? "start" : "end"); })
               .attr("transform", function(d) { return d == root ? "" : d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)"; })
               .text(function(d) { return d.name; });
 
+          // Wrap the node label
+          svg.selectAll(".node.root").append("foreignObject")
+              //.attr("x", function(d) { return d._children ? -8 : -48; }) /*the position of the text (left to right)*/
+              //.attr("y", 3) /*the position of the text (Up and Down)*/
+              .attr("width", function(d) { var dim = (d.type == 'work' ? node_dimensions.rootrect : node_dimensions.rootcircle);
+                                           return dim.textwidth; })
+              .attr("height", function(d) { var dim = (d.type == 'work' ? node_dimensions.rootrect : node_dimensions.rootcircle);
+                                            return dim.textheight; })
+              .attr("transform", function (d) { var dim = (d == root ? node_dimensions.rootrect : node_dimensions.rect);
+                                                return "translate(" + (-dim.width / 2) + ", " + (-dim.height/2) + ")"; })
+              .append("xhtml:body")
+              .append("p")
+              .text(function(d) { return d.name; });
+          
           d3.select(self.frameElement).style("height", diameter - 150 + "px");
       }
 
