@@ -18,8 +18,10 @@
   <dd> {{ artist.description }}</dd>
   {% endif %}
 
+{% if artist.tags.all %}
   <dt>Tags</dt>
   <dd>{% for kw in artist.tags.all %}<a href="../../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</dd>
+{% endif %}
 
   <dt>Works</dt>
   <dd>
@@ -30,6 +32,7 @@
     </ul>
   </dd>
 
+{% if artist.tags.similar_objects %}
   <dt>Similar artists (based on tags)</dt>
   <dd>
     <ul class="worklist">
@@ -38,6 +41,7 @@
       {% endfor %}
     </ul>
   </dd>
+{% endif %}
 
 </dl>
 
