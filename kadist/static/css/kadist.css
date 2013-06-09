@@ -96,7 +96,7 @@ a:hover {
     display: none;
 }
 
-li:hover .editlink, h1:hover .editlink {
+li:hover .editlink, h1:hover .editlink, dd:hover .editlink {
     display: inline;
     margin-left: .3em;
     margin-right: .3em;
