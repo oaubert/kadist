@@ -4,6 +4,7 @@ import sys
 import re
 
 from django.core.management.base import BaseCommand, CommandError
+from django.db import IntegrityError
 
 from kadist.models import Artist, Work
 from rake import RakeKeywordExtractor
@@ -12,6 +13,9 @@ class Command(BaseCommand):
     args = '[command] [param]'
     help = """Administration commands for Kadist catalogue
   import <txt file> : import the catalogue from a txt file
+  xls <xls file> : import the catalogue from a xls file
+  acsv <csv file> : import the artists from a csv file
+  wcsv <csv file> : import the works from a csv file
 """
     def _import_works_from_txt(self, filename):
         """Import from a txt file.
@@ -112,6 +116,77 @@ class Command(BaseCommand):
             self.stdout.write(("Tags: %s\n" % ", ".join(tags)).encode('utf-8'))
             w.tags.add(*tags)
 
+    def _import_artists_from_csv(self, filename):
+        """Import artists from a csv file.
+        """
+        self.stdout.write("** Importing artists from %s\n" % filename)
+
+        import csv
+        reader = csv.reader(open(filename, 'r'))
+        header = reader.next()
+        
+        FIRSTNAME = 'First name'
+        SURNAME = 'Last name'
+	DESCRIPTION = 'Corps'
+        URL = 'Chemin'
+
+        for n, row in enumerate(reader):
+            self.stdout.write("[%d]" % n)
+            self.stdout.flush()
+            data = dict(zip(header, row))
+
+            cname = (data[FIRSTNAME].strip().capitalize() + " " + data[SURNAME].strip().capitalize()).strip()
+            try:
+                a = Artist(name=cname, description=data[DESCRIPTION], url='http://www.kadist.org' + data[URL])
+                a.save()
+            except IntegrityError, e:
+                self.stderr.write("Integrity error: %s\n" % unicode(e))
+            
+    def _import_works_from_csv(self, filename):
+        """Import works from a csv file.
+        """
+        self.stdout.write("** Importing works from %s\n" % filename)
+
+        import csv
+        reader = csv.reader(open(filename, 'r'))
+        header = reader.next()
+
+        TITLE = ""
+        CREATOR = "Personnes"
+        DATE = "Work Date"
+        DESCRIPTION = "Corps"
+        URL = "Chemin"
+        TYPE = "Moyen"
+        IMG = "Images"
+        COLLECTION = "Collection"
+
+        for n, row in enumerate(reader):
+            self.stdout.write("[%d]" % n)
+            self.stdout.flush()
+            data = dict(zip(header, row))
+
+            try:
+                year = long(data[DATE])
+            except ValueError:
+                year = 0
+            w = Work(title=data[TITLE].strip(),
+                     year=year,
+                     worktype=data[TYPE],
+                     url='http://www.kadist.org' + data[URL],
+                     description=data[DESCRIPTION])
+            # FIXME: handle Collection field
+            
+            cname = data[CREATOR]
+            try:
+                creator = Artist.objects.get(name=cname)
+            except Artist.DoesNotExist:
+                # Have to create one
+                self.stderr.write("Error: missing artist: %s\n" % cname)
+                creator = Artist(name=cname, url="MISSING")
+                creator.save()
+            w.creator = creator
+            w.save()
+
     def handle(self, *args, **options):
         if not args:
             self.print_help(sys.argv[0], sys.argv[1])
@@ -121,6 +196,8 @@ class Command(BaseCommand):
         dispatcher = {
             'import': self._import_works_from_txt,
             'xls': self._import_works_from_xls,
+            'wcsv': self._import_works_from_csv,
+            'acsv': self._import_artists_from_csv,
             }
         m = dispatcher.get(command)
         if m is not None:
