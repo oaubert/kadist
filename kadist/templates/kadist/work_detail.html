@@ -10,7 +10,7 @@
 <dl class="description">
 
   <dt>Artist</dt>
-  <dd><a href="/kadist/artist/{{ work.creator.pk }}">{{ work.creator }}</a></dd>
+  <dd><a href="/kadist/artist/{{ work.creator.pk }}">{{ work.creator }}</a> <a class="editlink" href="{% url "admin:kadist_artist_change" work.creator.pk %}">Edit</a></dd>
 
   <dt>Year</dt>
   <dd>{{ work.year }}</dd>
@@ -28,9 +28,12 @@
   <dt>Description</dt>
   <dd>{{ work.description }}</dd>
 
+{% if work.tags.all %}
   <dt>Tags</dt>
   <dd>{% for kw in work.tags.all %}<a href="../../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</dd>
+{% endif %}
 
+{% if work.tags.similar_objects %}
   <dt>Similar works (based on tags)</dt>
   <dd>
     <ul class="worklist">
@@ -39,6 +42,7 @@
       {% endfor %}
     </ul>
   </dd>
+{% endif %}
 
 </dl>
 {% endblock %}
