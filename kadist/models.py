@@ -7,7 +7,7 @@ from gettext import gettext as _
 class Artist(models.Model):
     name = models.CharField("name",
                             max_length=190,
-                            unique=True)
+                            unique=False)
     url = models.URLField(verbose_name='Artist URL on the Kadist website',
                           max_length=255,
                           blank=True)
