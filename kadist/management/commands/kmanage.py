@@ -188,10 +188,10 @@ class Command(BaseCommand):
                 try:
                     creator = Artist.objects.get(pk=aid)
                     w.creator = creator
+                    w.save()
                 except Artist.DoesNotExist:
                     # Have to create one
                     self.stderr.write("Error: missing artist for %s - %s\n" % (data[WID], data[TITLE]))
-                w.save()
 
     def handle(self, *args, **options):
         if not args:
