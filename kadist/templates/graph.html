@@ -116,8 +116,8 @@
           var nodes = tree.nodes(root);
           if (isNaN(nodes[0].x))
               nodes.forEach( function(n) { n.x = 0 });
-          if (default_angle === undefined && root.children)
-              default_angle = 90 - root.children[0].x;
+          if (default_angle === undefined)
+              default_angle = root.children.length > 0 ? 90 - root.children[0].x : 0;
           // Normalize angles
           nodes.forEach(function(n) { n.x = (n.x + default_angle) % 360 });
           var links = tree.links(nodes);
@@ -261,6 +261,11 @@
                                             size: t[2] }
                                })
                              };
+                      if (! root.children.length)
+                          root = { name: "No defined tags",
+                                   type: 'cluster',
+                                   children: [] };
+                                            
                   }
               } else if (type == 'work') {
                   if (kw) {
@@ -310,6 +315,11 @@
                                           };
                                })
                              };
+                      if (! root.children.length)
+                          root = { name: "No defined works",
+                                   type: "cluster",
+                                   children: [] };
+                                            
                   }
               } else if (type == 'artist') {
                   if (kw) {
