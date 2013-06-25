@@ -65,7 +65,7 @@ class Command(BaseCommand):
                     data['Artist Description'], data['Work Description'] = value.split('||', 2)
 
                 data[field] = value
-            
+
     def _import_works_from_xls(self, filename):
         """Import from a xls file.
         """
@@ -76,7 +76,7 @@ class Command(BaseCommand):
         book = xlrd.open_workbook(filename)
         s = book.sheet_by_index(0)
         header = s.row_values(0)
-        
+
         FIRSTNAME = 'Main Artist First Name'
         SURNAME = 'Main Artist Surname'
 	TITLE = 'Main Title'
@@ -124,7 +124,8 @@ class Command(BaseCommand):
         import csv
         reader = csv.reader(open(filename, 'r'))
         header = reader.next()
-        
+
+        AID = 'Nid'
         FIRSTNAME = 'First name'
         SURNAME = 'Last name'
 	DESCRIPTION = 'Corps'
@@ -137,11 +138,14 @@ class Command(BaseCommand):
 
             cname = (data[FIRSTNAME].strip().capitalize() + " " + data[SURNAME].strip().capitalize()).strip()
             try:
-                a = Artist(name=cname, description=data[DESCRIPTION], url='http://www.kadist.org' + data[URL])
+                a = Artist(pk=long(data[AID]),
+                           name=cname,
+                           description=data[DESCRIPTION],
+                           url='http://www.kadist.org' + data[URL])
                 a.save()
             except IntegrityError, e:
                 self.stderr.write("Integrity error: %s\n" % unicode(e))
-            
+
     def _import_works_from_csv(self, filename):
         """Import works from a csv file.
         """
@@ -152,6 +156,8 @@ class Command(BaseCommand):
         header = reader.next()
 
         TITLE = ""
+        WID = "Nid"
+        AID = "people nids"
         CREATOR = "Personnes"
         DATE = "Work Date"
         DESCRIPTION = "Corps"
@@ -169,23 +175,23 @@ class Command(BaseCommand):
                 year = long(data[DATE])
             except ValueError:
                 year = 0
-            w = Work(title=data[TITLE].strip(),
+            w = Work(pk=long(data[WID]),
+                     title=data[TITLE].strip(),
                      year=year,
                      worktype=data[TYPE],
                      url='http://www.kadist.org' + data[URL],
                      description=data[DESCRIPTION])
-            # FIXME: handle Collection field
-            
-            cname = data[CREATOR]
-            try:
-                creator = Artist.objects.get(name=cname)
-            except Artist.DoesNotExist:
-                # Have to create one
-                self.stderr.write("Error: missing artist: %s\n" % cname)
-                creator = Artist(name=cname, url="MISSING")
-                creator.save()
-            w.creator = creator
-            w.save()
+                     # FIXME: handle Collection field
+
+            if data[AID]:
+                aid = long(data[AID].split(',')[0].strip())
+                try:
+                    creator = Artist.objects.get(pk=aid)
+                    w.creator = creator
+                except Artist.DoesNotExist:
+                    # Have to create one
+                    self.stderr.write("Error: missing artist for %s - %s\n" % (data[WID], data[TITLE]))
+                w.save()
 
     def handle(self, *args, **options):
         if not args:
