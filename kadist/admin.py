@@ -6,7 +6,7 @@ class WorkAdmin(admin.ModelAdmin):
     list_display = ('title', 'tags_as_string', 'worktype', 'year', 'creator', 'technique', 'description')
     list_display_links = ('title',)
     list_filter = ( 'creator', 'worktype', 'year' )
-    search_fields = [ 'creator', 'title', 'description', 'url' ]
+    search_fields = [ 'creator__name', 'title', 'description', 'url' ]
     def tags_as_string(self, obj):
         return ", ".join(t.name for t in obj.tags.all())
     tags_as_string.short_description = 'Tags'
