@@ -15,7 +15,7 @@ MySQL must be configured to correctly handle utf8. According to
 http://mathiasbynens.be/notes/mysql-utf8mb4 , utf8mb4 is preferable to
 avoid being bitten by obscure characters.
 
-- configure mysql server with (on Debian, create a file in in ``/etc/mysql/conf.d/``)
+- configure mysql server with (on Debian, create a file ``/etc/mysql/conf.d/utf8``)
 
   [client]
   default-character-set = utf8mb4
