@@ -43,7 +43,6 @@ def taglist():
              if t[1] >= TAG_MINCOUNT ]
     return tags
 
-# TODO: factorize tag info extraction into struct and use it in tag method + api/tag (JSON version) + angular view
 def taginfo(kw):
     """Return information about a tag.
 
