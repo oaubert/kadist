@@ -4,6 +4,7 @@
     <title>{% block title %}Base document{% endblock %}</title>
     <meta name="viewport" content="width=device-width"/>
     <link href="{{ STATIC_URL }}css/kadist.css" rel="stylesheet" type="text/css" />
+    <link href="{{ STATIC_URL }}css/jquery-ui.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico" />
     {% block extra_header %}
     {% endblock %}
@@ -21,9 +22,14 @@
       {% endblock %}
     </div>
 
-    <!--
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}js/kadist.js"></script>
-        -->
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready( function () {
+          $("#searchbox").autocomplete({ minLength: 1,
+                                         source: '/kadist/complete/tag' });
+      });
+    </script>
+
   </body>
 </html>

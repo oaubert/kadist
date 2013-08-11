@@ -22,7 +22,7 @@ from .templatetags.kadist import tagsize, TAG_MINCOUNT
 # define the default models for tags and tagged items
 TAG_MODEL = get_model('taggit', 'Tag')
 
-MIN_RELATED_TAGS_COUNT = 2
+MIN_RELATED_TAGS_COUNT = 0
 DISPLAY_ALL_RELATED_TAGS = False
 MAX_SEARCHED_TAGS_COUNT = 200
 
@@ -125,6 +125,17 @@ def tag_as_json(request, kw=None):
 def tag(request, kw=None):
     return render_to_response('tag.html', taginfo(kw),
                               context_instance=RequestContext(request))
+
+@api_view(['GET'])
+@renderer_classes((UnicodeJSONRenderer, ))
+@login_required
+def complete(request, type=None):
+    kw = request.REQUEST.get('term', '')
+    if kw:
+        res = TAG_MODEL.objects.filter(name__istartswith=kw).values_list('name', flat=True).order_by('name')
+    else:
+        res = [ kw ]
+    return Response(res)
 
 class WorkList(generics.ListCreateAPIView):
     model = Work

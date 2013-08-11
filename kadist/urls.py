@@ -56,5 +56,6 @@ urlpatterns = format_suffix_patterns(urlpatterns)
 urlpatterns += patterns('',
                         url(r'^api-auth/', include('rest_framework.urls',
                                                    namespace='rest_framework')),
+                        url(r'^complete/(?P<type>tag)$', views.complete, name='complete')
                         )
 

@@ -152,6 +152,10 @@ ul.navbar li {
     border: 1px solid #ddd;
 }
 
+ul.navbar li.wide-item {
+    width: 140px;
+}
+
 ul.navbar li:hover {
     background-color: #ddd;
     color: #444;
