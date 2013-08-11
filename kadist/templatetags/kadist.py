@@ -14,7 +14,7 @@ def tagsize(c):
     """
     if c > TAG_MAXCOUNT:
         return TAG_MAXSIZE
-    elif c < TAG_MINSIZE:
+    elif c < TAG_MINCOUNT:
         return TAG_MINSIZE
     else:
         return long(TAG_MINSIZE + TAG_FACTOR * (c - TAG_MINCOUNT))
