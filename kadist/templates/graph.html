@@ -23,7 +23,7 @@
     .link {
         fill: none;
         stroke: #9ecae1;
-        stroke-width: 1.5px;
+        stroke-linecap: round;
     }
 
     .label {
@@ -170,6 +170,7 @@
               .data(links)
               .enter().append("path")
               .attr("class", "link")
+              .attr("stroke-width", function(l) { return (l.target.size ? l.target.size : (l.target.children ? l.target.children.length : 2 )) })
               .attr("d", diagonal);
 
           var node = svg.selectAll(".node")
@@ -280,7 +281,8 @@
                                                type: 'cluster',
                                                children: json[cat].map( function(t) {
                                                    return { name: t[0],
-                                                            size: t[1],
+                                                            count: t[1],
+                                                            size: t[1] * 2,
                                                             type: 'tag'
                                                           }
                                                })
@@ -339,9 +341,11 @@
                           clusters.push({ name: 'Tags',
                                           type: 'cluster',
                                           children: json.tags.map( function(t) {
-                                              return { name: t,
+                                              return { name: t[0],
                                                        type: "tag",
-                                                       size: 24 };
+                                                       count: t[1],
+                                                       size: t[1] * 2
+                                                     };
                                           })
                                         });
 
@@ -374,9 +378,11 @@
                           clusters.push({ name: 'Tags',
                                           type: 'cluster',
                                           children: json.tags.map( function(t) {
-                                              return { name: t,
+                                              return { name: t[0],
                                                        type: "tag",
-                                                       size: 24 };
+                                                       count: t[1],
+                                                       size: count * 2
+                                                     };
                                           })
                                         });
 
