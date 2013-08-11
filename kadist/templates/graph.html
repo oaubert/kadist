@@ -55,6 +55,19 @@
         text-align: center;
         display: none;
     }
+
+     div.tooltip {
+        position: absolute;
+        text-align: center;
+        width: 100px;
+        height: 20px;
+        padding: 8px;
+        font: 10px sans-serif;
+        background: #ffff99;
+        border: solid 1px #aaa;
+        border-radius: 8px;
+        pointer-events: none;
+      }
     </style>
 {% endblock %}
 
@@ -110,6 +123,29 @@
                   .append("g")
                   .attr("id", "box")
                   .attr("transform", "rotate(" + angle + ")");
+      
+      // Add tooltip div
+      var tooltip = d3.select('body').append('div')
+                  .attr('class', 'tooltip')
+                  .style('opacity', 1e-6);
+
+      function mouseover() {
+          tooltip.transition()
+              .duration(300)
+              .style('opacity', 1);
+      }
+ 
+      function mousemove(d) {
+          tooltip.text('Info about ' + d.name + ':\n' + d.count)
+              .style('left', (d3.event.pageX ) + 'px')
+              .style('top', (d3.event.pageY) + 'px');
+      }
+ 
+      function mouseout() {
+        tooltip.transition()
+              .duration(300)
+              .style('opacity', 1e-6);
+      }
 
       function update(default_angle) {
           // Update the graph according to what is loaded in the root variable
@@ -140,6 +176,9 @@
                                        })
               .attr("class", function(d) { return "node " + d.type + (d == root ? " root " : "")})
               .attr("transform", function(d) { return d == root ? "": "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+              .on('mouseover', mouseover)
+              .on('mousemove', mousemove)
+              .on('mouseout', mouseout);
 
           // Different shapes according to node type
           node.filter(function(n) { return n.type == 'work' }).append("rect")
