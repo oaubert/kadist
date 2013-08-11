@@ -5,7 +5,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-                       url(r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': settings.STATIC_URL + 'img/favicon.ico'}),
+                       url(r'^favicon\.ico$', RedirectView.as_view(url=settings.STATIC_URL + 'img/favicon.ico')),
                        url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
                        url(r'^accounts/logout/$', 'django.contrib.auth.views.logout'),
                        url(r'^$', RedirectView.as_view(url='/kadist/')),
