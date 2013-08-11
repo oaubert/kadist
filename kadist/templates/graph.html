@@ -201,10 +201,11 @@
               .attr("transform", function (d) { var dim = (d == root ? node_dimensions.rootrect : node_dimensions.rect);
                                                 return "translate(" + (-dim.width / 2) + ", " + (-dim.height/2) + ")"; });
 
-          node.filter(function(n) { return n.type != 'work' }).append("circle")
+          node.filter(function(n) { return n.type != 'work' }).append("ellipse")
               .attr("class", "shape")
               .attr("fill", function (d) { return ((d != root && d.type == 'tag') ? d3.rgb('#9cf').brighter((48 - d.size) / 48.0).toString() : '#fff') })
-              .attr("r", function (d) { return (d == root ? node_dimensions.rootcircle.diameter : node_dimensions.circle.diameter) });
+              .attr("rx", function (d) { return (d == root ? node_dimensions.rootcircle.diameter : node_dimensions.circle.diameter) * (d.type == 'artist' ? 1.618 : 1); })
+              .attr("ry", function (d) { return (d == root ? node_dimensions.rootcircle.diameter : node_dimensions.circle.diameter) });
 
           // Append the text to all nodes
           node.filter(function(n) { return n != root }).append("text")
