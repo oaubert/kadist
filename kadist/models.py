@@ -24,7 +24,6 @@ class Artist(models.Model):
     def get_absolute_url(self):
         return reverse('artist-detail', args=[str(self.pk)])
 
-# Create your models here.
 class Work(models.Model):
     creator = models.ForeignKey(Artist,
                                 verbose_name="artist",
@@ -48,9 +47,8 @@ class Work(models.Model):
                                     blank=True)
     description = models.TextField(_("description"),
                                    blank=True)
-    # tags
     tags = TaggableManager(blank=True)
-
+    
     def __unicode__(self):
         return "%s (%s)" % (self.title, self.creator)
 
