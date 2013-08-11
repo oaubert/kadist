@@ -18,6 +18,14 @@ class Artist(models.Model):
                                    blank=True)
     tags = TaggableManager(blank=True)
 
+    @property
+    def weighted_tags(self):
+        """Return a tuple list with the weight for each tag.
+        """
+        # The aggregation API should work here, but seems not to.
+        # return self.tags.annotate(count=models.Count('taggit_taggeditem_items')).values_list('name', 'count').order_by('name')
+        return [ (t.name, t.taggit_taggeditem_items.count()) for t in self.tags.all() ]
+
     def __unicode__(self):
         return self.name
 
@@ -48,7 +56,13 @@ class Work(models.Model):
     description = models.TextField(_("description"),
                                    blank=True)
     tags = TaggableManager(blank=True)
-    
+
+    @property
+    def weighted_tags(self):
+        """Return a tuple list with the weight for each tag.
+        """
+        return [ (t.name, t.taggit_taggeditem_items.count()) for t in self.tags.all() ]
+
     def __unicode__(self):
         return "%s (%s)" % (self.title, self.creator)
 
