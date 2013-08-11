@@ -60,7 +60,7 @@
         position: absolute;
         text-align: center;
         width: 100px;
-        height: 20px;
+        max-height: 60px;
         padding: 8px;
         font: 10px sans-serif;
         background: #ffff99;
@@ -136,7 +136,15 @@
       }
  
       function mousemove(d) {
-          tooltip.text('Info about ' + d.name + ':\n' + d.count)
+          var text = "";
+          if (d.type === 'cluster')
+              text = d.children.length + " " + d.name;
+          else {
+              text = d.name + " (" + d.type + ")";
+              if (d.count)
+                  text += " - " + d.count + " item" + (d.count > 1 ? "s" : "");
+          }
+          tooltip.text(text)
               .style('left', (d3.event.pageX ) + 'px')
               .style('top', (d3.event.pageY) + 'px');
       }
