@@ -27,7 +27,10 @@
     <script type="text/javascript">
       $(document).ready( function () {
           $("#searchbox").autocomplete({ minLength: 1,
-                                         source: '/kadist/complete/tag' });
+                                         source: '/kadist/complete/tag',
+                                         select: function () {
+                                             $(this).closest("form").submit();
+                                         } });
       });
     </script>
 
