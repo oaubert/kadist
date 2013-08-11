@@ -132,10 +132,11 @@ def tag(request, kw=None):
 def complete(request, type=None):
     kw = request.REQUEST.get('term', '')
     if kw:
-        res = TAG_MODEL.objects.filter(name__istartswith=kw).values_list('name', flat=True).order_by('name')
+        res = TAG_MODEL.objects.filter(name__istartswith=kw).annotate(count=Count('taggit_taggeditem_items')).values_list('name', 'count').order_by('-count', 'name')
     else:
-        res = [ kw ]
-    return Response(res)
+        res = [ (kw, 1) ]
+    return Response([ { 'value': name, 'label': '%s (%d)' % (name, count) }
+                        for (name, count) in res ])
 
 class WorkList(generics.ListCreateAPIView):
     model = Work
