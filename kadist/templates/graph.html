@@ -3,7 +3,7 @@
 {% load admin_urls %}
 {% load url from future %}
 
-{% block title %}KCN - {{ params.kw }}{% endblock %}
+{% block title %}KCN - {{ kw }}{% endblock %}
 
 {% block extra_header %}
     <style type="text/css">
@@ -367,7 +367,7 @@
           });
       }
 
-      load("{{ params.kw }}", "{{ params.type }}");
+      load("{{ kw }}", "{{ type }}");
 
       $("body").on("mousewheel", function (evt, delta, deltaX, deltaY) {
           evt.preventDefault()
