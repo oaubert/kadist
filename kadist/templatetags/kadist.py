@@ -1,6 +1,6 @@
 from django import template
 
-TAG_MAXCOUNT = 50
+TAG_MAXCOUNT = 14
 TAG_MINCOUNT = 0
 TAG_MINSIZE = 10
 TAG_MAXSIZE = 48
