@@ -117,8 +117,8 @@ def taglist_as_json(request):
 @login_required
 def tag_as_json(request, kw=None):
     info = taginfo(kw)
-    info['works'] = WorkReferenceSerializer(info['works']).data
-    info['artists'] = ArtistReferenceSerializer(info['artists']).data
+    info['works'] = WorkReferenceSerializer(info['works'], many=True, context={'request': request}).data
+    info['artists'] = ArtistReferenceSerializer(info['artists'], many=True, context={'request': request}).data
     return Response(info)
 
 @login_required
