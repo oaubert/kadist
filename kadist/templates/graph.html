@@ -195,22 +195,24 @@
                   .text("\u2192")
                   .on('click', navigate, d);
 
-              // Activate menuitem (navigate to kadist website)
-              menu.append('circle')
-                  .attr('class', 'action activate')
-                  .attr('transform', "translate(22, 0)")
-                  .attr('r', 10)
-                  .attr('fill', '#bcf')
-                  .on('click',  function(d) {
-                      console.log('activate', d);
-                  });
-              menu.append('text')
-                  .attr('transform', "translate(22, 5)")
-                  .attr('text-anchor', 'middle')
-                  .text("K")
-                  .on('click',  function(d) {
-                      console.log('activate', d);
-                  });
+              if (d.kurl) {
+                  // Activate menuitem (navigate to kadist website)
+                  menu.append('circle')
+                      .attr('class', 'action activate')
+                      .attr('transform', "translate(22, 0)")
+                      .attr('r', 10)
+                      .attr('fill', '#bcf')
+                      .on('click',  function(d) {
+                          document.location = d.kurl;
+                      });
+                  menu.append('text')
+                      .attr('transform', "translate(22, 5)")
+                      .attr('text-anchor', 'middle')
+                      .text("K")
+                      .on('click',  function(d) {
+                          document.location = d.kurl;
+                      });
+              }
 
               // Transition the menu
               menu.transition()
@@ -313,6 +315,7 @@
                                           children: json.works.map( function(w) {
                                               return { name: w.title,
                                                        url: w.url,
+                                                       kurl: w.kurl,
                                                        id: w.id,
                                                        author: w.creatorname,
                                                        type: 'work'
@@ -326,6 +329,7 @@
                                          children: json.artists.map( function(a) {
                                              return { name: a.name,
                                                       url: a.url,
+                                                      kurl: w.kurl,
                                                       id: a.id,
                                                       type: 'artist'
                                                     };
@@ -390,6 +394,7 @@
                                           children: json.similar.slice(0, 12).map( function(w) {
                                               return { name: w.title,
                                                        url: w.url,
+                                                       kurl: w.kurl,
                                                        id: w.id,
                                                        author: w.creatorname,
                                                        type: 'work'
@@ -418,6 +423,7 @@
                       root = { name: json.title,
                                type: 'work',
                                url: json.url,
+                               kurl: w.kurl,
                                id: json.id,
                                children: clusters };
                   } else {
@@ -426,6 +432,7 @@
                                children: json.map( function(w) {
                                    return { name: w.title,
                                             url: w.url,
+                                            kurl: w.kurl,
                                             id: w.id,
                                             author: w.creatorname,
                                             type: 'work'
@@ -459,6 +466,7 @@
                                               return { name: w.title,
                                                        type: "work",
                                                        url: w.url,
+                                                       kurl: w.kurl,
                                                        id: w.id };
                                           })
                                         });
@@ -474,6 +482,7 @@
                                children: json.map( function(a) {
                                    return { name: a.name,
                                             url: a.url,
+                                            kurl: w.kurl,
                                             id: a.id,
                                             type: 'artist'
                                           };
