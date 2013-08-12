@@ -180,6 +180,13 @@
               document.location.pathname = "/kadist/graph/artist/" + d.id
       }
 
+      function edit(d) {
+          if (d.type == 'work')
+              document.location.pathname = "/admin/kadist/work/" + d.id;
+          else if (d.type == 'artist')
+              document.location.pathname = "/admin/kadist/artist/" + d.id
+      }
+
       function display_menu(node, d) {
           var menu = node.append('g')
               .style('opacity', 1e-6)
@@ -227,7 +234,22 @@
                       document.location = d.kurl;
                   });
           }
-          
+
+          if (! d3.select("#menu_admin").empty() && (d.type == 'work' || d.type == 'artist')) {
+              // Edit menuitem
+              menu.append('circle')
+                  .attr('class', 'action edit')
+                  .attr('transform', "translate(44, 0)")
+                  .attr('r', 10)
+                  .attr('fill', '#bcf')
+                  .on('click', edit, d);
+              menu.append('text')
+                  .attr('transform', "translate(44, 5)")
+                  .attr('text-anchor', 'middle')
+                  .text("\u270f")
+                  .on('click', edit, d);
+          }
+
           // Transition the menu
           // This will work on both mouse devices and touch devices
           menu.transition()
