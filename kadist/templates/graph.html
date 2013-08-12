@@ -63,11 +63,16 @@
         max-height: 200px;
         padding: 8px;
         font: 10px sans-serif;
-        background: #ffff99;
+        background: #fff8ff;
         border: solid 1px #aaa;
         border-radius: 8px;
         pointer-events: none;
       }
+
+     div.tooltip img {
+         max-width: 90px;
+     }
+
     </style>
 {% endblock %}
 
@@ -130,34 +135,37 @@
                   .style('opacity', 1e-6);
 
       function mouseover(d) {
+          var text = "";
+          if (d.type === 'cluster')
+              text = d.children.length + " " + d.name;
+          else {
+              text = d.name;
+              if (d.count)
+                  text += " - " + d.count + " item" + (d.count > 1 ? "s" : "");
+              if (d.author)
+                  text += " by " + d.author;
+              if (d.imgurl)
+                  text += '\n<p><img src="' + d.imgurl + '"></p>';
+          }
           if (! d.children) {
               var node = d3.select(this);
               if (node.selectAll(".action").empty()) {
                   display_menu(node, d);
               }
           }
-          tooltip.transition()
+          tooltip.html(text)
+              .transition()
               .duration(300)
               .style('opacity', 1);
       }
  
       function mousemove(d) {
-          var text = "";
-          if (d.type === 'cluster')
-              text = d.children.length + " " + d.name;
-          else {
-              text = d.name + " (" + d.type + ")";
-              if (d.count)
-                  text += " - " + d.count + " item" + (d.count > 1 ? "s" : "");
-              if (d.author)
-                  text += " by " + d.author;
-          }
-          tooltip.text(text)
-              .style('left', (d3.event.pageX + 20) + 'px')
+          tooltip.style('left', (d3.event.pageX + 20) + 'px')
               .style('top', (d3.event.pageY + 20) + 'px');
       }
  
       function mouseout() {
+          // Hide tooltip
           tooltip.transition()
               .duration(300)
               .style('opacity', 1e-6);
@@ -224,6 +232,8 @@
               .transition()
               .duration(2000)
               .remove();
+
+          return menu;
       }
 
       function click(d) {
@@ -329,6 +339,7 @@
                                               return { name: w.title,
                                                        url: w.url,
                                                        kurl: w.kurl,
+                                                       imgurl: w.imgurl,
                                                        id: w.id,
                                                        author: w.artist.name,
                                                        type: 'work'
@@ -342,7 +353,8 @@
                                          children: json.artists.map( function(a) {
                                              return { name: a.name,
                                                       url: a.url,
-                                                      kurl: w.kurl,
+                                                      kurl: a.kurl,
+                                                      imgurl: a.imgurl,
                                                       id: a.id,
                                                       type: 'artist'
                                                     };
@@ -408,6 +420,7 @@
                                               return { name: w.title,
                                                        url: w.url,
                                                        kurl: w.kurl,
+                                                       imgurl: w.imgurl,
                                                        id: w.id,
                                                        author: w.creatorname,
                                                        type: 'work'
@@ -436,7 +449,8 @@
                       root = { name: json.title,
                                type: 'work',
                                url: json.url,
-                               kurl: w.kurl,
+                               kurl: json.kurl,
+                               imgurl: json.imgurl,
                                id: json.id,
                                children: clusters };
                   } else {
@@ -446,6 +460,7 @@
                                    return { name: w.title,
                                             url: w.url,
                                             kurl: w.kurl,
+                                            imgurl: w.imgurl,
                                             id: w.id,
                                             author: w.creatorname,
                                             type: 'work'
@@ -479,6 +494,7 @@
                                               return { name: w.title,
                                                        type: "work",
                                                        url: w.url,
+                                                       imgurl: w.imgurl,
                                                        kurl: w.kurl,
                                                        id: w.id };
                                           })
@@ -495,7 +511,8 @@
                                children: json.map( function(a) {
                                    return { name: a.name,
                                             url: a.url,
-                                            kurl: w.kurl,
+                                            kurl: a.kurl,
+                                            imgurl: w.imgurl,
                                             id: a.id,
                                             type: 'artist'
                                           };
