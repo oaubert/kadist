@@ -2,9 +2,12 @@
 
 import sys
 import re
+import itertools
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError
+import urllib2
+from BeautifulSoup import BeautifulSoup
 
 from kadist.models import Artist, Work
 from rake import RakeKeywordExtractor
@@ -193,6 +196,20 @@ class Command(BaseCommand):
                     # Have to create one
                     self.stderr.write("Error: missing artist for %s - %s\n" % (data[WID], data[TITLE]))
 
+    def _scrape(self):
+        """Scrape img urls from Kadist website.
+        """
+        for w in itertools.chain(Work.objects.filter(imgurl=""),
+                                Artist.objects.filter(imgurl="")):
+            self.stdout.write("[%d]" % w.pk)
+            self.stdout.flush()
+            try:
+                soup = BeautifulSoup(urllib2.urlopen(w.url).read())
+                w.imgurl = soup.find('figure').find('img').get('src')
+                w.save()
+            except (ValuError, AttributeError):
+                pass
+
     def handle(self, *args, **options):
         if not args:
             self.print_help(sys.argv[0], sys.argv[1])
@@ -204,6 +221,7 @@ class Command(BaseCommand):
             'xls': self._import_works_from_xls,
             'wcsv': self._import_works_from_csv,
             'acsv': self._import_artists_from_csv,
+            'scrape': self._scrape,
             }
         m = dispatcher.get(command)
         if m is not None:
