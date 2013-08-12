@@ -145,16 +145,68 @@
                   text += " - " + d.count + " item" + (d.count > 1 ? "s" : "");
           }
           tooltip.text(text)
-              .style('left', (d3.event.pageX ) + 'px')
-              .style('top', (d3.event.pageY) + 'px');
+              .style('left', (d3.event.pageX + 20) + 'px')
+              .style('top', (d3.event.pageY + 20) + 'px');
       }
  
       function mouseout() {
-        tooltip.transition()
+          tooltip.transition()
               .duration(300)
               .style('opacity', 1e-6);
       }
 
+      function navigate(d) {
+          if (d.type == 'tag')
+              document.location.pathname = "/kadist/graph/tag/" + d.name;
+          else if (d.type == 'work')
+              document.location.pathname = "/kadist/graph/work/" + d.id;
+          else if (d.type == 'artist')
+              document.location.pathname = "/kadist/graph/artist/" + d.id
+      }
+
+      function click(d) {
+          console.log(d);
+          if (d.children)
+              // Only handle clicks on leaf nodes
+              return;
+          // We check on the parent node since the event is linked to the label
+          var node = d3.select(this.parentNode);
+          if (node.selectAll(".action").empty()) {
+              node.append('circle')
+                  .style('opacity', 1e-6)
+                  .attr('transform', "translate(20, -15)")
+                  .attr('r', 10)
+                  .attr('class', 'action navigate')
+                  .attr('fill', '#bcf')
+                  .on('click', navigate, d)
+                  .transition()
+                  .duration(400)
+                  .style('opacity', 1)
+                  .transition()
+                  .duration(1500)
+                  .remove();
+              node.append('circle')
+                  .style('opacity', 1e-6)
+                  .attr('transform', "translate(40, -15)")
+                  .attr('r', 10)
+                  .attr('class', 'action activate')
+                  .attr('fill', '#bcf')
+                  .on('click',  function(d) {
+                      console.log('activate', d);
+                  })
+                  .transition()
+                  .duration(400)
+                  .style('opacity', 1)
+                  .transition()
+                  .duration(1500)
+                  .remove();
+          } else {
+              // Already displayed -> navigate
+              navigate(d);
+              return;
+          }
+      }
+      
       function update(default_angle) {
           // Update the graph according to what is loaded in the root variable
           var nodes = tree.nodes(root);
@@ -176,13 +228,6 @@
           var node = svg.selectAll(".node")
               .data(nodes)
               .enter().append("g")
-              .on("click", function(d) { if (d.type == 'tag')
-                                             document.location.pathname = "/kadist/graph/tag/" + d.name
-                                         else if (d.type == 'work')
-                                             document.location.pathname = "/kadist/graph/work/" + d.id
-                                         else if (d.type == 'artist')
-                                             document.location.pathname = "/kadist/graph/artist/" + d.id
-                                       })
               .attr("class", function(d) { return "node " + d.type + (d == root ? " root " : "")})
               .attr("transform", function(d) { return d == root ? "": "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
               .on('mouseover', mouseover)
@@ -213,9 +258,10 @@
               .attr("class", "label")
               .attr("text-anchor", function(d) { return d == root ? "middle" : (d.x < 180 ? "start" : "end"); })
               .attr("transform", function(d) { return d == root ? "" : d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)"; })
+              .on("click", click)
               .text(function(d) { return d.name; });
 
-          // Wrap the node label
+          // Wrap the root label
           svg.selectAll(".node.root").append("foreignObject")
               //.attr("x", function(d) { return d._children ? -8 : -48; }) /*the position of the text (left to right)*/
               //.attr("y", 3) /*the position of the text (Up and Down)*/
