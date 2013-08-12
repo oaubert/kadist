@@ -147,7 +147,7 @@
               if (d.imgurl)
                   text += '\n<p><img src="' + d.imgurl + '"></p>';
           }
-          if (! d.children) {
+          if (! d.children || d === root) {
               var node = d3.select(this);
               if (node.selectAll(".action").empty()) {
                   display_menu(node, d);
@@ -183,7 +183,11 @@
       function display_menu(node, d) {
           var menu = node.append('g')
               .style('opacity', 1e-6)
-              .attr('transform', "translate(20, -15)")
+              .attr('transform', function(n) { return (d === root ?
+                                                       "translate(20, -" + (d.type == 'work' ?
+                                                                            node_dimensions.rootrect : node_dimensions.rootcircle).textheight
+                                                       + ")"
+                                                       : "translate(20, -15)") })
               .attr('class', 'menu');
 
           // FIXME: we have to add click handlers to both elements
@@ -237,8 +241,8 @@
       }
 
       function click(d) {
-          if (d.children)
-              // Only handle clicks on leaf nodes
+          if (d.children || d === root)
+              // Only handle clicks on leaf nodes or root
               return;
           // We check on the parent node since the event is linked to the label
           var node = d3.select(this.parentNode);
