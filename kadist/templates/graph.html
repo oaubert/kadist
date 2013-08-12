@@ -459,6 +459,8 @@
                                       children: [ { name: json.artist.name,
                                                     type: 'artist',
                                                     id: json.artist.id,
+                                                    kurl: json.artist.kurl,
+                                                    imgurl: json.artist.imgurl,
                                                     url: json.artist.url } ] });
                       if (json.tags.length)
                           clusters.push({ name: 'Tags',
@@ -528,6 +530,8 @@
 
                       root = { name: json.name,
                                type: 'artist',
+                               kurl: json.kurl,
+                               imgurl: json.imgurl,
                                children: clusters }
                   };
 
