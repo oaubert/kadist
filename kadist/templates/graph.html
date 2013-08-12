@@ -129,7 +129,13 @@
                   .attr('class', 'tooltip')
                   .style('opacity', 1e-6);
 
-      function mouseover() {
+      function mouseover(d) {
+          if (! d.children) {
+              var node = d3.select(this);
+              if (node.selectAll(".action").empty()) {
+                  display_menu(node, d);
+              }
+          }
           tooltip.transition()
               .duration(300)
               .style('opacity', 1);
@@ -166,6 +172,60 @@
               document.location.pathname = "/kadist/graph/artist/" + d.id
       }
 
+      function display_menu(node, d) {
+          var menu = node.append('g')
+              .style('opacity', 1e-6)
+              .attr('transform', "translate(20, -15)")
+              .attr('class', 'menu');
+
+          // FIXME: we have to add click handlers to both elements
+          // (shape+char.) each time.  This could be solved by
+          // adding another <g> group, which would get the click
+          // handler and embed the shape and the character. This
+          // will be done when/if the menu is extended.
+          
+          // Navigate menuitem
+          menu.append('circle')
+              .attr('class', 'action navigate')
+              .attr('transform', "translate(0, 0)")
+              .attr('r', 10)
+              .attr('fill', '#bcf')
+              .on('click', navigate, d);
+          menu.append('text')
+              .attr('transform', "translate(0, 5)")
+              .attr('text-anchor', 'middle')
+              .text("\u2192")
+              .on('click', navigate, d);
+          
+          if (d.kurl) {
+              // Activate menuitem (navigate to kadist website)
+              menu.append('circle')
+                  .attr('class', 'action activate')
+                  .attr('transform', "translate(22, 0)")
+                  .attr('r', 10)
+                  .attr('fill', '#bcf')
+                  .on('click',  function(d) {
+                      document.location = d.kurl;
+                  });
+              menu.append('text')
+                  .attr('transform', "translate(22, 5)")
+                  .attr('text-anchor', 'middle')
+                  .text("K")
+                  .on('click',  function(d) {
+                      document.location = d.kurl;
+                  });
+          }
+          
+          // Transition the menu
+          // This will work on both mouse devices and touch devices
+          menu.transition()
+              .duration(400)
+              .style('opacity', 1)
+              .transition()
+              .duration(2000)
+              .remove();
+      }
+
       function click(d) {
           if (d.children)
               // Only handle clicks on leaf nodes
@@ -173,56 +233,7 @@
           // We check on the parent node since the event is linked to the label
           var node = d3.select(this.parentNode);
           if (node.selectAll(".action").empty()) {
-              var menu = node.append('g')
-                  .style('opacity', 1e-6)
-                  .attr('transform', "translate(20, -15)")
-                  .attr('class', 'menu');
-
-              // FIXME: we have to add click handlers to both elements
-              // (shape+char.) each time.  This could be solved by
-              // adding another <g> group, which would get the click
-              // handler and embed the shape and the character. This
-              // will be done when/if the menu is extended.
-
-              // Navigate menuitem
-              menu.append('circle')
-                  .attr('class', 'action navigate')
-                  .attr('transform', "translate(0, 0)")
-                  .attr('r', 10)
-                  .attr('fill', '#bcf')
-                  .on('click', navigate, d);
-              menu.append('text')
-                  .attr('transform', "translate(0, 5)")
-                  .attr('text-anchor', 'middle')
-                  .text("\u2192")
-                  .on('click', navigate, d);
-
-              if (d.kurl) {
-                  // Activate menuitem (navigate to kadist website)
-                  menu.append('circle')
-                      .attr('class', 'action activate')
-                      .attr('transform', "translate(22, 0)")
-                      .attr('r', 10)
-                      .attr('fill', '#bcf')
-                      .on('click',  function(d) {
-                          document.location = d.kurl;
-                      });
-                  menu.append('text')
-                      .attr('transform', "translate(22, 5)")
-                      .attr('text-anchor', 'middle')
-                      .text("K")
-                      .on('click',  function(d) {
-                          document.location = d.kurl;
-                      });
-              }
-
-              // Transition the menu
-              menu.transition()
-                  .duration(400)
-                  .style('opacity', 1)
-                  .transition()
-                  .duration(2000)
-                  .remove();
+              display_menu(node, d);
           } else {
               // Already displayed -> navigate
               navigate(d);
