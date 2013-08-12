@@ -143,6 +143,8 @@
               text = d.name + " (" + d.type + ")";
               if (d.count)
                   text += " - " + d.count + " item" + (d.count > 1 ? "s" : "");
+              if (d.author)
+                  text += " by " + d.author;
           }
           tooltip.text(text)
               .style('left', (d3.event.pageX + 20) + 'px')
@@ -317,7 +319,7 @@
                                                        url: w.url,
                                                        kurl: w.kurl,
                                                        id: w.id,
-                                                       author: w.creatorname,
+                                                       author: w.artist.name,
                                                        type: 'work'
                                                      };
                                           })
