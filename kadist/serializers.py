@@ -7,7 +7,7 @@ class ArtistReferenceSerializer(serializers.HyperlinkedModelSerializer):
     kurl = serializers.CharField(source="url")
     class Meta:
         model = Artist
-        fields = ('url', 'id', 'name', 'kurl')
+        fields = ('url', 'id', 'name', 'kurl', 'imgurl')
 
 class WorkReferenceSerializer(serializers.HyperlinkedModelSerializer):
     """Minimal serialization for a work reference.
@@ -16,7 +16,7 @@ class WorkReferenceSerializer(serializers.HyperlinkedModelSerializer):
     kurl = serializers.CharField(source="url")
     class Meta:
         model = Work
-        fields = ('url', 'id', 'artist', 'title', 'kurl')
+        fields = ('url', 'id', 'artist', 'title', 'kurl', 'imgurl')
 
 class WorkSerializer(serializers.HyperlinkedModelSerializer):
     tags = serializers.RelatedField(source='weighted_tags')
@@ -25,7 +25,9 @@ class WorkSerializer(serializers.HyperlinkedModelSerializer):
     kurl = serializers.CharField(source="url")
     class Meta:
         model = Work
-        fields = ('url', 'id', 'artist', 'title', 'worktype', 'technique','dimensions', 'description', 'tags', 'similar', 'kurl')
+        fields = ('url', 'id', 'artist', 'title',
+                  'worktype', 'technique','dimensions', 'description',
+                  'tags', 'similar', 'kurl', 'imgurl')
 
 class ArtistSerializer(serializers.HyperlinkedModelSerializer):
     works = WorkReferenceSerializer(source='works')
@@ -34,4 +36,6 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Artist
-        fields = ('url', 'id', 'name', 'country', 'description', 'works', 'tags', 'kurl')
+        fields = ('url', 'id', 'name', 'country', 'description', 'works',
+                  'tags',
+                  'kurl', 'imgurl')
