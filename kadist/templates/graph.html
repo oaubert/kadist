@@ -165,40 +165,59 @@
       }
 
       function click(d) {
-          console.log(d);
           if (d.children)
               // Only handle clicks on leaf nodes
               return;
           // We check on the parent node since the event is linked to the label
           var node = d3.select(this.parentNode);
           if (node.selectAll(".action").empty()) {
-              node.append('circle')
+              var menu = node.append('g')
                   .style('opacity', 1e-6)
                   .attr('transform', "translate(20, -15)")
-                  .attr('r', 10)
+                  .attr('class', 'menu');
+
+              // FIXME: we have to add click handlers to both elements
+              // (shape+char.) each time.  This could be solved by
+              // adding another <g> group, which would get the click
+              // handler and embed the shape and the character. This
+              // will be done when/if the menu is extended.
+
+              // Navigate menuitem
+              menu.append('circle')
                   .attr('class', 'action navigate')
-                  .attr('fill', '#bcf')
-                  .on('click', navigate, d)
-                  .transition()
-                  .duration(400)
-                  .style('opacity', 1)
-                  .transition()
-                  .duration(1500)
-                  .remove();
-              node.append('circle')
-                  .style('opacity', 1e-6)
-                  .attr('transform', "translate(40, -15)")
+                  .attr('transform', "translate(0, 0)")
                   .attr('r', 10)
+                  .attr('fill', '#bcf')
+                  .on('click', navigate, d);
+              menu.append('text')
+                  .attr('transform', "translate(0, 5)")
+                  .attr('text-anchor', 'middle')
+                  .text("\u2192")
+                  .on('click', navigate, d);
+
+              // Activate menuitem (navigate to kadist website)
+              menu.append('circle')
                   .attr('class', 'action activate')
+                  .attr('transform', "translate(22, 0)")
+                  .attr('r', 10)
                   .attr('fill', '#bcf')
                   .on('click',  function(d) {
                       console.log('activate', d);
-                  })
-                  .transition()
+                  });
+              menu.append('text')
+                  .attr('transform', "translate(22, 5)")
+                  .attr('text-anchor', 'middle')
+                  .text("K")
+                  .on('click',  function(d) {
+                      console.log('activate', d);
+                  });
+
+              // Transition the menu
+              menu.transition()
                   .duration(400)
                   .style('opacity', 1)
                   .transition()
-                  .duration(1500)
+                  .duration(2000)
                   .remove();
           } else {
               // Already displayed -> navigate
