@@ -290,25 +290,25 @@
                                              });
                           }
                       });
-
+                      
                       // Single tag info
                       root = { name: json.tag,
                                type: 'tag',
                                children: clusters }
                   } else {
-                      // Tag list: sort along count to truncate, then sort again name
-                      if (json.length > 180) {
+                      // Tag list: sort along count to truncate if necessary, then sort along name
+                      if (json.length > 120) {
                           json.sort(function(a, b) { return b[1] - a[1]; })
-                          json = json.slice(0, 180);
-                          json.sort(function(a, b) { return a[0].localeCompare(b[0]) });
+                          json = json.slice(0, 120);
                       }
+                      json.sort(function(a, b) { return a[0].localeCompare(b[0]) });
                       root = { name: "Tags",
                                type: 'cluster',
                                children: json.map( function(t) {
                                    return { name: t[0],
                                             type: "tag",
                                             count: t[1],
-                                            size: t[2] }
+                                            size: t[2] / 2 }
                                })
                              };
                       if (! root.children.length)
