@@ -129,6 +129,10 @@
                   .attr("id", "box")
                   .attr("transform", "rotate(" + angle + ")");
 
+      // Append #links then #nodes so that links are always below nodes
+      svg.append("g").attr("id", "links");
+      svg.append("g").attr("id", "nodes");
+
       // Add tooltip div
       var tooltip = d3.select('body').append('div')
                   .attr('class', 'tooltip')
@@ -300,18 +304,22 @@
               default_angle = root.children.length > 0 ? 90 - root.children[0].x : 0;
           // Normalize angles
           nodes.forEach(function(n) { n.x = (n.x + default_angle) % 360 });
-          var links = tree.links(nodes);
 
-          var link = svg.selectAll(".link")
-              .data(links)
-              .enter().append("path")
+          var link = svg.select('#links')
+              .selectAll(".link")
+              .data(tree.links(nodes));
+          link.exit()
+              .remove();
+          link.enter().append("path")
               .attr("class", "link")
-              .attr("stroke-width", function(l) { return (l.target.size ? l.target.size : (l.target.children ? l.target.children.length : 2 )) })
+              .attr("stroke-width", function(l) { return l.target.size || (l.target.children ? l.target.children.length : 2 ); })
               .attr("d", diagonal);
 
-          var node = svg.selectAll(".node")
-              .data(nodes)
-              .enter().append("g")
+          var node = svg.select('#nodes').selectAll(".node")
+              .data(nodes);
+          node.exit()
+              .remove();
+          node.enter().append("g")
               .attr("class", function(d) { return "node " + d.type + (d == root ? " root " : "")})
               .attr("transform", function(d) { return d == root ? "": "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
               .on('mouseover', mouseover)
