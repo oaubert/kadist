@@ -208,17 +208,19 @@
           // will be done when/if the menu is extended.
 
           // Navigate menuitem
-          menu.append('circle')
-              .attr('class', 'action navigate')
-              .attr('transform', "translate(0, 0)")
-              .attr('r', 10)
-              .attr('fill', '#bcf')
-              .on('click', navigate, d);
-          menu.append('text')
-              .attr('transform', "translate(0, 5)")
-              .attr('text-anchor', 'middle')
-              .text("\u2192")
-              .on('click', navigate, d);
+          if (d != root) {
+              menu.append('circle')
+                  .attr('class', 'action navigate')
+                  .attr('transform', "translate(0, 0)")
+                  .attr('r', 10)
+                  .attr('fill', '#bcf')
+                  .on('click', navigate, d);
+              menu.append('text')
+                  .attr('transform', "translate(0, 5)")
+                  .attr('text-anchor', 'middle')
+                  .text("\u2192")
+                  .on('click', navigate, d);
+          }
 
           if (d.kurl) {
               // Activate menuitem (navigate to kadist website)
