@@ -569,6 +569,10 @@
           });
       }
 
+      root = { name: "Loading...",
+               type: "{{ type }}",
+               children: [] };
+      update();
       load("{{ kw }}", "{{ type }}");
 
       $("body").on("mousewheel", function (evt, delta, deltaX, deltaY) {
