@@ -272,8 +272,22 @@
               display_menu(node, d);
           } else {
               // Already displayed -> navigate
-              navigate(d);
-              return;
+              d3.selectAll(".menu").remove();
+              d3.selectAll(".link,.node")
+                  .filter(function (n) { return n != this.parentNode })
+                  .attr("opacity", ".2");
+              
+              d3.select(this.parentNode)
+                  .call(function(n) { n.select(".shape").remove() })
+                  .transition()
+                  .duration(800)
+                  .attr("opacity", "1")
+                  .call(function(n) { n.select(".label")
+                                      .attr("transform", "rotate(0)translate(0,0)") })
+                  .attr("transform", "translate(-30, 0)rotate(-" + angle + ")scale(2)")
+                  .each("end", function() { 
+                      navigate(d); 
+                  });
           }
       }
 
