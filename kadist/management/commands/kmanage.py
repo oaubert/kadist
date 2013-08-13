@@ -201,14 +201,15 @@ class Command(BaseCommand):
         """
         for w in itertools.chain(Work.objects.filter(imgurl=""),
                                 Artist.objects.filter(imgurl="")):
-            self.stdout.write("[%d]" % w.pk)
-            self.stdout.flush()
-            try:
-                soup = BeautifulSoup(urllib2.urlopen(w.url).read())
-                w.imgurl = soup.find('figure').find('img').get('src')
-                w.save()
-            except (ValuError, AttributeError):
-                pass
+            if w.url:
+                self.stdout.write("[%d]" % w.pk)
+                self.stdout.flush()
+                try:
+                    soup = BeautifulSoup(urllib2.urlopen(w.url).read())
+                    w.imgurl = soup.find('figure').find('img').get('src')
+                    w.save()
+                except AttributeError:
+                    pass
 
     def handle(self, *args, **options):
         if not args:
