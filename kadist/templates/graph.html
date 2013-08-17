@@ -86,6 +86,7 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.mousewheel.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/d3.v3.min.js"></script>
     <script type="text/javascript">
+      var is_touch_device = ("ontouchstart" in window || window.DocumentTouch && document instanceof DocumentTouch);
       var w = $(window).width() - 50;
       var h = $(window).height() - 50;
       var root = null;
@@ -276,7 +277,7 @@
           var node = d3.select(this.parentNode);
           if (node.selectAll(".action").empty()) {
               display_menu(node, d);
-          } else {
+          } else if (! is_touch_device) {
               // Already displayed -> navigate
               d3.selectAll(".menu").remove();
               d3.selectAll(".link,.node")
