@@ -8,11 +8,20 @@
 {% block content %}
   <h1><em>{{ kw }}</em></h1>
 
-  {% if works %}
-  <h2>Works <span class="tagcount">({{ works|length }})</span></h2>
+  {% if major_works %}
+  <h2>Major Works <span class="tagcount">({{ major_works|length }})</span></h2>
   <ul class="description worklist">
-    {% for w in works %}
-    <li><a href="{{ w.get_absolute_url }}">{{ w.title }}</a> <a class="editlink" href="{% url "admin:kadist_work_change" w.pk %}">Edit</a>(<a href="{{ w.creator.get_absolute_url }}">{{ w.creator }}</a> <a class="editlink" href="{% url "admin:kadist_artist_change" w.creator.pk %}">Edit</a>)</li>
+    {% for w in major_works %}
+    <li><a href="{{ w.get_absolute_url }}">{{ w.title }}</a> <a class="editlink" href="{% url "admin:kadist_work_change" w.pk %}">Edit</a>(<a href="{{ w.creator.get_absolute_url }}">{{ w.creator }}</a> <a class="editlink" href="{% url "admin:kadist_work_change" w.creator.pk %}">Edit</a>)</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if minor_works %}
+  <h2>Minor Works <span class="tagcount">({{ minor_works|length }})</span></h2>
+  <ul class="description worklist">
+    {% for w in minor_works %}
+    <li><a href="{{ w.get_absolute_url }}">{{ w.title }}</a> <a class="editlink" href="{% url "admin:kadist_work_change" w.pk %}">Edit</a>(<a href="{{ w.creator.get_absolute_url }}">{{ w.creator }}</a> <a class="editlink" href="{% url "admin:kadist_work_change" w.creator.pk %}">Edit</a>)</li>
     {% endfor %}
   </ul>
   {% endif %}

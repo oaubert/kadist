@@ -1,8 +1,20 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from taggit_autosuggest.managers import TaggableManager
+from taggit.models import GenericTaggedItemBase, TagBase
 
 from gettext import gettext as _
+
+class MajorTag(TagBase):
+    class Meta:
+        verbose_name = _("Major Tag")
+        verbose_name_plural = _("Major Tags")
+MajorTag.Meta.verbose_name = "Major Tag"
+MajorTag.Meta.verbose_name_plural = "Major Tags"
+
+class MajorTaggedItem(GenericTaggedItemBase):
+    tag = models.ForeignKey('MajorTag',
+                            related_name="%(app_label)s_%(class)s_items")
 
 class Artist(models.Model):
     name = models.CharField("name",
@@ -61,6 +73,8 @@ class Work(models.Model):
                                     blank=True)
     description = models.TextField(_("description"),
                                    blank=True)
+
+    major_tags = TaggableManager(blank=True, through=MajorTaggedItem)
     tags = TaggableManager(blank=True)
 
     @property
@@ -68,6 +82,12 @@ class Work(models.Model):
         """Return a tuple list with the weight for each tag.
         """
         return [ (t.name, t.taggit_taggeditem_items.count()) for t in self.tags.all() ]
+
+    @property
+    def weighted_major_tags(self):
+        """Return a tuple list with the weight for each major tag.
+        """
+        return [ (t.name, t.kadist_majortaggeditem_items.count()) for t in self.major_tags.all() ]
 
     def __unicode__(self):
         return "%s (%s)" % (self.title, self.creator)

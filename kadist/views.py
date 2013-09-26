@@ -15,12 +15,13 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from nltk.corpus import wordnet as wn
 
-from .models import Artist, Work
+from .models import Artist, Work, MajorTag
 from .serializers import ArtistSerializer, WorkSerializer, ArtistReferenceSerializer, WorkReferenceSerializer
 from .templatetags.kadist import tagsize, TAG_MINCOUNT
 
 # define the default models for tags and tagged items
 TAG_MODEL = get_model('taggit', 'Tag')
+MAJOR_TAG_MODEL = MajorTag
 
 MIN_RELATED_TAGS_COUNT = 0
 DISPLAY_ALL_RELATED_TAGS = False
@@ -38,8 +39,9 @@ def taglist():
     The list is decorated with the item count for each tag, and the corresponding tagsize in points.
     """
     tags = TAG_MODEL.objects.annotate(count=Count('taggit_taggeditem_items')).values_list('name', 'count').order_by('name')
+    majortags = MajorTag.objects.annotate(count=Count('kadist_majortaggeditem_items')).values_list('name', 'count').order_by('name')
     tags = [ (t[0], t[1], tagsize(t[1]))
-             for t in tags
+             for t in itertools.chain(tags, majortags)
              if t[1] >= TAG_MINCOUNT ]
     return tags
 
@@ -48,7 +50,8 @@ def taginfo(kw):
 
     It returns a dict with the following keys:
             'tag': tag
-            'works': list of works
+            'minor_works': list of minor works
+            'major_works': list of major works
             'artists': list of artists,
             'synonyms': list of synonyms
             'hypernyms': list of hypernyms
@@ -58,7 +61,8 @@ def taginfo(kw):
     """
     info = { 'tag': kw }
 
-    info['works'] = Work.objects.filter(tags__name__in=[kw])
+    info['minor_works'] = Work.objects.filter(tags__name__in=[kw])
+    info['major_works'] = Work.objects.filter(major_tags__name__in=[kw])
     info['artists'] = Artist.objects.filter(tags__name__in=[kw])
 
     if ' ' in kw:
@@ -84,6 +88,10 @@ def taginfo(kw):
             c = Work.objects.filter(tags__name__in=[n]).count()
             if c > MIN_RELATED_TAGS_COUNT or DISPLAY_ALL_RELATED_TAGS:
                 rel.append( (n, c) )
+            else:
+                c = Work.objects.filter(major_tags__name__in=[n]).count()
+                if c > MIN_RELATED_TAGS_COUNT or DISPLAY_ALL_RELATED_TAGS:
+                    rel.append( (n, c) )
         rel.sort(key=operator.itemgetter(1), reverse=True)
         return rel
 
@@ -117,7 +125,8 @@ def taglist_as_json(request):
 @login_required
 def tag_as_json(request, kw=None):
     info = taginfo(kw)
-    info['works'] = WorkReferenceSerializer(info['works'], many=True, context={'request': request}).data
+    info['minor_works'] = WorkReferenceSerializer(info['minor_works'], many=True, context={'request': request}).data
+    info['major_works'] = WorkReferenceSerializer(info['major_works'], many=True, context={'request': request}).data
     info['artists'] = ArtistReferenceSerializer(info['artists'], many=True, context={'request': request}).data
     return Response(info)
 

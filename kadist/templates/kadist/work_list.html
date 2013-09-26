@@ -9,7 +9,7 @@
   <h1>Works</h1>
   <ul class="worklist detailed description">
     {% for w in object_list %}
-    <li class="taggeditem"><a href="{{ w.get_absolute_url }}">{{ w.title }}</a> (<a href="{{ w.creator.get_absolute_url }}">{{ w.creator }}</a>) <span class="taglist">{% for t in w.tags.all|slice:":30" %}<a class="tagref" href="../tag/{{ t.name }}">{{ t.name }}</a> -{% endfor %}</span></li>
+    <li class="taggeditem"><a href="{{ w.get_absolute_url }}">{{ w.title }}</a> (<a href="{{ w.creator.get_absolute_url }}">{{ w.creator }}</a>) <span class="taglist">{% for t in w.major_tags.all|slice:":30" %}<a class="tagref" href="../tag/{{ t.name }}">{{ t.name }}</a> -{% endfor %}</span></li>
     {% endfor %}
   </ul>
 {% endblock %}

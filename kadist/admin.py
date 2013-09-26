@@ -2,13 +2,15 @@ from django.contrib import admin
 from .models import Artist, Work
 
 class WorkAdmin(admin.ModelAdmin):
-    fields = ('title', 'tags', 'worktype', 'year', 'creator', 'technique', 'url', 'description')
+    fields = ('title', 'major_tags', 'tags', 'worktype', 'year', 'creator', 'technique', 'url', 'description')
     list_display = ('title', 'tags_as_string', 'worktype', 'year', 'creator', 'technique', 'description')
     list_display_links = ('title',)
     list_filter = ( 'creator', 'worktype', 'year' )
     search_fields = [ 'creator__name', 'title', 'description', 'url' ]
     def tags_as_string(self, obj):
-        return ", ".join(t.name for t in obj.tags.all())
+        return (", ".join(t.name for t in obj.major_tags.all())
+                + " - "
+                + ", ".join(t.name for t in obj.tags.all()))
     tags_as_string.short_description = 'Tags'
 admin.site.register(Work, WorkAdmin)
 

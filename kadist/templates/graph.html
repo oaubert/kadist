@@ -383,10 +383,25 @@
           d3.json("/kadist/api/" + type + "/"  + kw, function(json) {
               if (type == 'tag') {
                   if (kw) {
-                      if (json.works.length) {
-                          clusters.push({ name: "Works",
+                      if (json.major_works.length) {
+                          clusters.push({ name: "Major Works",
                                           type: 'cluster',
-                                          children: json.works.map( function(w) {
+                                          children: json.major_works.map( function(w) {
+                                              return { name: w.title,
+                                                       url: w.url,
+                                                       kurl: w.kurl,
+                                                       imgurl: w.imgurl,
+                                                       id: w.id,
+                                                       author: w.artist.name,
+                                                       type: 'work'
+                                                     };
+                                          })
+                                        });
+                      }
+                      if (json.minor_works.length) {
+                          clusters.push({ name: "Minor Works",
+                                          type: 'cluster',
+                                          children: json.minor_works.map( function(w) {
                                               return { name: w.title,
                                                        url: w.url,
                                                        kurl: w.kurl,
@@ -464,6 +479,7 @@
                   }
               } else if (type == 'work') {
                   if (kw) {
+                      /*
                       if (json.similar.length)
                           clusters.push({ name: 'Similar works',
                                           type: 'cluster',
@@ -478,7 +494,7 @@
                                                      };
                                           })
                                         });
-
+                      */
                       clusters.push({ name: 'Artist',
                                       type: 'cluster',
                                       children: [ { name: json.artist.name,
@@ -487,6 +503,17 @@
                                                     kurl: json.artist.kurl,
                                                     imgurl: json.artist.imgurl,
                                                     url: json.artist.url } ] });
+                      if (json.major_tags.length)
+                          clusters.push({ name: 'Major Tags',
+                                          type: 'cluster',
+                                          children: json.major_tags.map( function(t) {
+                                              return { name: t[0],
+                                                       type: "tag",
+                                                       count: t[1],
+                                                       size: t[1] * 2
+                                                     };
+                                          })
+                                        });
                       if (json.tags.length)
                           clusters.push({ name: 'Tags',
                                           type: 'cluster',
