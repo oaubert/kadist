@@ -9,8 +9,6 @@ class MajorTag(TagBase):
     class Meta:
         verbose_name = _("Major Tag")
         verbose_name_plural = _("Major Tags")
-MajorTag.Meta.verbose_name = "Major Tag"
-MajorTag.Meta.verbose_name_plural = "Major Tags"
 
 class MajorTaggedItem(GenericTaggedItemBase):
     tag = models.ForeignKey('MajorTag',
@@ -74,8 +72,8 @@ class Work(models.Model):
     description = models.TextField(_("description"),
                                    blank=True)
 
-    major_tags = TaggableManager(blank=True, through=MajorTaggedItem)
-    tags = TaggableManager(blank=True)
+    major_tags = TaggableManager(verbose_name='Major tags', blank=True, through=MajorTaggedItem)
+    tags = TaggableManager(verbose_name='Minor tags', blank=True)
 
     @property
     def weighted_tags(self):
