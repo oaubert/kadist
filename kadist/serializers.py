@@ -23,11 +23,12 @@ class WorkSerializer(serializers.HyperlinkedModelSerializer):
     tags = serializers.RelatedField(source='weighted_tags')
     artist = ArtistReferenceSerializer(source='creator')
     kurl = serializers.CharField(source="url")
+    similar = WorkReferenceSerializer(source='major_tags.similar_objects')
     class Meta:
         model = Work
         fields = ('url', 'id', 'artist', 'title',
                   'worktype', 'technique','dimensions', 'description',
-                  'major_tags', 'tags', 'kurl', 'imgurl')
+                  'major_tags', 'tags', 'kurl', 'imgurl', 'similar')
 
 class ArtistSerializer(serializers.HyperlinkedModelSerializer):
     works = WorkReferenceSerializer(source='works')
