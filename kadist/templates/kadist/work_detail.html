@@ -38,5 +38,16 @@
   <dd>{% for kw in work.tags.all %}<a href="../../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</dd>
 {% endif %}
 
+{% if work.major_tags.similar_objects %}
+  <dt>Similar works (based on major tags)</dt>
+  <dd>
+    <ul class="worklist">
+      {% for w in work.major_tags.similar_objects|slice:":10" %}
+      <li><a title="{{ w.similar_tags }} common tags" href="{{ w.get_absolute_url }}">{{ w }}</a></li>
+      {% endfor %}
+    </ul>
+  </dd>
+{% endif %}
+
 </dl>
 {% endblock %}
