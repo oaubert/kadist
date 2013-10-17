@@ -7,7 +7,7 @@ sync:
 	./synchronize
 
 backup:
-	$(MANAGE) dumpdata kadist taggit | gzip -c > kadist.json.gz
+	$(MANAGE) dumpdata -n kadist taggit | gzip -c > kadist.json.gz
 
 restore:
 	$(MANAGE) loaddata kadist.json.gz
