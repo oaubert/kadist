@@ -5,6 +5,18 @@ from taggit.models import GenericTaggedItemBase, TagBase
 
 from gettext import gettext as _
 
+import nltk
+from nltk.corpus import wordnet as wn
+from itertools import product
+
+def compare(word1, word2):
+    ss1 = wn.synsets(word1)
+    ss2 = wn.synsets(word2)
+    if ss1 and ss2:
+        return max(s1.wup_similarity(s2) for (s1, s2) in product(ss1, ss2)) or 0
+    else:
+        return 0
+
 class MajorTag(TagBase):
     class Meta:
         verbose_name = _("Major Tag")
@@ -92,3 +104,29 @@ class Work(models.Model):
 
     def get_absolute_url(self):
         return reverse('work-detail', args=[str(self.pk)])
+
+    def similarity(self, work, MAXITEMS=5, MAJMIN=.5, MINMAJ=.5):
+        majmaj = sum(sorted(filter(lambda x: x, 
+                                   (compare(t[0], t[1]) 
+                                    for t in product(self.major_tags.values_list('name', flat=True),
+                                                     work.major_tags.values_list('name', flat=True)))),
+                            reverse=True)[:MAXITEMS])
+
+        majmin = sum(sorted(filter(lambda x: x, 
+                                   (compare(t[0], t[1]) 
+                                    for t in product(self.major_tags.values_list('name', flat=True),
+                                                     work.tags.values_list('name', flat=True)))),
+                            reverse=True)[:MAXITEMS])
+
+        minmaj = sum(sorted(filter(lambda x: x, 
+                                   (compare(t[0], t[1]) for t in product(self.tags.values_list('name', flat=True),
+                                                                         work.major_tags.values_list('name', flat=True)))),
+                            reverse=True)[:MAXITEMS])
+
+        return (majmaj + MAJMIN * majmin + MINMAJ * minmaj) / (MAXITEMS * (1 + MINMAJ + MAJMIN))
+
+class SimilarityMatrix(models.Model):
+    origin = models.ForeignKey(Work, related_name="similarity_origin")
+    destination = models.ForeignKey(Work, related_name="similarity_destination")
+    profile = models.IntegerField()
+    value = models.FloatField()
