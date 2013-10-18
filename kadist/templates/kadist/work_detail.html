@@ -8,7 +8,13 @@
 
 {% block content %}
 <h1>{{ work.title }} <a class="editlink" href="{% url "admin:kadist_work_change" work.pk %}">Edit</a></h1>
+{% if work.imgurl %}
+<img style="float: left; padding: 10px;" src="{{ work.imgurl }}">
+{% endif %}
+
 <dl class="description">
+  <dt>Kadist URL</dt>
+  <dd><a href="{{ work.url }}">{{ work.url }}</a></dd>
 
   <dt>Artist</dt>
   <dd><a href="/kadist/artist/{{ work.creator.pk }}">{{ work.creator }}</a> <a class="editlink" href="{% url "admin:kadist_artist_change" work.creator.pk %}">Edit</a></dd>
