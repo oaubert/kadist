@@ -233,8 +233,7 @@ class Command(BaseCommand):
                                         profile=profileid,
                                         value=w.similarity(d, maxitems, majmin, minmaj))
                 cell.save()
-                self.stderr.write(".")
-                self.stderr.flush()
+                self.stderr.write("   %f - %s" % (cell.value, unicode(d)))
 
     def _scrape(self):
         """Scrape img urls from Kadist website.
