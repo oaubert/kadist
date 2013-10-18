@@ -2,6 +2,7 @@
 
 {% load admin_urls %}
 {% load url from future %}
+{% load kadist %}
 
 {% block title %}KCN - {{ work.title }}{% endblock %}
 
@@ -43,7 +44,7 @@
   <dd>
     <ul class="worklist">
       {% for w in work.major_tags.similar_objects|slice:":10" %}
-      <li><a title="{{ w.similar_tags }} common tags" href="{{ w.get_absolute_url }}">{{ w }}</a></li>
+      <li><a title="{{ w.similar_tags }} common tags" href="{{ w.get_absolute_url }}">{{ w }} ({{ work|args:w|call:"similarity" }})</a></li>
       {% endfor %}
     </ul>
   </dd>
