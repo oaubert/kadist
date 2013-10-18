@@ -132,3 +132,9 @@ class SimilarityMatrix(models.Model):
     destination = models.ForeignKey(Work, related_name="similarity_destination")
     profile = models.IntegerField()
     value = models.FloatField()
+
+class ProfileData(models.Model):
+    profile = models.IntegerField(unique=True)
+    maxitems = models.IntegerField()
+    minmaj = models.FloatField()
+    majmin = models.FloatField()
