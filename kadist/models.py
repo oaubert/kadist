@@ -10,6 +10,8 @@ from nltk.corpus import wordnet as wn
 from itertools import product
 
 def compare(word1, word2):
+    if word1 == word2:
+        return 1.0
     ss1 = wn.synsets(word1)
     ss2 = wn.synsets(word2)
     if ss1 and ss2:
