@@ -61,8 +61,8 @@ def taginfo(kw):
     """
     info = { 'tag': kw }
 
-    info['minor_works'] = Work.objects.filter(tags__name__in=[kw])
-    info['major_works'] = Work.objects.filter(major_tags__name__in=[kw])
+    info['minor_works'] = set(Work.objects.filter(tags__name__in=[kw]))
+    info['major_works'] = set(Work.objects.filter(major_tags__name__in=[kw]))
     info['artists'] = Artist.objects.filter(tags__name__in=[kw])
 
     if ' ' in kw:
