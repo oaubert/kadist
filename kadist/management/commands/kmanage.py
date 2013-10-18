@@ -9,7 +9,7 @@ from django.db import IntegrityError
 import urllib2
 from BeautifulSoup import BeautifulSoup
 
-from kadist.models import Artist, Work
+from kadist.models import Artist, Work, ProfileData, SimilarityMatrix
 from rake import RakeKeywordExtractor
 
 class Command(BaseCommand):
@@ -19,6 +19,7 @@ class Command(BaseCommand):
   xls <xls file> : import the catalogue from a xls file
   acsv <csv file> : import the artists from a csv file
   wcsv <csv file> : import the works from a csv file
+  similarity PROFILEID MAXITEMS=5 MAJMIN=.5 MINMAJ=.5
 """
     def _import_works_from_txt(self, filename):
         """Import from a txt file.
@@ -196,6 +197,45 @@ class Command(BaseCommand):
                     # Have to create one
                     self.stderr.write("Error: missing artist for %s - %s\n" % (data[WID], data[TITLE]))
 
+    def _similarity(self, profileid=None, maxitems=5, majmin=.5, minmaj=.5):
+        maxitems = long(maxitems)
+        majmin = float(majmin)
+        minmaj = float(minmaj)
+        if profileid is None:
+            # List existing profiles
+            self.stdout.write("List of profiles")
+            for p in ProfileData.objects.all():
+                self.stdout.write("#%s - MAXITEMS = %d - MAJMIN = %f - MINMAJ = %f - %d items\n" % (
+                        p.profile,
+                        p.maxitems,
+                        p.majmin,
+                        p.minmaj,
+                        SimilarityMatrix.objects.filter(profile=profileid).count()))
+            return
+
+        # Delete previous data with the same profile
+        SimilarityMatrix.objects.filter(profile=profileid).delete()
+        ProfileData.objects.filter(profile=profileid).delete()
+
+        profile = ProfileData(profile=profileid,
+                              maxitems=maxitems,
+                              majmin=majmin,
+                              minmaj=minmaj)
+        profile.save()
+
+        # Generate data
+        tagged = [ w for w in Work.objects.all() if w.major_tags.all() ]
+        for w in tagged:
+            self.stderr.write("%s\n" % unicode(w))
+            for d in tagged:
+                cell = SimilarityMatrix(origin=w,
+                                        destination=d,
+                                        profile=profileid,
+                                        value=w.similarity(d, maxitems, majmin, minmaj))
+                cell.save()
+                self.stderr.write(".")
+                self.stderr.flush()
+
     def _scrape(self):
         """Scrape img urls from Kadist website.
         """
@@ -223,6 +263,7 @@ class Command(BaseCommand):
             'wcsv': self._import_works_from_csv,
             'acsv': self._import_artists_from_csv,
             'scrape': self._scrape,
+            'similarity': self._similarity,
             }
         m = dispatcher.get(command)
         if m is not None:
