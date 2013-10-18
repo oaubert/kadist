@@ -11,8 +11,8 @@ BASE=${HOME}/${APPPATH}
 $BASE/manage.py collectstatic --noinput
 git stash
 
-echo "******** Synchronizing with gnozyme..."
-rsync --bwlimit=90 -av -F ${BASE}/ gnozyme:${APPPATH}/
+#echo "******** Synchronizing with gnozyme..."
+#rsync --bwlimit=90 -av -F ${BASE}/ gnozyme:${APPPATH}/
 
 echo "******** Synchronizing with cinecast..."
 rsync --bwlimit=90 -av -F ${BASE}/ cinecast:${APPPATH}/
