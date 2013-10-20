@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from nltk.corpus import wordnet as wn
 
-from .models import Artist, Work, MajorTag
+from .models import Artist, Work, MajorTag, compare
 from .serializers import ArtistSerializer, WorkSerializer, ArtistReferenceSerializer, WorkReferenceSerializer
 from .templatetags.kadist import tagsize, TAG_MINCOUNT
 
@@ -119,6 +119,20 @@ def majortaglist_as_html(request):
     worklist = Work.objects.annotate(count=Count('major_tags')).order_by('-count')
     return render_to_response('majortags.html', {
             'object_list': worklist,
+            }, context_instance=RequestContext(request))
+
+@login_required
+def similaritymatrix_as_html(request, origin, destination):
+    origin = Work.objects.get(pk=origin)
+    destination = Work.objects.get(pk=destination)
+    cols = destination.major_tags.values_list('name', flat=True)
+    data = [ (t, [ compare(t, d) for d in destination.major_tags.values_list('name', flat=True) ])
+             for t in origin.major_tags.values_list('name', flat=True) ]
+    return render_to_response('matrix.html', {
+            'origin': origin,
+            'destination': destination,
+            'cols': cols,
+            'data': data,
             }, context_instance=RequestContext(request))
 
 @api_view(['GET'])
