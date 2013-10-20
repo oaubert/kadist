@@ -168,9 +168,10 @@ class Work(models.Model):
             # amount of data is negligible compared to the time to
             # debug this properly.  
             # TODO: implement better later, through functional.partial or django curry
-            return [ { 'profile': p,
-                       'works': self.similar(p) }
-                     for p in ProfileData.objects.values_list('profile', flat=True) ]
+            return [ { 'profile': p.profile,
+                       'info': p,
+                       'works': self.similar(p.profile) }
+                     for p in ProfileData.objects.all() ]
         else:
             return [ { 'work': s.destination,
                        'similarity': s.value }
