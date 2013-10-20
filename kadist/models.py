@@ -8,7 +8,6 @@ from gettext import gettext as _
 import nltk
 from nltk.corpus import wordnet as wn
 from itertools import product
-from collections import OrderedDict
 
 def compare(word1, word2):
     if word1 == word2:
@@ -178,9 +177,15 @@ class SimilarityMatrix(models.Model):
     destination = models.ForeignKey(Work, related_name="similarity_destination")
     profile = models.IntegerField()
     value = models.FloatField()
+    
+    def __unicode__(self):
+        return "(%d - %d)[%d] = %.02f" % (self.origin.pk, self.destination.pk, self.profile, self.value)
 
 class ProfileData(models.Model):
     profile = models.IntegerField(unique=True)
     maxitems = models.IntegerField()
     minmaj = models.FloatField()
     majmin = models.FloatField()
+
+    def __unicode__(self):
+        return "Profile [%d]: maxitems = %d - min/maj = %.02f - maj/min = %.02f" % (self.profile, self.maxitems, self.minmaj, self.majmin)
