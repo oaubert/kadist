@@ -44,16 +44,22 @@
   <dt>Minor Tags</dt>
   <dd>{% for kw in work.tags.all %}<a href="../../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</dd>
 {% endif %}
+</dl>
 
-  <dt style="clear:both"></dt>
-  <dt>Similar works (based on magic formula)</dt>
+<h2>Similar works (based on similarity formula)</h2>
+<dl>
+
+{% for data in work.similar %}
+  <dt>Formula {{ data.profile }}
   <dd>
     <ul class="worklist">
-      {% for s in work.similar %}
+      {% for s in data.works %}
       <li><a href="{{ s.work.get_absolute_url }}">{{ s.work }}</a> <a target="_blank" href="{{ s.work.url }}">&#x21d7;</a> ({{ s.similarity|floatformat:2 }}) - {% for kw in s.work.major_tags.all %}<a href="../../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</a></li>
       {% endfor %}
     </ul>
   </dd>
+{% endfor %}
 
 </dl>
+
 {% endblock %}
