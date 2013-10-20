@@ -164,8 +164,12 @@ class Work(models.Model):
         """Return the list of similar works for the given profile.
         """
         if profile is None:
+            # Not optimal, since it will compute all lists. But the
+            # amount of data is negligible compared to the time to
+            # debug this properly.  
+            # TODO: implement better later, through functional.partial or django curry
             return [ { 'profile': p,
-                       'works': lambda: self.similar(p) }
+                       'works': self.similar(p) }
                      for p in ProfileData.objects.values_list('profile', flat=True) ]
         else:
             return [ { 'work': s.destination,
