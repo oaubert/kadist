@@ -109,6 +109,35 @@ class Work(models.Model):
 
     def similarity(self, work, MAXITEMS=5, MAJMIN=.5, MINMAJ=.5):
         if self.major_tags.all() and work.major_tags.all():
+            majmaj = sum(sorted(filter(lambda x: x,
+                                       (compare(t[0], t[1])
+                                        for t in product(self.major_tags.values_list('name', flat=True),
+                                                         work.major_tags.values_list('name', flat=True)))),
+                                reverse=True)[:MAXITEMS])
+        else:
+            majmaj = 0
+
+        if self.tags.all() and work.major_tags.all():
+            majmin = sum(sorted(filter(lambda x: x,
+                                       (compare(t[0], t[1])
+                                        for t in product(self.major_tags.values_list('name', flat=True),
+                                                         work.tags.values_list('name', flat=True)))),
+                                reverse=True)[:MAXITEMS])
+        else:
+            majmin = 0
+
+        if self.major_tags.all() and work.tags.all():
+            minmaj = sum(sorted(filter(lambda x: x,
+                                       (compare(t[0], t[1]) for t in product(self.tags.values_list('name', flat=True),
+                                                                             work.major_tags.values_list('name', flat=True)))),
+                                reverse=True)[:MAXITEMS])
+        else:
+            minmaj = 0
+
+        return (majmaj + MAJMIN * majmin + MINMAJ * minmaj) / (MAXITEMS * (1 + MINMAJ + MAJMIN))
+
+    def similarity1(self, work, MAXITEMS=5, MAJMIN=.5, MINMAJ=.5):
+        if self.major_tags.all() and work.major_tags.all():
             majmaj = sum(sorted( ( max(compare(target, other) for other in work.major_tags.values_list('name', flat=True))
                                    for target in self.major_tags.values_list('name', flat=True) ),
                                  reverse=True)[:MAXITEMS])
