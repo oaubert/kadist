@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% load admin_urls %}
+{% load url from future %}
+
+{% block title %}Kadist catalogue navigator - {{ object_list|length }} works{% endblock %}
+
+{% block content %}
+  <h1>Works (reverse) sorted by number of major tags</h1>
+  <ul class="worklist description">
+    {% for w in object_list %}
+    <li class="taggeditem"><a href="{{ w.get_absolute_url }}">{{ w.title }}</a>  <a class="editlink" href="{% url "admin:kadist_work_change" w.pk %}">Edit</a> (<a href="{{ w.creator.get_absolute_url }}">{{ w.creator }}</a>) - {{ w.count }} major tags</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

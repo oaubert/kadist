@@ -114,6 +114,13 @@ def taglist_as_html(request):
                 'tags': taglist()
                 }, context_instance=RequestContext(request))
 
+@login_required
+def majortaglist_as_html(request):
+    worklist = Work.objects.annotate(count=Count('major_tags')).order_by('-count')
+    return render_to_response('majortags.html', {
+            'object_list': worklist,
+            }, context_instance=RequestContext(request))
+
 @api_view(['GET'])
 @renderer_classes((UnicodeJSONRenderer, ))
 @login_required
