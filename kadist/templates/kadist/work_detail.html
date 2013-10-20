@@ -48,7 +48,7 @@
 
 <h2>Similar works (based on similarity formula)</h2>
 {% for data in work.similar %}
-<h3>Formula {{ data.profile }}
+<h3>Formula {{ data.profile }}</h3>
   <ul class="worklist">
     {% for s in data.works %}
     <li><a href="{{ s.work.get_absolute_url }}">{{ s.work }}</a> <a target="_blank" href="{{ s.work.url }}">&#x21d7;</a> ({{ s.similarity|floatformat:2 }}) - {% for kw in s.work.major_tags.all %}<a href="../../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</li>
