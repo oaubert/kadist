@@ -131,6 +131,13 @@ class Work(models.Model):
 
         return (majmaj + MAJMIN * majmin + MINMAJ * minmaj) / (MAXITEMS * (1 + MINMAJ + MAJMIN))
 
+    def similar(self, profile=1):
+        """Return the list of similar works for the given profile.
+        """
+        return [ { 'work': s.destination,
+                   'similarity': s.value } 
+                 for s in SimilarityMatrix.objects.filter(profile=profile, origin=self).order_by('-value')[:10] ]
+
 class SimilarityMatrix(models.Model):
     origin = models.ForeignKey(Work, related_name="similarity_origin")
     destination = models.ForeignKey(Work, related_name="similarity_destination")
