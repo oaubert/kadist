@@ -27,6 +27,19 @@ MIN_RELATED_TAGS_COUNT = 0
 DISPLAY_ALL_RELATED_TAGS = False
 MAX_SEARCHED_TAGS_COUNT = 200
 
+SURVEY_WORKS = [
+    463,
+    548,
+    568,
+    691,
+    709,
+    727,
+    796,
+    820,
+    907,
+    988,
+    ]
+
 @api_view(('GET',))
 def api_root(request, format=None):
     return Response({
@@ -119,6 +132,13 @@ def majortaglist_as_html(request):
     worklist = Work.objects.annotate(count=Count('major_tags')).order_by('-count')
     return render_to_response('majortags.html', {
             'object_list': worklist,
+            }, context_instance=RequestContext(request))
+
+@login_required
+def survey_as_html(request):
+    works = [ Work.objects.get(pk=i) for i in SURVEY_WORKS ]
+    return render_to_response('survey.html', {
+            'works': works,
             }, context_instance=RequestContext(request))
 
 @api_view(['GET'])

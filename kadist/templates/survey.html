@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% load admin_urls %}
+{% load url from future %}
+{% load kadist %}
+
+{% block title %}Ksearch - survey{% endblock %}
+
+{% block content %}
+
+{% for work in works %}
+
+<h1><a href="{{ work.get_absolute_url }}">{{ work.title }}</a></h1>
+by <a href="/kadist/artist/{{ work.creator.pk }}">{{ work.creator }}</a> ({{ work.year }}).
+{% if work.imgurl %}
+<img style="width: 200px; float: left; padding: 10px;" src="{{ work.imgurl }}">
+{% endif %}
+
+<dl class="description">
+  <dt>Description</dt>
+  <dd>{{ work.description }}</dd>
+
+{% if work.major_tags.all %}
+  <dt>Major Tags</dt>
+  <dd>{% for kw in work.major_tags.all %}<a href="../../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</dd>
+{% endif %}
+
+{% if work.tags.all %}
+  <dt>Minor Tags</dt>
+  <dd>{% for kw in work.tags.all %}<a href="../../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</dd>
+{% endif %}
+</dl>
+
+<h2>Similar works</h2>
+{% for data in work.similar %}
+<h3>Selection {{ data.profile }}</h3>
+  <ol class="worklist">
+    {% for s in data.works %}
+    <li>
+      <img class="illustration" src="{{ s.work.imgurl }}" alt="" />
+      <a target="_blank" href="{{ s.work.url }}">{{ s.work }}</a>
+    </li>
+    {% endfor %}
+  </ol>
+{% endfor %}
+
+</dl>
+<hr />
+{% endfor %}
+{% endblock %}
