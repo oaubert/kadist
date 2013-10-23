@@ -135,9 +135,12 @@ def majortaglist_as_html(request):
             }, context_instance=RequestContext(request))
 
 @login_required
-def survey_as_html(request):
+def survey_as_html(request, profile=None):
     works = [ Work.objects.get(pk=i) for i in SURVEY_WORKS ]
-    profiles = ProfileData.objects.order_by('profile').values_list('profile', flat=True)
+    if profile is None or profile == '':
+        profiles = ProfileData.objects.order_by('profile').values_list('profile', flat=True)
+    else:
+        profiles = [ long(profile) ]
     return render_to_response('survey.html', {
             'works': works,
             'profiles': profiles,
