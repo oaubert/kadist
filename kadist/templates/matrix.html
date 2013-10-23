@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% load admin_urls %}
+{% load url from future %}
+
+{% block title %}Kadist catalogue navigator - similarity matrix{% endblock %}
+
+{% block content %}
+<h1>Similarity matrix</h1>
+<p>Between {{ origin }} and {{ destination }}</p>
+<table>
+  <th>
+    {% for c in cols %}
+    <td>{{ c }}</td>
+    {% endfor %}
+  </th>
+  {% for i in data %}
+  <tr>
+    <td>{{ i.0 }}</td>
+    {% for c in i.1 %}
+    <td>{{ c|floatformat:2 }}</td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
