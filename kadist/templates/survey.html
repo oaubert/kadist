@@ -38,7 +38,7 @@ by <a href="/kadist/artist/{{ work.creator.pk }}">{{ work.creator }}</a> ({{ wor
     {% for s in data.works %}
     <li>
       <img class="illustration" src="{{ s.work.imgurl }}" alt="" />
-      <a target="_blank" href="{{ s.work.url }}">{{ s.work }}</a>
+      <a target="_blank" href="{{ s.work.url }}">{{ s.work }}</a> (<a target="_blank" href="/kadist/matrix/{{ work.pk }}/{{ s.work.pk }}">Matrix</a>)
     </li>
     {% endfor %}
   </ol>
