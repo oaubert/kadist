@@ -23,6 +23,10 @@ def tagsize(c):
 def similarity_index(s):
     return int(s * 10)
 
+@register.filter
+def similar(work, p):
+    return work.similar(p)
+
 def callMethod(obj, methodName):
     method = getattr(obj, methodName)
     if obj.__dict__.has_key("__callArg"):

@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from nltk.corpus import wordnet as wn
 
-from .models import Artist, Work, MajorTag, compare
+from .models import Artist, Work, MajorTag, ProfileData, compare
 from .serializers import ArtistSerializer, WorkSerializer, ArtistReferenceSerializer, WorkReferenceSerializer
 from .templatetags.kadist import tagsize, TAG_MINCOUNT
 
@@ -137,8 +137,10 @@ def majortaglist_as_html(request):
 @login_required
 def survey_as_html(request):
     works = [ Work.objects.get(pk=i) for i in SURVEY_WORKS ]
+    profiles = ProfileData.objects.order_by('profile').values_list('profile', flat=True)
     return render_to_response('survey.html', {
             'works': works,
+            'profiles': profiles,
             }, context_instance=RequestContext(request))
 
 @login_required

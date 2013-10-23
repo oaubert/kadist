@@ -8,43 +8,35 @@
 
 {% block content %}
 
-{% for work in works %}
+{% for profile in profiles %}
 
-<h1><a href="{{ work.get_absolute_url }}">{{ work.title }}</a></h1>
-by <a href="/kadist/artist/{{ work.creator.pk }}">{{ work.creator }}</a> ({{ work.year }}).
-{% if work.imgurl %}
-<img style="width: 200px; float: left; padding: 10px;" src="{{ work.imgurl }}">
-{% endif %}
+<h1>Index {{ profile }}</h1>
 
-<dl class="description">
-  <dt>Description</dt>
-  <dd>{{ work.description }}</dd>
+<ol class="surveylist">
 
-{% if work.major_tags.all %}
-  <dt>Major Tags</dt>
-  <dd>{% for kw in work.major_tags.all %}<a href="../../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</dd>
-{% endif %}
+  {% for work in works %}
+  <li class="surveywork"><strong>Reference</strong>: <a href="{{ work.get_absolute_url }}">{{ work.title }}</a> by <a href="/kadist/artist/{{ work.creator.pk }}">{{ work.creator }}</a> ({{ work.year }}).
+    {% if work.imgurl %}
+    <img class="illustration" src="{{ work.imgurl }}">
+    {% endif %}
 
-{% if work.tags.all %}
-  <dt>Minor Tags</dt>
-  <dd>{% for kw in work.tags.all %}<a href="../../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</dd>
-{% endif %}
-</dl>
+    <p><strong>Similar works</strong></p>
+    <ul class="similarlist">
+      {% for s in work|similar:profile %}
+      <li>
+        <img class="tooltipimg" src="{{ s.work.imgurl }}" alt="" />
+        <a target="_blank" href="{{ s.work.url }}">{{ s.work }}</a> (<a target="_blank" href="/kadist/matrix/{{ work.pk }}/{{ s.work.pk }}">Matrix</a>)
+      </li>
+      {% endfor %}
+    </ul>
 
-<h2>Similar works</h2>
-{% for data in work.similar %}
-<h3>Selection {{ data.profile }}</h3>
-  <ol class="worklist">
-    {% for s in data.works %}
-    <li>
-      <img class="illustration" src="{{ s.work.imgurl }}" alt="" />
-      <a target="_blank" href="{{ s.work.url }}">{{ s.work }}</a> (<a target="_blank" href="/kadist/matrix/{{ work.pk }}/{{ s.work.pk }}">Matrix</a>)
-    </li>
-    {% endfor %}
-  </ol>
+    <hr />
+  </li>
+  {% endfor %}
+</ol>
+
+
+
 {% endfor %}
 
-</dl>
-<hr />
-{% endfor %}
 {% endblock %}

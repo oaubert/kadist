@@ -75,27 +75,39 @@ ul.worklist.detailed li {
     position: relative;
 }
 
-ol li {
-    position: relative;
-    margin-left: 140px;
-}
-
 hr {
     margin-top: 1em;
     margin-bottom: 1em;
 }
 
+.similarlist {
+    position: relative;
+    padding-left: 20px;
+}
+
 .illustration {
+    width: 120px;
+    float: left;
+    margin: 10px;
+    max-height: 120px;
+}
+
+.tooltipimg {
     opacity: 0;
     position: absolute;
     width: 120px;
-    height: 90px;
     top: 0px;
-    left: -140px;
+    left: -120px;
 }
 
-li:hover .illustration {
-    opacity: .8;
+.similarlist li:hover .tooltipimg {
+    opacity: 1.0;
+}
+
+.surveywork {
+    padding-top: 1em;
+    padding-left: 140px;
+    position: relative;
 }
 
 ul.taglist {
