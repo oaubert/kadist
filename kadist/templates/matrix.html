@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% load kadist %}
 {% load admin_urls %}
 {% load url from future %}
 
@@ -7,7 +8,7 @@
 
 {% block content %}
 <h1>Similarity matrix</h1>
-<p>Between {{ origin }} and {{ destination }}</p>
+<p>Between <em>{{ origin }}</em> and <em>{{ destination }}</em> :</p>
 <table>
   <th>
     {% for c in cols %}
@@ -18,7 +19,7 @@
   <tr>
     <td>{{ i.0 }}</td>
     {% for c in i.1 %}
-    <td>{{ c|floatformat:2 }}</td>
+    <td class="similar{{ c|similarity_index }}">{{ c|floatformat:2 }}</td>
     {% endfor %}
   </tr>
   {% endfor %}

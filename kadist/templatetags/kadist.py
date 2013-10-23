@@ -19,6 +19,10 @@ def tagsize(c):
     else:
         return long(TAG_MINSIZE + TAG_FACTOR * (c - TAG_MINCOUNT))
 
+@register.filter
+def similarity_index(s):
+    return int(s * 10)
+
 def callMethod(obj, methodName):
     method = getattr(obj, methodName)
     if obj.__dict__.has_key("__callArg"):
