@@ -188,9 +188,13 @@ class SimilarityMatrix(models.Model):
 
 class ProfileData(models.Model):
     profile = models.IntegerField(unique=True)
+    name = models.CharField("name",
+                            max_length=127,
+                            unique=False)
     maxitems = models.IntegerField()
     minmaj = models.FloatField()
     majmin = models.FloatField()
 
     def __unicode__(self):
-        return "Profile [%d]: maxitems = %d - min/maj = %.02f - maj/min = %.02f" % (self.profile, self.maxitems, self.minmaj, self.majmin)
+        return "Profile %s [%d]: maxitems = %d - min/maj = %.02f - maj/min = %.02f" % (self.name, self.profile, self.maxitems, self.minmaj, self.majmin)
+
