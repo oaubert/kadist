@@ -235,6 +235,15 @@ class Command(BaseCommand):
                 cell.save()
                 self.stderr.write("   %f - %s" % (cell.value, unicode(d)))
 
+    def _dump_similarity(self, profileid=None):
+        # Generate data
+        tagged = [ w for w in Work.objects.all() if w.major_tags.all() ]
+        self.stdout.write(" " + ";".join(w.title.replace(";", " ").replace('"', '') for w in tagged))
+        for w in tagged:
+            self.stdout.write( w.title.replace(";", " ").replace('"', '') + ";" 
+                               + ";".join( "%.04f" % (SimilarityMatrix.objects.filter(origin=w.id, destination=d.id, profile=profileid).values_list('value', flat=True) or [0])[0]
+                                           for d in tagged) )
+
     def _scrape(self):
         """Scrape img urls from Kadist website.
         """
@@ -263,6 +272,7 @@ class Command(BaseCommand):
             'acsv': self._import_artists_from_csv,
             'scrape': self._scrape,
             'similarity': self._similarity,
+            'dump': self._dump_similarity,
             }
         m = dispatcher.get(command)
         if m is not None:
