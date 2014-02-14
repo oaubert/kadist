@@ -12,7 +12,8 @@
         </ul></li>
 {% endif %}
         <li><a title="Tag cloud" id="menu_taglist" href="/kadist/tag/">Tag list</a></li>
-        <li><a title="Toggle graph view" id="menu_graph" href="javascript:if(document.location.pathname.indexOf('/kadist/graph') < 0) { document.location.pathname = document.location.pathname.replace('/kadist/', '/kadist/graph/') } else { document.location.pathname = document.location.pathname.replace('/kadist/graph/', '/kadist/') }">Graph</a></li>
+        <li><a title="Toggle graph view" id="menu_graph"
+        href="javascript:if(document.location.pathname.indexOf('/kadist/graph') < 0) { document.location.pathname = document.location.pathname.replace('/admin/', '/').replace('/kadist/', '/kadist/graph/') } else { document.location.pathname = document.location.pathname.replace('/kadist/graph/', '/kadist/') }">Graph</a></li>
         <li><a title="Logout" id="menu_logout" title="Connecté en tant que {{ user }}" href="/accounts/logout">Logout</a></li>
         <li class="wide-item"><form action="/kadist/tag"><input id="searchbox" autofocus="" placeholder="Enter tag to search for..." size="20" name="keyword" type="text"></form></li>
       </ul>
