@@ -225,8 +225,9 @@ class Command(BaseCommand):
 
         # Generate data
         tagged = [ w for w in Work.objects.all() if w.major_tags.all() ]
-        for w in tagged:
-            self.stderr.write("%s\n" % unicode(w))
+        l = len(tagged)
+        for i, w in enumerate(tagged):
+            self.stderr.write("[%d/%d] %s\n" % (i, l, unicode(w)))
             for d in tagged:
                 cell = SimilarityMatrix(origin=w,
                                         destination=d,
