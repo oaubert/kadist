@@ -239,9 +239,9 @@ class Command(BaseCommand):
     def _dump_similarity(self, profileid=None):
         # Generate data
         tagged = [ w for w in Work.objects.all() if w.major_tags.all() ]
-        self.stdout.write(" " + ";".join(w.title.replace(";", " ").replace('"', '') for w in tagged))
+        self.stdout.write(" " + ";".join(unicode(w).replace(";", " ").replace('"', '') for w in tagged))
         for w in tagged:
-            self.stdout.write( w.title.replace(";", " ").replace('"', '') + ";" 
+            self.stdout.write( unicode(w).replace(";", " ").replace('"', '') + ";"
                                + ";".join( "%.04f" % (SimilarityMatrix.objects.filter(origin=w.id, destination=d.id, profile=profileid).values_list('value', flat=True) or [0])[0]
                                            for d in tagged) )
 
