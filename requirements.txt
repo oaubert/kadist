@@ -1,3 +1,4 @@
+django
 djangorestframework
 django-taggit
 django-taggit-autosuggest
