@@ -107,13 +107,13 @@ class Work(models.Model):
     def get_absolute_url(self):
         return reverse('work-detail', args=[str(self.pk)])
 
-    def similarity(self, work, MAXITEMS=5, MAJMIN=.5, MINMAJ=.5):
+    def similarity(self, work, MAXITEMS=.8, MAJMIN=.5, MINMAJ=.5):
         s = 0
         if self.major_tags.all() and work.major_tags.all():
             s = len(list(t
                          for t in product(self.major_tags.values_list('name', flat=True),
                                           work.major_tags.values_list('name', flat=True))
-                         if (compare(t[0], t[1]) > .8)))
+                         if (compare(t[0], t[1]) > MAXITEMS)))
         return s
 
     def similarity2(self, work, MAXITEMS=5, MAJMIN=.5, MINMAJ=.5):
