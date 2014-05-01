@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width"/>
     <link href="{{ STATIC_URL }}css/kadist.css" rel="stylesheet" type="text/css" />
     <link href="{{ STATIC_URL }}css/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <link href="http://cdn.jsdelivr.net/qtip2/2.2.0/jquery.qtip.min.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico" />
     {% block extra_header %}
     {% endblock %}
@@ -24,6 +25,7 @@
 
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://cdn.jsdelivr.net/qtip2/2.2.0/jquery.qtip.min.js"></script>
     <script type="text/javascript">
       $(document).ready( function () {
           $("#searchbox").autocomplete({ minLength: 1,
