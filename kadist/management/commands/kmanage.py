@@ -20,6 +20,7 @@ class Command(BaseCommand):
   acsv <csv file> : import the artists from a csv file
   wcsv <csv file> : import the works from a csv file
   similarity PROFILEID MAXITEMS=5 MAJMIN=.5 MINMAJ=.5
+  dump PROFILEID : dump similarity matrix as csv
 """
     def _import_works_from_txt(self, filename):
         """Import from a txt file.
@@ -198,7 +199,7 @@ class Command(BaseCommand):
                     self.stderr.write("Error: missing artist for %s - %s\n" % (data[WID], data[TITLE]))
 
     def _similarity(self, profileid=None, maxitems=5, majmin=.5, minmaj=.5):
-        maxitems = long(maxitems)
+        maxitems = float(maxitems)
         majmin = float(majmin)
         minmaj = float(minmaj)
         if profileid is None:
@@ -225,9 +226,8 @@ class Command(BaseCommand):
 
         # Generate data
         tagged = [ w for w in Work.objects.all() if w.major_tags.all() ]
-        l = len(tagged)
-        for i, w in enumerate(tagged):
-            self.stderr.write("[%d/%d] %s\n" % (i, l, unicode(w)))
+        for w in tagged:
+            self.stderr.write("%s\n" % unicode(w))
             for d in tagged:
                 cell = SimilarityMatrix(origin=w,
                                         destination=d,
@@ -281,4 +281,3 @@ class Command(BaseCommand):
         else:
             raise CommandError("Unknown command")
 
-        self.stdout.write("\nDone.\nDO NOT FORGET TO RUN rebuild_index !!!\n")
