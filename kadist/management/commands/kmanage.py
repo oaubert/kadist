@@ -9,7 +9,7 @@ from django.db import IntegrityError
 import urllib2
 from BeautifulSoup import BeautifulSoup
 
-from kadist.models import Artist, Work, ProfileData, SimilarityMatrix
+from kadist.models import Artist, Work, ProfileData, SimilarityMatrix, MajorTag, compare, TagSimilarity
 from rake import RakeKeywordExtractor
 
 class Command(BaseCommand):
@@ -21,6 +21,7 @@ class Command(BaseCommand):
   wcsv <csv file> : import the works from a csv file
   similarity PROFILEID MAXITEMS=5 MAJMIN=.5 MINMAJ=.5
   dump PROFILEID : dump similarity matrix as csv
+  tagsimilarity [THRESHOLD=.8]
 """
     def _import_works_from_txt(self, filename):
         """Import from a txt file.
@@ -245,6 +246,22 @@ class Command(BaseCommand):
                                + ";".join( "%.04f" % (SimilarityMatrix.objects.filter(origin=w.id, destination=d.id, profile=profileid).values_list('value', flat=True) or [0])[0]
                                            for d in tagged) )
 
+    def _tag_similarity(self, threshold=.8):
+        """Compute tag similarity.
+        """
+        threshold = float(threshold)
+        tags = [ t.name for t in MajorTag.objects.all() ]
+        total = len(tags)
+        for n, ref in enumerate(tags):
+            print "\r%d\t / %d" % (n, total)
+            similar = [ t.name for t in MajorTag.objects.all() if compare(ref, t.name) >= threshold ]
+            if similar:
+                item = TagSimilarity(ref=ref,
+                                     threshold=threshold,
+                                     similar=",".join(similar),
+                                     count=len(similar))
+                item.save()
+
     def _scrape(self):
         """Scrape img urls from Kadist website.
         """
@@ -274,6 +291,7 @@ class Command(BaseCommand):
             'scrape': self._scrape,
             'similarity': self._similarity,
             'dump': self._dump_similarity,
+            'tagsimilarity': self._tag_similarity,
             }
         m = dispatcher.get(command)
         if m is not None:

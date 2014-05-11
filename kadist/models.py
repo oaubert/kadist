@@ -207,3 +207,11 @@ class ProfileData(models.Model):
     def __unicode__(self):
         return "Profile %s [%d]: maxitems = %d - min/maj = %.02f - maj/min = %.02f" % (self.name, self.profile, self.maxitems, self.minmaj, self.majmin)
 
+class TagSimilarity(models.Model):
+    """Cache major tags with a similarity > .8 with the reference.
+    """
+    ref = models.CharField("reference", max_length=128)
+    threshold = models.FloatField()
+    # Comma-separated list of similar tags
+    similar = models.TextField("similar", blank=True)
+    count = models.IntegerField()
