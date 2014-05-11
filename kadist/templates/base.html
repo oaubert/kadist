@@ -33,6 +33,63 @@
                                          select: function () {
                                              $(this).closest("form").submit();
                                          } });
+          // Tooltip for similarity matrix
+          $('.matrix').each(function() {
+              $(this).qtip({
+                  content: {
+                      text: function(event, api) {
+                          $.ajax({
+                              url: api.elements.target.attr('href') // Use href attribute as URL
+                          })
+                              .then(function(content) {
+                                  // Set the tooltip content upon successful retrieval
+                                  api.set('content.text', content);
+                              }, function(xhr, status, error) {
+                                  // Upon failure... set the tooltip content to error
+                                  api.set('content.text', status + ': ' + error);
+                              });
+                          return 'Loading...'; // Set some initial text
+                      }
+                  },
+                  position: {
+                      viewport: $(window)
+                  },
+                  style: 'qtip-wiki'
+              });
+          });
+
+          // Tooltip for tags
+          $('.tag').each(function() {
+              $(this).qtip({
+                  content: {
+                      text: function(event, api) {
+                          $.ajax({
+                              url: api.elements.target.attr('href') + '/similar' // Assume we are always in a link
+                          })
+                              .then(function(content) {
+                                  // Set the tooltip content upon successful retrieval
+                                  api.set('content.text', content);
+                              }, function(xhr, status, error) {
+                                  // Upon failure... set the tooltip content to error
+                                  api.set('content.text', status + ': ' + error);
+                              });
+                          return 'Loading...'; // Set some initial text
+                      }
+                  },
+                  position: {
+                      corner: {
+                          target: 'rightMiddle',
+                          tooltip: 'leftMiddle'
+                      },
+                      viewport: $(window),
+                      adjust: {
+                          screen: true
+                      }
+                  },
+                  style: 'qtip-wiki'
+              });
+          });
+
       });
     </script>
 
