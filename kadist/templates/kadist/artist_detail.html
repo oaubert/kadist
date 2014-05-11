@@ -20,14 +20,14 @@
 
 {% if artist.tags.all %}
   <dt>Tags</dt>
-  <dd>{% for kw in artist.tags.all %}<a href="../../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</dd>
+  <dd>{% for kw in artist.tags.all %}<a class="tag" href="../../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}</dd>
 {% endif %}
 
   <dt>Works</dt>
   <dd>
     <ul class="worklist detailed">
       {% for w in artist.works.all %}
-      <li><a href="{{ w.get_absolute_url }}">{{ w.title }}</a> <a class="editlink" href="{% url "admin:kadist_work_change" w.pk %}">Edit</a> <span class="taglist">{% for t in w.tags.all %}<a class="tagref" href="../../tag/{{ t.name }}">{{ t.name }}</a> -{% endfor %}</span></li>
+      <li><a href="{{ w.get_absolute_url }}">{{ w.title }}</a> <a class="editlink" href="{% url "admin:kadist_work_change" w.pk %}">Edit</a> <span class="taglist">{% for t in w.major_tags.all %}<a class="tag major tagref" href="../../tag/{{ t.name }}">{{ t.name }}</a> -{% endfor %}</span></li>
       {% endfor %}
     </ul>
   </dd>

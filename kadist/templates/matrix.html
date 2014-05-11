@@ -6,12 +6,12 @@
 <table>
   <th>
     {% for c in cols %}
-    <td>{{ c }}</td>
+    <td><a class="tag major tagref" href="../tag/{{ c }}">{{ c }}</a></td>
     {% endfor %}
   </th>
   {% for i in data %}
   <tr>
-    <td>{{ i.0 }}</td>
+    <td><a class="tag major tagref" href="../tag/{{ i.0 }}">{{ i.0 }}</a></td>
     {% for c in i.1 %}
     <td class="similar{{ c|similarity_index }}">{{ c|floatformat:2 }}</td>
     {% endfor %}

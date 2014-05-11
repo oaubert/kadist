@@ -30,7 +30,7 @@
   <h2>Artists <span class="tagcount">({{ artists|length }})</span></h2>
   <ul class="description worklist">
     {% for a in artists %}
-    <li><a href="{{ a.get_absolute_url }}">{{ a.name }}</a> - {% for t in a.tags.all %}<a href="{{ t.name }}">{{ t.name }}</a> -{% endfor %}</li>
+    <li><a href="{{ a.get_absolute_url }}">{{ a.name }}</a> - {% for t in a.tags.all %}<a class="tag" href="{{ t.name }}">{{ t.name }}</a> -{% endfor %}</li>
     {% endfor %}
   </ul>
   {% endif %}
