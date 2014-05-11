@@ -288,3 +288,7 @@ ul.navbar .submenu li {
 .similar10 {
     background-color: #555;
 }
+.qtip-content {
+    max-height: 400px;
+    overflow: auto;
+}
