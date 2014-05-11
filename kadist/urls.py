@@ -8,6 +8,7 @@ from .models import Work, Artist
 urlpatterns = patterns('',
                        url(r'^$', login_required(TemplateView.as_view(template_name='root.html')), name='root'),
                        url(r'^tag/$', views.taglist_as_html, name='tag-list'),
+                       url(r'^tag/(?P<tag>.+)/similar$', views.tagsimilarity_as_html, name='tag-similarity'),
                        url(r'^tag/(?P<kw>.+)$', views.tag, name='tag-detail'),
                        url(r'^graph/', include(patterns('',
                                                         url(r'^$', RedirectView.as_view(url="tag/")),

@@ -2,11 +2,12 @@ import operator
 import itertools
 
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.db.models.loading import get_model
 from django.db.models import Count
+from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework import generics
 from rest_framework.renderers import UnicodeJSONRenderer
@@ -15,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from nltk.corpus import wordnet as wn
 
-from .models import Artist, Work, MajorTag, ProfileData, compare
+from .models import Artist, Work, MajorTag, ProfileData, compare, TagSimilarity
 from .serializers import ArtistSerializer, WorkSerializer, ArtistReferenceSerializer, WorkReferenceSerializer
 from .templatetags.kadist import tagsize, TAG_MINCOUNT
 
@@ -71,12 +72,22 @@ def taginfo(kw):
             'hyponyms': list of hyponyms
             'holonyms': list of holonyms
             'meronyms': list of meronyms
+            'tagsimilar': list of works with a similar (>.8) common tag
+            'similar_tags': list of similar (>.8) tags
     """
     info = { 'tag': kw }
 
     info['minor_works'] = set(Work.objects.filter(tags__name__in=[kw]))
     info['major_works'] = set(Work.objects.filter(major_tags__name__in=[kw]))
     info['artists'] = Artist.objects.filter(tags__name__in=[kw])
+
+    try:
+        sim = TagSimilarity.objects.get(ref=kw)
+        info['similar_tags'] = sim.similar.split(',')
+        info['tagsimilar'] = set(Work.objects.filter(major_tags__name__in=info['similar_tags']))
+    except ObjectDoesNotExist:
+        info['tagsimilar'] = []
+        info['similar_tags'] = []
 
     if ' ' in kw:
         kwl = kw.split()
@@ -158,6 +169,21 @@ def similaritymatrix_as_html(request, origin, destination):
             'destination': destination,
             'cols': cols,
             'data': data,
+            }, context_instance=RequestContext(request))
+
+@login_required
+def tagsimilarity_as_html(request, tag):
+    try:
+        sim = TagSimilarity.objects.get(ref=tag)
+    except ObjectDoesNotExist:
+        return HttpResponse("<h1>No tags with a similarity > 0.8 with %s</h1>" % tag)
+
+    similar = sim.similar.split(',')
+    works = set(Work.objects.filter(major_tags__name__in=similar))
+    return render_to_response('simtag.html', {
+            'tag': tag,
+            'similar_tags': similar,
+            'object_list': works,
             }, context_instance=RequestContext(request))
 
 @api_view(['GET'])
