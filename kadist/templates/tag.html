@@ -34,7 +34,9 @@
     {% endfor %}
   </ul>
   {% endif %}
-  
+
+  {% include "simtag.html" with tag=kw similar_tags=similar_tags object_list=tagsimilar %}
+
   <h2>Semantic navigation</h2>
 
   <div class="related_tags">
