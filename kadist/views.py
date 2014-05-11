@@ -1,5 +1,6 @@
 import operator
 import itertools
+import json
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
@@ -234,3 +235,39 @@ class ArtistList(generics.ListCreateAPIView):
 class ArtistDetail(generics.RetrieveUpdateDestroyAPIView):
     model = Artist
     serializer_class = ArtistSerializer
+
+MAX_SUGGESTIONS = 20
+def suggest(request):
+    """
+    Returns a list of JSON objects with a `name` and a `value` property that
+    all start like your query string `q` (not case sensitive).
+    """
+    query = request.GET.get('q', '')
+    limit = request.GET.get('limit', MAX_SUGGESTIONS)
+    try:
+        request.GET.get('limit', MAX_SUGGESTIONS)
+        limit = min(int(limit), MAX_SUGGESTIONS)  # max or less
+    except ValueError:
+        limit = MAX_SUGGESTIONS
+
+    data = []
+    if '.' in query:
+        # Synset
+        try:
+            s = wn.synset(query)
+            # Exact term. Propose more specific terms.
+            data.append( { 'name': "More specific term", 'value': "" })
+            data.extend( {'name': '%s - %s' % (n.name, n.definition), 'value': n.name} for n in s.hyponyms() )
+        except:
+            # Keep only the 1st part
+            query = query.split('.')[0]
+    else:
+        s = wn.synsets(query)
+        if s:
+            data.append( { 'name': "Disambiguation", 'value': "" })
+            data.extend( {'name': '%s - %s' % (n.name, n.definition), 'value': n.name} for n in s )
+    tag_name_qs = MajorTag.objects.filter(name__icontains=query).values_list('name', flat=True)
+    data.extend({'name': n, 'value': n} for n in tag_name_qs[:limit])
+
+    return HttpResponse(json.dumps(data), mimetype='application/json')
+
