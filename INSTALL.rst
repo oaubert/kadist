@@ -7,6 +7,18 @@ INSTALL instruction
 ** Configure the download path to `/usr/local/share/nltk_data`
 ** Download `wordnet`
 
+* jquery-autosuggest customization
+
+In order to display name/value pairs (for disambiguation interface), the jquery-autosuggest component must be customized with the files located in custom/:
+
+if JQ is set to the location of the jquery-autosuggest library (in a virtualenv
+context, $ENV/lib/python2.7/site-packages/taggit_autosuggest)
+
+then
+
+cp custom/jquery.autoSuggest.minified.js $JQ/static/jquery-autosuggest/js/jquery.autoSuggest.minified.js
+cp widgets.py $JQ/widgets.py
+
 * MySQL configuration
 
 ** MySQL configuration issues
