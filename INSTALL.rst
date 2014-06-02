@@ -19,6 +19,9 @@ then
 cp custom/jquery.autoSuggest.minified.js $JQ/static/jquery-autosuggest/js/jquery.autoSuggest.minified.js
 cp widgets.py $JQ/widgets.py
 
+See https://github.com/oaubert/jquery-autosuggest/tree/fork for
+customization details.
+
 * MySQL configuration
 
 ** MySQL configuration issues
