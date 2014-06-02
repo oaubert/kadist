@@ -254,20 +254,25 @@ def suggest(request):
     if '.' in query:
         # Synset
         try:
+            # Exact term. Try to propose more specific terms.
             s = wn.synset(query)
-            # Exact term. Propose more specific terms.
-            data.append( { 'name': "More specific term", 'value': "" })
-            data.extend( {'name': '%s - %s' % (n.name, n.definition), 'value': n.name} for n in s.hyponyms() )
+            hypo = s.hyponyms()
+            if hypo:
+                data.append( { 'name': "* More specific term *", 'value': "* More specific *" })
+                data.extend( {'name': '%s - %s' % (n.name, n.definition), 'value': n.name} for n in hypo )
         except:
             # Keep only the 1st part
             query = query.split('.')[0]
-    else:
-        s = wn.synsets(query)
-        if s:
-            data.append( { 'name': "Disambiguation", 'value': "" })
-            data.extend( {'name': '%s - %s' % (n.name, n.definition), 'value': n.name} for n in s )
+
+    s = wn.synsets(query)
+    if s:
+        data.append( { 'name': "* Disambiguation *", 'value': "* Disambiguation *" })
+        data.extend( {'name': '%s - %s' % (n.name, n.definition), 'value': n.name} for n in s )
+
+    # Matching existing tags
     tag_name_qs = MajorTag.objects.filter(name__icontains=query).values_list('name', flat=True)
-    data.extend({'name': n, 'value': n} for n in tag_name_qs[:limit])
+    if tag_name_qs:
+        data.append( { 'name': "* Existing tags *", 'value': "* Existing tags *" })
+        data.extend({'name': n, 'value': n} for n in tag_name_qs[:limit])
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
-
