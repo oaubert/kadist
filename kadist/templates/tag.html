@@ -3,10 +3,10 @@
 {% load admin_urls %}
 {% load url from future %}
 
-{% block title %}KCN - {{ kw }}{% endblock %}
+{% block title %}KCN - {{ tag }}{% endblock %}
 
 {% block content %}
-  <h1><em>{{ kw }}</em></h1>
+  <h1><em>{{ tag }}</em></h1>
 
   {% if major_works %}
   <h2>Major Works <span class="tagcount">({{ major_works|length }})</span></h2>
@@ -35,7 +35,7 @@
   </ul>
   {% endif %}
 
-  {% include "simtag.html" with tag=kw similar_tags=similar_tags object_list=tagsimilar %}
+  {% include "simtag.html" with tag=tag similar_tags=similar_tags object_list=tagsimilar %}
 
   <h2>Semantic navigation</h2>
 
