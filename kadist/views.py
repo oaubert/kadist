@@ -258,7 +258,7 @@ def suggest(request):
             s = wn.synset(query)
             hypo = s.hyponyms()
             if hypo:
-                data.append( { 'name': "* More specific term *", 'value': "* More specific *" })
+                data.append( { 'name': "------------------ More specific term ------------------", 'value': "*More_specific*" })
                 data.extend( {'name': '%s - %s' % (n.name, n.definition), 'value': n.name} for n in hypo )
         except:
             # Keep only the 1st part
@@ -266,13 +266,13 @@ def suggest(request):
 
     s = wn.synsets(query)
     if s:
-        data.append( { 'name': "* Disambiguation *", 'value': "* Disambiguation *" })
+        data.append( { 'name':  "------------------ Disambiguation ------------------", 'value': "*Disambiguation*" })
         data.extend( {'name': '%s - %s' % (n.name, n.definition), 'value': n.name} for n in s )
 
     # Matching existing tags
     tag_name_qs = MajorTag.objects.filter(name__icontains=query).values_list('name', flat=True)
     if tag_name_qs:
-        data.append( { 'name': "* Existing tags *", 'value': "* Existing tags *" })
+        data.append( { 'name': "------------------ Existing tags ------------------", 'value': "*Existing_tags*" })
         data.extend({'name': n, 'value': n} for n in tag_name_qs[:limit])
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
