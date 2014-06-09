@@ -292,3 +292,6 @@ ul.navbar .submenu li {
     max-height: 400px;
     overflow: auto;
 }
+.grp-row.major_tags {
+    overflow: visible !important;
+}
