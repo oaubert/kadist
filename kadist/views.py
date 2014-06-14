@@ -275,4 +275,4 @@ def suggest(request):
         data.append( { 'name': "------------------ Existing tags ------------------", 'value': "*Existing_tags*" })
         data.extend({'name': n, 'value': n} for n in tag_name_qs[:limit])
 
-    return HttpResponse(json.dumps(data), mimetype='application/json')
+    return HttpResponse(json.dumps(data), content_type='application/json')
