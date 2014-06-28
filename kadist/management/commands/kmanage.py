@@ -199,10 +199,12 @@ class Command(BaseCommand):
                     # Have to create one
                     self.stderr.write("Error: missing artist for %s - %s\n" % (data[WID], data[TITLE]))
 
-    def _similarity(self, profileid=None, maxitems=5, majmin=.5, minmaj=.5):
+    def _similarity(self, profileid=None, label="", maxitems=5, majmin=.5, minmaj=.5):
         maxitems = float(maxitems)
         majmin = float(majmin)
         minmaj = float(minmaj)
+        if not label:
+            label = "Similarity profile (maxitems=%.02f/majmin=%.02f/minmaj=%.02f)"
         if profileid is None:
             # List existing profiles
             self.stdout.write("List of profiles")
@@ -220,6 +222,7 @@ class Command(BaseCommand):
         ProfileData.objects.filter(profile=profileid).delete()
 
         profile = ProfileData(profile=profileid,
+                              name=label,
                               maxitems=maxitems,
                               majmin=majmin,
                               minmaj=minmaj)
