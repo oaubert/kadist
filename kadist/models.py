@@ -12,8 +12,14 @@ from itertools import product
 def compare(word1, word2):
     if word1 == word2:
         return 1.0
-    ss1 = wn.synsets(word1)
-    ss2 = wn.synsets(word2)
+    try:
+        ss1 = [ wn.synset(word1) ]
+    except:
+        ss1 = wn.synsets(word1)
+    try:
+        ss2 = [ wn.synset(word2) ]
+    except:
+        ss2 = wn.synsets(word2)
     if ss1 and ss2:
         return max(s1.wup_similarity(s2) for (s1, s2) in product(ss1, ss2)) or 0
     else:
