@@ -253,7 +253,7 @@ class Command(BaseCommand):
         tags = [ t.name for t in MajorTag.objects.all() ]
         total = len(tags)
         for n, ref in enumerate(tags):
-            print "\r%d\t / %d" % (n, total)
+            print "%d\t / %d\r" % (n+1, total),
             similar = [ t.name for t in MajorTag.objects.all() if compare(ref, t.name) >= threshold ]
             if similar:
                 item = TagSimilarity(ref=ref,
