@@ -1,6 +1,9 @@
 <link href="{{ STATIC_URL }}css/kadist.css" rel="stylesheet" type="text/css" />
 {% load kadist %}
 <div>
+  {% if definition %}
+  <p><strong>Definition:</strong> {{ definition }}</p>
+  {% endif %}
   <h2>{{ object_list|length }} works having a tag similar (> 0.8) with {{ tag }}</h2>
   <ul class="description">
     {% for w in object_list %}
