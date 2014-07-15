@@ -200,7 +200,7 @@ def tagsimilarity_as_html(request, tag):
 
 @login_required
 def sortedtaglist_as_html(request):
-    data = TagSimilarity.objects.filter(count__gt=8).order_by('-count').values('ref', 'count', 'similar')
+    data = TagSimilarity.objects.filter(count__gt=4).order_by('-count').values('ref', 'count', 'similar')
     for d in data:
         d['similar'] = d['similar'].split(',')
     return render_to_response('sortedtag.html', {
