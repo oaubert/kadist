@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% load admin_urls %}
+{% load url from future %}
+
+{% block title %}Kadist catalogue navigator - sorted tags{% endblock %}
+
+{% block content %}
+  <h1>Tags according to the number of similar (>0.8) tags</h1>
+  <ul class="description">
+    {% for d in data %}
+    <li class="taggeditem"><a class="tag major" href="/kadist/tag/{{ d.ref }}">{{ d.ref }}</a> [{{ d.count }}] : {% for t in d.similar %}<a class="tag major" href="/kadist/tag/{{ t }}">{{ t }}</a>, {% endfor %}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

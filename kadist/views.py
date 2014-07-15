@@ -176,15 +176,35 @@ def similaritymatrix_as_html(request, origin, destination):
 def tagsimilarity_as_html(request, tag):
     try:
         sim = TagSimilarity.objects.get(ref=tag)
+        similar = sim.similar.split(',')
+        works = set(Work.objects.filter(major_tags__name__in=similar))
     except ObjectDoesNotExist:
-        return HttpResponse("<h1>No tags with a similarity > 0.8 with %s</h1>" % tag)
+        similar = []
+        works = set()
 
-    similar = sim.similar.split(',')
-    works = set(Work.objects.filter(major_tags__name__in=similar))
+    definition = ""
+    if '.' in tag:
+        # Should be a Wordnet entity. Get its definition
+        try:
+            s = wn.synset(tag)
+            definition = s.definition
+            print tag, definition
+        except Exception, e:
+            definition = "Error " + unicode(e)
     return render_to_response('simtag.html', {
             'tag': tag,
             'similar_tags': similar,
             'object_list': works,
+            'definition': definition,
+            }, context_instance=RequestContext(request))
+
+@login_required
+def sortedtaglist_as_html(request):
+    data = TagSimilarity.objects.filter(count__gt=8).order_by('-count').values('ref', 'count', 'similar')
+    for d in data:
+        d['similar'] = d['similar'].split(',')
+    return render_to_response('sortedtag.html', {
+            'data': data,
             }, context_instance=RequestContext(request))
 
 @api_view(['GET'])
