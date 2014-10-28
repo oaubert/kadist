@@ -276,10 +276,14 @@ def suggest(request):
         try:
             # Exact term. Try to propose more specific terms.
             s = wn.synset(query)
+            # Display the exact term itself
+            data.append({'name': '%s - %s' % (s.name, s.definition), 'value': s.name})
             hypo = s.hyponyms()
             if hypo:
                 data.append( { 'name': "------------------ More specific term ------------------", 'value': "*More_specific*" })
                 data.extend( {'name': '%s - %s' % (n.name, n.definition), 'value': n.name} for n in hypo )
+            else:
+                data.append( { 'name': "------------------ No more specific term ------------------", 'value': "*No_More_specific*" })
         except:
             # Keep only the 1st part
             query = query.split('.')[0]
