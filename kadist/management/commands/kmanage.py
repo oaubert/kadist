@@ -230,15 +230,16 @@ class Command(BaseCommand):
 
         # Generate data
         tagged = [ w for w in Work.objects.all() if w.major_tags.all() ]
-        for w in tagged:
-            self.stderr.write("%s\n" % unicode(w))
-            for d in tagged:
+        total = len(tagged)
+        for i, w in enumerate(tagged):
+            self.stderr.write("[%d/%d] %s" % (i, total, unicode(w)))
+            for ind, d in enumerate(tagged):
                 cell = SimilarityMatrix(origin=w,
                                         destination=d,
                                         profile=profileid,
                                         value=w.similarity(d, maxitems, majmin, minmaj))
                 cell.save()
-                self.stderr.write("   %f - %s" % (cell.value, unicode(d)))
+                self.stderr.write("  %d / %d %f - %s\r" % (ind, total, cell.value, unicode(d)))
 
     def _dump_similarity(self, profileid=None):
         # Generate data
@@ -252,11 +253,13 @@ class Command(BaseCommand):
     def _tag_similarity(self, threshold=.8):
         """Compute tag similarity.
         """
+        TagSimilarity.objects.all().delete()
         threshold = float(threshold)
         tags = [ t.name for t in MajorTag.objects.all() ]
         total = len(tags)
         for n, ref in enumerate(tags):
-            print "%d\t / %d\r" % (n+1, total),
+            self.stderr.write("%d\t / %d\r" % (n+1, total))
+            self.stderr.flush()
             similar = [ t.name for t in MajorTag.objects.all() if compare(ref, t.name) >= threshold ]
             if similar:
                 item = TagSimilarity(ref=ref,
