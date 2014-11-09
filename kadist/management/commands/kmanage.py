@@ -19,7 +19,7 @@ class Command(BaseCommand):
   xls <xls file> : import the catalogue from a xls file
   acsv <csv file> : import the artists from a csv file
   wcsv <csv file> : import the works from a csv file
-  similarity PROFILEID MAXITEMS=5 MAJMIN=.5 MINMAJ=.5
+  similarity PROFILEID LABEL MAXITEMS=5 MAJMIN=.5 MINMAJ=.5
   dump PROFILEID : dump similarity matrix as csv
   tagsimilarity [THRESHOLD=.8]
 """
