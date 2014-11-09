@@ -239,7 +239,7 @@ class Command(BaseCommand):
                                         profile=profileid,
                                         value=w.similarity(d, maxitems, majmin, minmaj))
                 cell.save()
-                self.stderr.write("  %d / %d %f - %s\r" % (ind, total, cell.value, unicode(d)))
+                self.stderr.write("  %d / %d / %d %f - %s\r" % (ind, i, total, cell.value, unicode(d)))
 
     def _dump_similarity(self, profileid=None):
         # Generate data
