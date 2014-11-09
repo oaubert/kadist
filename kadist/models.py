@@ -114,6 +114,8 @@ class Work(models.Model):
         return reverse('work-detail', args=[str(self.pk)])
 
     def similarity(self, work, MAXITEMS=.8, MAJMIN=.5, MINMAJ=.5):
+        """Similarity measure counting the number of major tags with a similarity > MAXITEMS
+        """
         s = 0
         if self.major_tags.all() and work.major_tags.all():
             s = len(list(t
@@ -123,6 +125,8 @@ class Work(models.Model):
         return s
 
     def similarity2(self, work, MAXITEMS=5, MAJMIN=.5, MINMAJ=.5):
+        """Similarity measure combining the sum of at most MAXITEMS similarity values between tags
+        """
         if self.major_tags.all() and work.major_tags.all():
             majmaj = sum(sorted(filter(lambda x: x,
                                        (compare(t[0], t[1])
@@ -152,6 +156,8 @@ class Work(models.Model):
         return (majmaj + MAJMIN * majmin + MINMAJ * minmaj) / (MAXITEMS * (1 + MINMAJ + MAJMIN))
 
     def similarity1(self, work, MAXITEMS=5, MAJMIN=.5, MINMAJ=.5):
+        """Similarity measure combining the maximum similarity values
+        """
         if self.major_tags.all() and work.major_tags.all():
             majmaj = sum(sorted( ( max(compare(target, other) for other in work.major_tags.values_list('name', flat=True))
                                    for target in self.major_tags.values_list('name', flat=True) ),
