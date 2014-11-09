@@ -204,7 +204,7 @@ class Command(BaseCommand):
         majmin = float(majmin)
         minmaj = float(minmaj)
         if not label:
-            label = "Similarity profile (maxitems=%.02f/majmin=%.02f/minmaj=%.02f)"
+            label = "Similarity profile (maxitems=%.02f/majmin=%.02f/minmaj=%.02f)" % (maxitems, majmin, minmaj)
         if profileid is None:
             # List existing profiles
             self.stdout.write("List of profiles")
