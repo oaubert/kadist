@@ -19,7 +19,8 @@
     {% if work.imgurl %}
     <img class="illustration" src="{{ work.imgurl }}">
     {% endif %}
-
+    <br/>
+    <strong>Tags</strong> {% for kw in work.major_tags.all %}<a class="tag major" href="../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}
     <p><strong>Similar works</strong></p>
     <ul class="similarlist">
       {% for s in work|similar:profile %}
