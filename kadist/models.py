@@ -196,7 +196,7 @@ class Work(models.Model):
         else:
             return [ { 'work': s.destination,
                        'similarity': s.value }
-                     for s in SimilarityMatrix.objects.filter(profile=profile, origin=self).order_by('-value')[:10] ]
+                     for s in SimilarityMatrix.objects.filter(profile=profile, origin=self).exclude(value=0).order_by('-value')[:10] ]
 
 class SimilarityMatrix(models.Model):
     origin = models.ForeignKey(Work, related_name="similarity_origin")
