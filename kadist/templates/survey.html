@@ -25,7 +25,7 @@
       {% for s in work|similar:profile %}
       <li>
         <img class="tooltipimg" src="{{ s.work.imgurl }}" alt="" />
-        <a target="_blank" href="{{ s.work.url }}">{{ s.work }}</a> <a class="similar{{ s.similarity|similarity_index }}" target="_blank" href="/kadist/matrix/{{ work.pk }}/{{ s.work.pk }}">{{ s.similarity|floatformat:2 }}</a>
+        <a title="{{ s.work.description }}" target="_blank" href="{{ s.work.url }}">{{ s.work }}</a> <a class="matrix similar{{ s.similarity|similarity_index }}" target="_blank" href="/kadist/matrix/{{ work.pk }}/{{ s.work.pk }}">{{ s.similarity|floatformat:2 }}</a> - {% for kw in s.work.major_tags.all %}<a class="tag major" href="../../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}
       </li>
       {% endfor %}
     </ul>
