@@ -151,11 +151,15 @@ def survey_as_html(request, profile=None):
     works = [ Work.objects.get(pk=i) for i in SURVEY_WORKS ]
     if profile is None or profile == '':
         profiles = ProfileData.objects.order_by('profile').values_list('profile', flat=True)
+        profilelabel = "No label"
     else:
         profiles = [ long(profile) ]
+        profilelabel = ProfileData.objects.get(pk=profile).name
     return render_to_response('survey.html', {
             'works': works,
             'profiles': profiles,
+            'profile': profile,
+            'profilelabel': profilelabel
             }, context_instance=RequestContext(request))
 
 @login_required

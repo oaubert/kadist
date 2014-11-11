@@ -4,13 +4,13 @@
 {% load url from future %}
 {% load kadist %}
 
-{% block title %}Ksearch - survey{% endblock %}
+{% block title %}Ksearch - survey {{ profile }}{% endblock %}
 
 {% block content %}
 
 {% for profile in profiles %}
 
-<h1>Index {{ profile }}</h1>
+<h1>Formula {{ profile }} - {{ profilelabel }}</h1>
 
 <ol class="surveylist">
 
