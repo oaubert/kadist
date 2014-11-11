@@ -108,6 +108,7 @@ hr {
     padding-top: 1em;
     padding-left: 140px;
     position: relative;
+    min-height: 140px;
 }
 
 ul.taglist {
