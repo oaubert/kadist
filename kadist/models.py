@@ -127,6 +127,7 @@ class Work(models.Model):
     def similarity2(self, work, MAXITEMS=5, MAJMIN=.5, MINMAJ=.5):
         """Similarity measure combining the sum of at most MAXITEMS similarity values between tags
         """
+        MAXITEMS = long(MAXITEMS)
         if self.major_tags.all() and work.major_tags.all():
             majmaj = sum(sorted(filter(lambda x: x,
                                        (compare(t[0], t[1])
@@ -158,6 +159,7 @@ class Work(models.Model):
     def similarity1(self, work, MAXITEMS=5, MAJMIN=.5, MINMAJ=.5):
         """Similarity measure combining the maximum similarity values
         """
+        MAXITEMS = long(MAXITEMS)
         if self.major_tags.all() and work.major_tags.all():
             majmaj = sum(sorted( ( max(compare(target, other) for other in work.major_tags.values_list('name', flat=True))
                                    for target in self.major_tags.values_list('name', flat=True) ),
