@@ -160,6 +160,12 @@ def api_root(request, format=None):
             'works': reverse('work-list', request=request),
             })
 
+@login_required
+def site_root(request):
+    return render_to_response('root.html', {
+                'profiles': ProfileData.objects.order_by('profile').values('profile', 'name')
+    }, context_instance=RequestContext(request))
+
 def taglist():
     """Return the decorated list of existing tags.
 
