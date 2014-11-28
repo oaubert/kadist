@@ -4,16 +4,11 @@
 {% load url from future %}
 {% load kadist %}
 
-{% block title %}Ksearch - survey {{ profile }}{% endblock %}
+{% block title %}Ksearch - survey{% endblock %}
 
 {% block content %}
 
-{% for profile in profiles %}
-
-<h1>Formula {{ profile }} - {{ profilelabel }}</h1>
-
 <ol class="surveylist">
-
   {% for work in works %}
   <li class="surveywork"><strong>Reference</strong>: <a href="{{ work.get_absolute_url }}">{{ work.title }}</a> by <a href="/kadist/artist/{{ work.creator.pk }}">{{ work.creator }}</a> ({{ work.year }}).
     {% if work.imgurl %}
@@ -22,22 +17,23 @@
     <br/>
     <strong>Tags</strong> {% for kw in work.major_tags.all %}<a class="tag major" href="../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}
     <p><strong>Similar works</strong></p>
-    <ul class="similarlist">
+
+    <div class="similarity_results">
+    {% for profile in profiles %}
+    <ol class="similarlist" data-profile="{{ profile }}">
       {% for s in work|similar:profile %}
       <li>
         <img class="tooltipimg" src="{{ s.work.imgurl }}" alt="" />
-        <a title="{{ s.work.description }}" target="_blank" href="{{ s.work.url }}">{{ s.work }}</a> <a class="matrix similar{{ s.similarity|similarity_index }}" target="_blank" href="/kadist/matrix/{{ work.pk }}/{{ s.work.pk }}">{{ s.similarity|floatformat:2 }}</a> - {% for kw in s.work.major_tags.all %}<a class="tag major" href="../tag/{{ kw }}">{{ kw }}</a> - {% endfor %}
+        <a title="{{ s.work.description }}" target="_blank" href="{{ s.work.url }}">{{ s.work }}</a> <a class="matrix similar{{ s.similarity|similarity_index }}" target="_blank" href="/kadist/matrix/{{ work.pk }}/{{ s.work.pk }}">{{ s.similarity|floatformat:2 }}</a>
       </li>
       {% endfor %}
-    </ul>
-
+    </ol>
+    {% endfor %}
+    </div>
+    
     <hr />
   </li>
   {% endfor %}
 </ol>
-
-
-
-{% endfor %}
 
 {% endblock %}
