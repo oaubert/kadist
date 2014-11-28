@@ -83,6 +83,7 @@ hr {
 .similarlist {
     display: inline-block;
     position: relative;
+    vertical-align: top;
     padding-left: 20px;
     width: 25%;
     border: 1px solid black;
