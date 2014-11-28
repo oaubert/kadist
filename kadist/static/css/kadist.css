@@ -289,12 +289,15 @@ ul.navbar .submenu li {
 }
 .similar8 {
     background-color: #777;
+    font-weight: bold;
 }
 .similar9 {
     background-color: #666;
+    font-weight: bold;
 }
 .similar10 {
     background-color: #555;
+    font-weight: bold;
 }
 .qtip {
     max-width: 100%;
