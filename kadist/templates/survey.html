@@ -8,6 +8,13 @@
 
 {% block content %}
 
+<p>Formulas :
+  <ul>
+    {% for p, name in profiles.items %}
+    <li>{{ p }} : {{ name }}</li>
+    {% endfor %}
+  </ul>
+</p>
 <ol class="surveylist">
   {% for work in works %}
   <li class="surveywork"><strong>Reference</strong>: <a href="{{ work.get_absolute_url }}">{{ work.title }}</a> by <a href="/kadist/artist/{{ work.creator.pk }}">{{ work.creator }}</a> ({{ work.year }}).

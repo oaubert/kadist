@@ -265,19 +265,15 @@ def majortaglist_as_html(request):
             }, context_instance=RequestContext(request))
 
 @login_required
-def survey_as_html(request, profile=None):
+def survey_as_html(request, profiles=None):
     works = [ Work.objects.get(pk=i) for i in SURVEY_WORKS ]
-    if profile is None or profile == '':
-        profiles = ProfileData.objects.order_by('profile').values_list('profile', flat=True)
-        profilelabel = "No label"
+    if profiles is None or profiles == '':
+        profiles = dict(list(ProfileData.objects.order_by('profile').values_list('profile', 'name'))[-3:])
     else:
-        profiles = [ long(profile) ]
-        profilelabel = ProfileData.objects.get(pk=profile).name
+        profiles = dict( (long(p), ProfileData.objects.get(pk=long(p))) for p in profiles.split(",") )
     return render_to_response('survey.html', {
             'works': works,
-            'profiles': profiles,
-            'profile': profile,
-            'profilelabel': profilelabel
+            'profiles': profiles
             }, context_instance=RequestContext(request))
 
 @login_required
