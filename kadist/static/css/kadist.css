@@ -81,8 +81,11 @@ hr {
 }
 
 .similarlist {
+    display: inline-block;
     position: relative;
     padding-left: 20px;
+    width: 25%;
+    border: 1px solid black;
 }
 
 .illustration {
@@ -106,7 +109,6 @@ hr {
 
 .surveywork {
     padding-top: 1em;
-    padding-left: 140px;
     position: relative;
     min-height: 140px;
 }
@@ -288,6 +290,12 @@ ul.navbar .submenu li {
 }
 .similar10 {
     background-color: #555;
+}
+.qtip {
+    max-width: 100%;
+}
+.matrix_tip_title {
+    max-width: 50em;
 }
 .qtip-content {
     max-height: 400px;
