@@ -80,6 +80,10 @@ hr {
     margin-bottom: 1em;
 }
 
+.similarity_results {
+    padding: 140px;
+}
+
 .similarlist {
     display: inline-block;
     position: relative;
@@ -304,4 +308,7 @@ ul.navbar .submenu li {
 }
 .grp-row.major_tags {
     overflow: visible !important;
+}
+.highlight {
+    font-weight: bold;
 }
