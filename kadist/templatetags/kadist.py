@@ -35,6 +35,11 @@ def callMethod(obj, methodName):
         return ret
     return method()
 
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
+
+@register.filter
 def args(obj, arg):
     if not obj.__dict__.has_key("__callArg"):
         obj.__callArg = []
@@ -42,4 +47,3 @@ def args(obj, arg):
     return obj
 
 register.filter("call", callMethod)
-register.filter("args", args)
