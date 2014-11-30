@@ -17,7 +17,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from nltk.corpus import wordnet as wn
 
-from .models import Artist, Work, MajorTag, ProfileData, compare, TagSimilarity
+from .models import Artist, Work, MajorTag, ProfileData, compare, TagSimilarity, SimilarityMatrix
 from .serializers import ArtistSerializer, WorkSerializer, ArtistReferenceSerializer, WorkReferenceSerializer
 from .templatetags.kadist import tagsize, TAG_MINCOUNT
 
@@ -281,14 +281,32 @@ def survey_as_html(request, profiles=None):
 def similaritymatrix_as_html(request, origin, destination):
     origin = Work.objects.get(pk=origin)
     destination = Work.objects.get(pk=destination)
-    cols = destination.major_tags.values_list('name', flat=True)
-    data = [ (t, [ compare(t, d) for d in destination.major_tags.values_list('name', flat=True) ])
-             for t in origin.major_tags.values_list('name', flat=True) ]
+
+    originmajortags = list(origin.major_tags.values_list('name', flat=True))
+    originminortags = list(origin.tags.values_list('name', flat=True))
+    destmajortags = list(destination.major_tags.values_list('name', flat=True))
+    destminortags = list(destination.tags.values_list('name', flat=True))
+    origintags = originmajortags + originminortags
+    desttags = destmajortags + destminortags
+
+    category = {}
+    for t in itertools.chain(originmajortags, destmajortags):
+        category[t] = 'major'
+    for t in itertools.chain(originminortags, destminortags):
+        category[t] = 'minor'
+
+
+    cols = desttags
+    data = [ (t, [ compare(t, d) for d in desttags ])
+    for t in origintags ]
     return render_to_response('matrix.html', {
             'origin': origin,
             'destination': destination,
             'cols': cols,
             'data': data,
+            'category': category
+            }, context_instance=RequestContext(request))
+
             }, context_instance=RequestContext(request))
 
 @login_required
