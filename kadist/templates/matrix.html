@@ -1,17 +1,22 @@
 <link href="{{ STATIC_URL }}css/kadist.css" rel="stylesheet" type="text/css" />
 {% load kadist %}
 <div>
+  <style type="text/css">
+    .major {
+    font-weight: bold;
+    }
+  </style>
   <h1>Similarity matrix</h1>
   <p class="matrix_tip_title">Between <em>{{ origin }}</em> and <em>{{ destination }}</em> :</p>
 <table>
   <th>
     {% for c in cols %}
-    <td><a class="tag major tagref" href="../tag/{{ c }}">{{ c }}</a></td>
+    <td><a class="tag {{ category|get_item:c }} tagref" href="../tag/{{ c }}">{{ c }}</a></td>
     {% endfor %}
   </th>
   {% for i in data %}
   <tr>
-    <td><a class="tag major tagref" href="../tag/{{ i.0 }}">{{ i.0 }}</a></td>
+    <td><a class="tag {{ category|get_item:i.0 }} tagref" href="../tag/{{ i.0 }}">{{ i.0 }}</a></td>
     {% for c in i.1 %}
     <td class="similar{{ c|similarity_index }}">{{ c|floatformat:2 }}</td>
     {% endfor %}
