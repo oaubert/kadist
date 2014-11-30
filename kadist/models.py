@@ -113,7 +113,45 @@ class Work(models.Model):
     def get_absolute_url(self):
         return reverse('work-detail', args=[str(self.pk)])
 
-    def similarity(self, work, MAXITEMS=.8, MAJMIN=.5, MINMAJ=.5):
+    def similarity(self, work, THRESHOLD=.8, MAJMIN=.5, MINMAJ=.5):
+        """Similarity measure combining the ponderated sum of similarity values above threshold
+
+        with a bonus (*1.5) to identic tags (similarity == 1)
+        """
+        def ponderate(n):
+            if n == 1:
+                return n * 1.5
+            else:
+                return n
+
+        if self.major_tags.all() and work.major_tags.all():
+            majmaj = sum(ponderate(x) for x in filter(lambda x: x >= THRESHOLD,
+                                                      (compare(t[0], t[1])
+                                                       for t in product(self.major_tags.values_list('name', flat=True),
+                                                                        work.major_tags.values_list('name', flat=True)))))
+
+        else:
+            majmaj = 0
+
+        if self.tags.all() and work.major_tags.all():
+            majmin = sum(ponderate(x) for x in filter(lambda x: x >= THRESHOLD,
+                                                      (compare(t[0], t[1])
+                                                       for t in product(self.major_tags.values_list('name', flat=True),
+                                                                        work.tags.values_list('name', flat=True)))))
+        else:
+            majmin = 0
+
+        if self.major_tags.all() and work.tags.all():
+            minmaj = sum(ponderate(x) for x in filter(lambda x: x >= THRESHOLD,
+                                                      (compare(t[0], t[1])
+                                                       for t in product(self.tags.values_list('name', flat=True),
+                                                                        work.major_tags.values_list('name', flat=True)))))
+        else:
+            minmaj = 0
+
+        return (majmaj + MAJMIN * majmin + MINMAJ * minmaj) / (1 + MINMAJ + MAJMIN) / 1.5 / 10
+
+    def similarity3(self, work, MAXITEMS=.8, MAJMIN=.5, MINMAJ=.5):
         """Similarity measure counting the number of major tags with a similarity > MAXITEMS
         """
         s = 0
