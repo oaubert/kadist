@@ -105,15 +105,16 @@
       }
 
       function details(d) {
+          $("#details").empty().append("<p>Loading tag similarity matrix...</p>")
+              .dialog({
+                  modal: true,
+                  minWidth: 800,
+                  closeOnEscape: true
+              });
           $.ajax({ url: "/kadist/matrix/" + d.origin + "/" + d.destination,
                    dataType: "html" })
               .done(function( html ) {
-                  $("#details").empty().append(html)
-                      .dialog({
-                          modal: true,
-                          minWidth: 800,
-                          closeOnEscape: true
-                      });
+                  $("#details").empty().append(html);
               });
       }
 
