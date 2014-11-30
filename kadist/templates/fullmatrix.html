@@ -130,7 +130,16 @@
               .attr("dy", ".32em")
               .attr("text-anchor", "end")
               .attr("data-id", function(d, i) { return d.work.pk; })
-              .text(function(d, i) { return d.work.title; });
+              .text(function(d, i) { return d.work.title; })
+              .on("mouseover", mouseover)
+              .on("mouseout", mouseout)
+              .on("mousemove", mousemove)
+              .each(function (d) {
+                  // Add min/max info for each row
+                  var extent = d3.extent(d.similar.map(function (n) { return n.value }));
+                  d.min = extent[0];
+                  d.max = extent[1];
+              });
 
           var column = svg.selectAll(".column")
               .data(json)
@@ -148,10 +157,19 @@
               .attr("dy", ".32em")
               .attr("text-anchor", "start")
               .attr("data-id", function(d, i) { return d.work.pk; })
-              .text(function(d, i) { return d.work.title; });
+              .text(function(d, i) { return d.work.title; })
+              .on("mouseover", mouseover)
+              .on("mouseout", mouseout)
+              .on("mousemove", mousemove);
 
           function mouseover(d) {
-              var text = "<p>Similarity " + d.value + " between<br>" + d.origin_title + "<br>and<br>" + d.destination_title + "</p><p>Click for tag details.</p>";
+              var text = "";
+              if (d.work !== undefined) {
+                  // Column/row title
+                  text = "<p>Work " + d.work.title + "<br>Min = " + d.min + "<br>Max = " + d.max + "</p>";
+              } else {
+                  text = "<p>Similarity " + d.value + " between<br>" + d.origin_title + "<br>and<br>" + d.destination_title + "</p><p>Click for tag details.</p>";
+              }
               tooltip.html(text)
                   .transition()
                   .duration(300)
