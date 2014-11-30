@@ -36,7 +36,7 @@
      div.tooltip {
         position: absolute;
         text-align: center;
-        width: 100px;
+        max-width: 300px;
         max-height: 200px;
         padding: 8px;
         font: 10px sans-serif;
@@ -61,7 +61,7 @@
 
     <div id="details">
     </div>
-    
+
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.mousewheel.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/d3.v3.min.js"></script>
@@ -84,40 +84,6 @@
           .attr('class', 'tooltip')
           .style('opacity', 1e-6);
 
-      function mouseover(d) {
-          var text = "<p>" + d.value + "</p>";
-          tooltip.html(text)
-              .transition()
-              .duration(300)
-              .style('opacity', 1);
-      }
-
-      function mousemove(d) {
-          tooltip.style('left', (d3.event.pageX + 20) + 'px')
-              .style('top', (d3.event.pageY + 20) + 'px');
-      }
-
-      function mouseout() {
-          // Hide tooltip
-          tooltip.transition()
-              .duration(300)
-              .style('opacity', 1e-6);
-      }
-
-      function details(d) {
-          $("#details").empty().append("<p>Loading tag similarity matrix...</p>")
-              .dialog({
-                  modal: true,
-                  minWidth: 800,
-                  closeOnEscape: true
-              });
-          $.ajax({ url: "/kadist/matrix/" + d.origin + "/" + d.destination,
-                   dataType: "html" })
-              .done(function( html ) {
-                  $("#details").empty().append(html);
-              });
-      }
-
       var svg = d3.select("body").append("svg")
           .attr("width", size + margin.left + margin.right)
           .attr("height", size + margin.top + margin.bottom)
@@ -135,6 +101,10 @@
           var n = json.length;
           var databounds = d3.extent(json.map( function (n) { return n.similar.map( function (s) { return s.value; }); }).flatten())
 
+          var worktitle = function(pk) {
+              return json.filter(function (n) { return n.work.pk == pk; })[0].work.title;
+          }
+          
           // Initialize scales
           x = d3.scale.ordinal().rangeBands([0, size]).domain(d3.range(n)),
           z = d3.scale.linear().domain([databounds[1], databounds[0]]),
@@ -180,6 +150,40 @@
               .attr("data-id", function(d, i) { return d.work.pk; })
               .text(function(d, i) { return d.work.title; });
 
+          function mouseover(d) {
+              var text = "<p>Similarity " + d.value + " between<br>" + d.origin_title + "<br>and<br>" + d.destination_title + "</p><p>Click for tag details.</p>";
+              tooltip.html(text)
+                  .transition()
+                  .duration(300)
+                  .style('opacity', 1);
+          }
+
+          function mousemove(d) {
+              tooltip.style('left', (d3.event.pageX + 20) + 'px')
+                  .style('top', (d3.event.pageY + 20) + 'px');
+          }
+
+          function mouseout() {
+              // Hide tooltip
+              tooltip.transition()
+                  .duration(300)
+                  .style('opacity', 1e-6);
+          }
+
+          function details(d) {
+              $("#details").empty().append("<p>Loading tag similarity matrix...</p>")
+                  .dialog({
+                      modal: true,
+                      minWidth: 800,
+                      closeOnEscape: true
+                  });
+              $.ajax({ url: "/kadist/matrix/" + d.origin + "/" + d.destination,
+                       dataType: "html" })
+                  .done(function( html ) {
+                      $("#details").empty().append(html);
+                  });
+          }
+
           function cells(row) {
               var cell = d3.select(this).selectAll(".cell")
                   .data(row.similar)
@@ -196,8 +200,13 @@
                   .on("mouseover", mouseover)
                   .on("mouseout", mouseout)
                   .on("mousemove", mousemove)
-                  .on("click", details);
+                  .on("click", details)
+                  .each( function (d) {
+                      d.origin_title = worktitle(d.origin);
+                      d.destination_title = worktitle(d.destination);
+                  });
           }
+
       });
     </script>
 {% endblock %}
