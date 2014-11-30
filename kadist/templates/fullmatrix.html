@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% load admin_urls %}
+{% load url from future %}
+
+{% block title %}KCN - Similarity matrix for {{ profile }}{% endblock %}
+
+{% block extra_header %}
+    <style type="text/css">
+
+    .background {
+        background-color: #fff;
+    }
+
+    line {
+        stroke: #cde;
+    }
+
+    text.active {
+        fill: red;
+    }
+
+    #loading {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-corner: 4px;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        padding: 10px;
+        opacity: .8;
+        text-align: center;
+        display: none;
+    }
+
+     div.tooltip {
+        position: absolute;
+        text-align: center;
+        width: 100px;
+        max-height: 200px;
+        padding: 8px;
+        font: 10px sans-serif;
+        background: #fff8ff;
+        border: solid 1px #aaa;
+        border-radius: 8px;
+        pointer-events: none;
+      }
+
+     div.tooltip img {
+         max-width: 90px;
+     }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div id="loading">
+      <img width="24" height="24" src="{{ STATIC_URL }}img/loading.gif" alt="Loading...">
+      <p>Loading...</p>
+    </div>
+
+    <div id="details">
+    </div>
+    
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.mousewheel.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/d3.v3.min.js"></script>
+    <script type="text/javascript">
+      Array.prototype.flatten = function() {
+          return this.reduce(function(a, b) {
+              return a.concat(b);
+          }, []);
+      };
+      var is_touch_device = ("ontouchstart" in window || window.DocumentTouch && document instanceof DocumentTouch);
+      var width = $(window).width() - 50;
+      var height = $(window).height() - 50;
+      var margin = {top: 120, right: 0, bottom: 10, left: 120};
+      var size = width - margin.left - margin.right;
+      // Scales
+      var x, z;
+
+      // Add tooltip div
+      var tooltip = d3.select('body').append('div')
+          .attr('class', 'tooltip')
+          .style('opacity', 1e-6);
+
+      function mouseover(d) {
+          var text = "<p>" + d.value + "</p>";
+          tooltip.html(text)
+              .transition()
+              .duration(300)
+              .style('opacity', 1);
+      }
+
+      function mousemove(d) {
+          tooltip.style('left', (d3.event.pageX + 20) + 'px')
+              .style('top', (d3.event.pageY + 20) + 'px');
+      }
+
+      function mouseout() {
+          // Hide tooltip
+          tooltip.transition()
+              .duration(300)
+              .style('opacity', 1e-6);
+      }
+
+      function details(d) {
+          $.ajax({ url: "/kadist/matrix/" + d.origin + "/" + d.destination,
+                   dataType: "html" })
+              .done(function( html ) {
+                  $("#details").empty().append(html)
+                      .dialog({
+                          modal: true,
+                          minWidth: 800,
+                          closeOnEscape: true
+                      });
+              });
+      }
+
+      var svg = d3.select("body").append("svg")
+          .attr("width", size + margin.left + margin.right)
+          .attr("height", size + margin.top + margin.bottom)
+//          .style("margin-left", margin.left + "px")
+          .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      $("#loading").show();
+      d3.json("/kadist/api/profile/{{ profile }}", function(json) {
+          $("#loading").hide();
+
+          window.data = json;
+
+          // Compute similarity values extent
+          var n = json.length;
+          var databounds = d3.extent(json.map( function (n) { return n.similar.map( function (s) { return s.value; }); }).flatten())
+
+          // Initialize scales
+          x = d3.scale.ordinal().rangeBands([0, size]).domain(d3.range(n)),
+          z = d3.scale.linear().domain([databounds[1], databounds[0]]),
+
+          svg.append("rect")
+              .attr("class", "background")
+              .attr("width", size)
+              .attr("height", size);
+
+          var row = svg.selectAll(".row")
+              .data(json)
+              .enter().append("g")
+              .attr("class", "row")
+              .attr("transform", function(d, i) { return "translate(0," + x(i) + ")"; })
+              .each(cells);
+
+          row.append("line")
+              .attr("x2", size);
+
+          row.append("text")
+              .attr("x", -6)
+              .attr("y", x.rangeBand() / 2)
+              .attr("dy", ".32em")
+              .attr("text-anchor", "end")
+              .attr("data-id", function(d, i) { return d.work.pk; })
+              .text(function(d, i) { return d.work.title; });
+
+          var column = svg.selectAll(".column")
+              .data(json)
+              .enter().append("g")
+              .attr("class", "column")
+              .attr("data-id", function(d, i) { return d.work.pk; })
+              .attr("transform", function(d, i) { return "translate(" + x(i) + ")rotate(-90)"; });
+
+          column.append("line")
+              .attr("x1", -size);
+
+          column.append("text")
+              .attr("x", 6)
+              .attr("y", x.rangeBand() / 2)
+              .attr("dy", ".32em")
+              .attr("text-anchor", "start")
+              .attr("data-id", function(d, i) { return d.work.pk; })
+              .text(function(d, i) { return d.work.title; });
+
+          function cells(row) {
+              var cell = d3.select(this).selectAll(".cell")
+                  .data(row.similar)
+                  .enter().append("rect")
+                  .attr("class", "cell")
+                  .attr("x", function(d, i) { return x(i); })
+                  .attr("width", x.rangeBand())
+                  .attr("height", x.rangeBand())
+                  .attr("data-origin", function(d) { return d.origin; })
+                  .attr("data-destination", function(d) { return d.destination; })
+                  .attr("data-value", function(d) { return d.value; })
+                  .style("fill-opacity", function(d) { return z(d.value); })
+                  .style("fill", "#ccc")
+                  .on("mouseover", mouseover)
+                  .on("mouseout", mouseout)
+                  .on("mousemove", mousemove)
+                  .on("click", details);
+          }
+      });
+    </script>
+{% endblock %}

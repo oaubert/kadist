@@ -28,6 +28,7 @@ urlpatterns = patterns('',
                        url(r'^sortedtag/$', views.sortedtaglist_as_html, name='sorted-tag-list'),
                        url(r'^sortedwork/$', views.majortaglist_as_html, name='work-major-list'),
                        url(r'^survey/(?P<profiles>[,0-9]*)$', views.survey_as_html, name='survey'),
+                       url(r'^profile/(?P<profile>[0-9]*)$', views.matrix_as_html, name='similarity-matrix'),
                        url(r'matrix/(?P<origin>[0-9]+)/(?P<destination>[0-9]+)$', views.similaritymatrix_as_html, name='matrix'),
                        url(r'^artist/$', login_required(ListView.as_view(model=Artist)), name='artist-list'),
                        url(r'^artist/(?P<pk>.+)/$', login_required(DetailView.as_view(model=Artist, context_object_name='artist')),
@@ -53,6 +54,9 @@ urlpatterns = patterns('',
                                                       url(r'^tag/(?P<kw>.+)$', 
                                                           views.tag_as_json, 
                                                           name='api-tag-detail'),
+                                                      url(r'^profile/(?P<profile>\d+)$',
+                                                          views.matrix_data,
+                                                          name='api-matrix-data'),
                                                       )))
                        )
 

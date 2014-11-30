@@ -307,7 +307,23 @@ def similaritymatrix_as_html(request, origin, destination):
             'category': category
             }, context_instance=RequestContext(request))
 
+@login_required
+def matrix_as_html(request, profile):
+    return render_to_response('fullmatrix.html', {
+            'profile': profile
             }, context_instance=RequestContext(request))
+
+@api_view(['GET'])
+@login_required
+@renderer_classes((UnicodeJSONRenderer, ))
+def matrix_data(request, profile):
+    profile = long(profile)
+    data = [ {
+        'work': w,
+        'similar': list(SimilarityMatrix.objects.filter(profile=profile, origin__pk=w['pk'], destination__pk__in=SURVEY_WORKS).order_by('destination__pk').values('value', 'origin', 'destination'))
+    } for w in Work.objects.filter(pk__in=SURVEY_WORKS).order_by('pk').values('pk','title')
+         ]
+    return Response(data)
 
 @login_required
 def tagsimilarity_as_html(request, tag):
