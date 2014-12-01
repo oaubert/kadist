@@ -15,7 +15,7 @@
 <p>Formulas :
   <div class="similarity_results">
     {% for p, name in profiles.items %}
-    <div class="similarlist">{{ p }} : {{ name }}</div>
+    <div class="similarlist">{{ p }} : {{ name }} (<a href="/kadist/profile/{{ p }}">Full matrix</a>)</div>
     {% endfor %}
   </div>
 </p>
