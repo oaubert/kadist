@@ -287,7 +287,7 @@
                   .attr("x", 1)
                   .attr("width", nx(databounds[0] + data[0].dx))
                   .attr("height", function(d) { return height - ny(d.y); })
-                  .attr("data-title", function(d) { return d.x + " - " + (d.x + d.dx) + " - " + d.y + " items"; })
+                  .attr("data-title", function(d) { return Number(d.x).toPrecision(4) + " - " + Number(d.x + d.dx).toPrecision(4) + " - " + d.y + " items"; })
                   .on("mouseover", mouseover)
                   .on("mouseout", mouseout)
                   .on("mousemove", mousemove);
