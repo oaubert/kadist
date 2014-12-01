@@ -189,8 +189,10 @@
               if (d.work !== undefined) {
                   // Column/row title
                   text = "<p>Work " + d.work.title + "<br>Min = " + d.min + "<br>Max = " + d.max + "</p>";
-              } else {
+              } else if (d.origin_title !== undefined) {
                   text = "<p>Similarity " + d.value + " between<br>" + d.origin_title + "<br>and<br>" + d.destination_title + "</p><p>Click for tag details.</p>";
+              } else {
+                  text= this.attributes.getNamedItem("data-title").value;
               }
               tooltip.html(text)
                   .transition()
@@ -264,7 +266,7 @@
               
               // Generate a histogram using twenty uniformly-spaced bins.
               var data = d3.layout.histogram()
-                  .bins(nx.ticks(nbins))
+                  .bins(nbins)
               (values.filter( function (n) { return n > 0 }));
               
               var ny = d3.scale.linear()
@@ -283,8 +285,12 @@
               
               bar.append("rect")
                   .attr("x", 1)
-                  .attr("width", nx(data[0].dx) + 4)
-                  .attr("height", function(d) { return height - ny(d.y); });
+                  .attr("width", nx(databounds[0] + data[0].dx))
+                  .attr("height", function(d) { return height - ny(d.y); })
+                  .attr("data-title", function(d) { return d.x + " - " + (d.x + d.dx) + " - " + d.y + " items"; })
+                  .on("mouseover", mouseover)
+                  .on("mouseout", mouseout)
+                  .on("mousemove", mousemove);
               
               //bar.append("text")
               //    .attr("dy", ".75em")
