@@ -149,7 +149,7 @@ class Work(models.Model):
         else:
             minmaj = 0
 
-        return (majmaj + MAJMIN * majmin + MINMAJ * minmaj) / (1 + MINMAJ + MAJMIN) / 1.5 / 10
+        return (majmaj + MAJMIN * majmin + MINMAJ * minmaj) / (1 + MINMAJ + MAJMIN) / 1.5
 
     def similarity3(self, work, MAXITEMS=.8, MAJMIN=.5, MINMAJ=.5):
         """Similarity measure counting the number of major tags with a similarity > MAXITEMS
