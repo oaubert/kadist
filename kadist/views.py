@@ -310,8 +310,9 @@ def similaritymatrix_as_html(request, origin, destination):
 @login_required
 def matrix_as_html(request, profile):
     return render_to_response('fullmatrix.html', {
-            'profile': profile
-            }, context_instance=RequestContext(request))
+        'profile': profile,
+        'profiledata': ProfileData.objects.get(pk=long(profile))
+    }, context_instance=RequestContext(request))
 
 @api_view(['GET'])
 @login_required
