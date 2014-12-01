@@ -50,6 +50,20 @@
          max-width: 90px;
      }
 
+     .bar rect {
+         fill: steelblue;
+         shape-rendering: crispEdges;
+     }
+     
+     .bar text {
+         fill: #fff;
+     }
+     
+     .axis path, .axis line {
+         fill: none;
+         stroke: #000;
+         shape-rendering: crispEdges;
+     }
     </style>
 {% endblock %}
 
@@ -91,6 +105,12 @@
           .append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+      var histogram = svg.append("g")
+          .attr("class", "histogram")
+          .attr("width", margin.left)
+          .attr("height", margin.top)
+          .attr("transform", "translate(-" + margin.left + ",-" + margin.top + ")");
+          
       $("#loading").show();
       d3.json("/kadist/api/profile/{{ profile }}", function(json) {
           $("#loading").hide();
@@ -99,8 +119,10 @@
 
           // Compute similarity values extent
           var n = json.length;
-          var databounds = d3.extent(json.map( function (n) { return n.similar.map( function (s) { return s.value; }); }).flatten())
-
+          var values = json.map( function (n) { return n.similar.map( function (s) { return s.value; }); }).flatten();
+          var databounds = d3.extent(values)
+          window.databounds = databounds;
+          
           var worktitle = function(pk) {
               return json.filter(function (n) { return n.work.pk == pk; })[0].work.title;
           }
@@ -223,8 +245,59 @@
                       d.origin_title = worktitle(d.origin);
                       d.destination_title = worktitle(d.destination);
                   });
+
+
+              draw_frequency(values, databounds);
           }
 
+          function draw_frequency(values, databounds) {
+              var width = margin.left;
+              var height = margin.top / 2;
+              var nbins = 20;
+              
+              // A formatter for counts.
+              var formatCount = d3.format(",.f");
+              
+              var nx = d3.scale.linear()
+                  .domain(databounds)
+                  .range([0, width]);
+              
+              // Generate a histogram using twenty uniformly-spaced bins.
+              var data = d3.layout.histogram()
+                  .bins(nx.ticks(nbins))
+              (values.filter( function (n) { return n > 0 }));
+              
+              var ny = d3.scale.linear()
+                  .domain([0, d3.max(data, function(d) { return d.y; })])
+                  .range([height, 0]);
+              
+              var xAxis = d3.svg.axis()
+                  .scale(nx)
+                  .orient("bottom");
+
+              var bar = histogram.selectAll(".bar")
+                  .data(data)
+                  .enter().append("g")
+                  .attr("class", "bar")
+                  .attr("transform", function(d) { return "translate(" + nx(d.x) + "," + ny(d.y) + ")"; });
+              
+              bar.append("rect")
+                  .attr("x", 1)
+                  .attr("width", nx(data[0].dx) + 4)
+                  .attr("height", function(d) { return height - ny(d.y); });
+              
+              //bar.append("text")
+              //    .attr("dy", ".75em")
+              //    .attr("y", 6)
+              //    .attr("x", nx(data[0].dx) / 2)
+              //    .attr("text-anchor", "middle")
+              //    .text(function(d) { return formatCount(d.y); });
+              
+              histogram.append("g")
+                  .attr("class", "x axis")
+                  .attr("transform", "translate(0," + height + ")")
+                  .call(xAxis);
+          }
       });
     </script>
 {% endblock %}
