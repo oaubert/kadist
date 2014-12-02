@@ -22,7 +22,7 @@ inside a collection of tagged items from the Kadist foundation.</p>
   <li>Surveys
     <ul>
       {% for p in profiles %}
-      <li><a href="survey/{{ p.profile }}">Display survey {{ p.profile }} : {{ p.name }} (<a href="/kadist/profile/{{ p }}">Full matrix</a>)</a></li>
+      <li><a href="survey/{{ p.profile }}">Display survey {{ p.profile }} : {{ p.name }} (<a href="/kadist/profile/{{ p.profile }}">Full matrix</a>)</a></li>
       {% endfor %}
     </ul>
   </li>
