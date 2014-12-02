@@ -19,14 +19,25 @@ inside a collection of tagged items from the Kadist foundation.</p>
   <li><a href="work/">Display list of works</a></li>
   <li><a href="sortedwork/">Display list of works (reverse) sorted by number of major tags</a></li> 
   <li><a href="sortedtag/">Display list of tags (reverse) sorted by number of similar tags</a></li>
-  <li>Surveys
+  <li><strong>Surveys</strong>
+    <form>
     <ul>
       {% for p in profiles %}
-      <li><a href="survey/{{ p.profile }}">Display survey {{ p.profile }} : {{ p.name }} (<a href="/kadist/profile/{{ p.profile }}">Full matrix</a>)</a></li>
+      <li><input type="checkbox" value="{{ p.profile }}"> <a href="survey/{{ p.profile }}">Display survey {{ p.profile }} : {{ p.name }} (<a href="/kadist/profile/{{ p.profile }}">Full matrix</a>)</a></li>
       {% endfor %}
     </ul>
+    <input type="button" onclick="compare_profiles();" value="Compare">
+    </form>
   </li>
   <li><a href="/admin/kadist/work">Edition interface for works</a></li>
   <li><a href="/admin/kadist/artist">Edition interface for artists</a></li>
 </ul>
+<script type="text/javascript">
+    function compare_profiles() {
+        var profiles = [].slice.call(document.querySelectorAll("input[type=checkbox]")).filter( function (i) { return i.checked; }).map( function (i) { return i.value; });
+        if (profiles.length > 0) {
+            document.location.pathname = '/kadist/survey/' + profiles.join(',');
+        }
+    }
+</script>
 {% endblock %}
