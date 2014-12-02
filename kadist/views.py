@@ -274,7 +274,7 @@ def survey_as_html(request, profiles=None):
     return render_to_response('survey.html', {
             'works': works,
             'profiles': profiles,
-            'similarwidth': '%.02f%%' % (95 / len(profiles))
+            'similarwidth': '%.02f%%' % (90 / len(profiles))
             }, context_instance=RequestContext(request))
 
 @login_required
