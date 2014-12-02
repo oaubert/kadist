@@ -117,6 +117,14 @@
 
           window.data = json;
 
+          json.forEach(function (d) {
+              // Add min/max info for each row
+              var extent = d3.extent(d.similar.map(function (n) { return n.value }));
+              d.min = extent[0];
+              d.max = extent[1];
+              d.nonnull = d.similar.filter(function (n) { return n.value > 0; }).length;
+          });
+          
           // Compute similarity values extent
           var n = json.length;
           var values = json.map( function (n) { return n.similar.map( function (s) { return s.value; }); }).flatten();
@@ -153,16 +161,11 @@
               .attr("text-anchor", "end")
               .attr("data-id", function(d, i) { return d.work.pk; })
               .text(function(d, i) { return d.work.title; })
+              .attr("data-title", function (d) { return "<p><strong>" + d.work.title + "</strong><br>Min = " + d.min + "<br>Max = " + d.max + "<br>Non-null values = " + d.nonnull + "</p>"; })
               .on("mouseover", mouseover)
               .on("mouseout", mouseout)
               .on("mousemove", mousemove)
-              .each(function (d) {
-                  // Add min/max info for each row
-                  var extent = d3.extent(d.similar.map(function (n) { return n.value }));
-                  d.min = extent[0];
-                  d.max = extent[1];
-              });
-
+          
           var column = svg.selectAll(".column")
               .data(json)
               .enter().append("g")
@@ -180,24 +183,20 @@
               .attr("text-anchor", "start")
               .attr("data-id", function(d, i) { return d.work.pk; })
               .text(function(d, i) { return d.work.title; })
+              .attr("data-title", function (d) { return "<p><strong>" + d.work.title + "</strong><br>Min = " + d.min + "<br>Max = " + d.max + "<br>Non-null values = " + d.nonnull + "</p>"; })
               .on("mouseover", mouseover)
               .on("mouseout", mouseout)
               .on("mousemove", mousemove);
 
           function mouseover(d) {
               var text = "";
-              if (d.work !== undefined) {
-                  // Column/row title
-                  text = "<p>Work " + d.work.title + "<br>Min = " + d.min + "<br>Max = " + d.max + "</p>";
-              } else if (d.origin_title !== undefined) {
-                  text = "<p>Similarity " + d.value + " between<br>" + d.origin_title + "<br>and<br>" + d.destination_title + "</p><p>Click for tag details.</p>";
-              } else {
+              if (this.attributes !== undefined && this.attributes.getNamedItem("data-title")) {
                   text= this.attributes.getNamedItem("data-title").value;
+                  tooltip.html(text)
+                      .transition()
+                      .duration(300)
+                      .style('opacity', 1);
               }
-              tooltip.html(text)
-                  .transition()
-                  .duration(300)
-                  .style('opacity', 1);
           }
 
           function mousemove(d) {
@@ -231,23 +230,23 @@
                   .data(row.similar)
                   .enter().append("rect")
                   .attr("class", "cell")
+                  .each( function (d) {
+                      d.origin_title = worktitle(d.origin);
+                      d.destination_title = worktitle(d.destination);
+                  })
                   .attr("x", function(d, i) { return x(i); })
                   .attr("width", x.rangeBand())
                   .attr("height", x.rangeBand())
                   .attr("data-origin", function(d) { return d.origin; })
                   .attr("data-destination", function(d) { return d.destination; })
                   .attr("data-value", function(d) { return d.value; })
+                  .attr("data-title", function (d) { return "<p>Similarity " + d.value + " between<br>" + d.origin_title + "<br>and<br>" + d.destination_title + "</p><p>Click for tag details.</p>"; })
                   .style("fill-opacity", function(d) { return value_scale(d.value); })
                   .style("fill", "#ccc")
                   .on("mouseover", mouseover)
                   .on("mouseout", mouseout)
                   .on("mousemove", mousemove)
-                  .on("click", details)
-                  .each( function (d) {
-                      d.origin_title = worktitle(d.origin);
-                      d.destination_title = worktitle(d.destination);
-                  });
-
+                  .on("click", details);
 
               draw_frequency(values, databounds);
           }
