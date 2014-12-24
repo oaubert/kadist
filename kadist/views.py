@@ -375,6 +375,7 @@ def tag_as_json(request, kw=None):
     info['minor_works'] = WorkReferenceSerializer(info['minor_works'], many=True, context={'request': request}).data
     info['major_works'] = WorkReferenceSerializer(info['major_works'], many=True, context={'request': request}).data
     info['artists'] = ArtistReferenceSerializer(info['artists'], many=True, context={'request': request}).data
+    info['tagsimilar'] = WorkReferenceSerializer(info['tagsimilar'], many=True, context={'request': request}).data
     return Response(info)
 
 @login_required
