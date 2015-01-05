@@ -153,9 +153,9 @@ class Work(models.Model):
 
         if self.tags.all() and work.tags.all():
             # We take into account only identical minor/minor tags
-            minmin = ponderate(1) * len(t for t in product(self.tags.values_list('name', flat=True),
-                                                           work.tags.values_list('name', flat=True))
-                                        if t[0] == t[1])
+            minmin = ponderate(1) * len([t for t in product(self.tags.values_list('name', flat=True),
+                                                            work.tags.values_list('name', flat=True))
+                                         if t[0] == t[1]])
         else:
             minmin = 0
 
