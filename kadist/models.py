@@ -115,7 +115,7 @@ class Work(models.Model):
     def get_absolute_url(self):
         return reverse('work-detail', args=[str(self.pk)])
 
-    def similarity(self, work, THRESHOLD=.8, MAJMIN=.5, MINMAJ=.5):
+    def similarity(self, work, THRESHOLD=.8, MAJMIN=.5, MINMAJ=.5, MINMIN=.3):
         """Similarity measure combining the ponderated sum of similarity values above threshold
 
         with a bonus (*1.5) to identic tags (similarity == 1)
@@ -151,9 +151,17 @@ class Work(models.Model):
         else:
             minmaj = 0
 
-        return (majmaj + MAJMIN * majmin + MINMAJ * minmaj) / (1 + MINMAJ + MAJMIN) / 1.5
+        if self.tags.all() and work.tags.all():
+            # We take into account only identical minor/minor tags
+            minmin = ponderate(1) * len(t for t in product(self.tags.values_list('name', flat=True),
+                                                           work.tags.values_list('name', flat=True))
+                                        if t[0] == t[1])
+        else:
+            minmin = 0
 
-    def similarity3(self, work, MAXITEMS=.8, MAJMIN=.5, MINMAJ=.5):
+        return (majmaj + MAJMIN * majmin + MINMAJ * minmaj + MINMIN * minmin) / (1 + MINMAJ + MAJMIN + MINMIN) / 4
+
+    def similarity3(self, work, MAXITEMS=.8, MAJMIN=.5, MINMAJ=.5, MINMIN=0):
         """Similarity measure counting the number of major tags with a similarity > MAXITEMS
         """
         s = 0
@@ -164,7 +172,7 @@ class Work(models.Model):
                          if (compare(t[0], t[1]) > MAXITEMS)))
         return s
 
-    def similarity2(self, work, MAXITEMS=5, MAJMIN=.5, MINMAJ=.5):
+    def similarity2(self, work, MAXITEMS=5, MAJMIN=.5, MINMAJ=.5, MINMIN=0):
         """Similarity measure combining the sum of at most MAXITEMS similarity values between tags
         """
         MAXITEMS = long(MAXITEMS)
@@ -196,7 +204,7 @@ class Work(models.Model):
 
         return (majmaj + MAJMIN * majmin + MINMAJ * minmaj) / (MAXITEMS * (1 + MINMAJ + MAJMIN))
 
-    def similarity1(self, work, MAXITEMS=5, MAJMIN=.5, MINMAJ=.5):
+    def similarity1(self, work, MAXITEMS=5, MAJMIN=.5, MINMAJ=.5, MINMIN=0):
         """Similarity measure combining the maximum similarity values
         """
         MAXITEMS = long(MAXITEMS)
