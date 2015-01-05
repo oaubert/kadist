@@ -9,6 +9,8 @@ import nltk
 from nltk.corpus import wordnet as wn
 from itertools import product
 
+IDENTICAL_PONDERATION = 1.5
+
 def compare(word1, word2):
     if word1 == word2:
         return 1.0
@@ -120,7 +122,7 @@ class Work(models.Model):
         """
         def ponderate(n):
             if n == 1:
-                return n * 1.5
+                return n * IDENTICAL_PONDERATION
             else:
                 return n
 
