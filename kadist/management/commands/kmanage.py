@@ -19,7 +19,7 @@ class Command(BaseCommand):
   xls <xls file> : import the catalogue from a xls file
   acsv <csv file> : import the artists from a csv file
   wcsv <csv file> : import the works from a csv file
-  similarity PROFILEID LABEL MAXITEMS=5 MAJMIN=.5 MINMAJ=.5
+  similarity PROFILEID LABEL MAXITEMS=5 MAJMIN=.5 MINMAJ=.5 MINMIN=.3
   dump PROFILEID : dump similarity matrix as csv
   tagsimilarity [THRESHOLD=.8]
 """
@@ -199,12 +199,13 @@ class Command(BaseCommand):
                     # Have to create one
                     self.stderr.write("Error: missing artist for %s - %s\n" % (data[WID], data[TITLE]))
 
-    def _similarity(self, profileid=None, label="", maxitems=5, majmin=.5, minmaj=.5):
+    def _similarity(self, profileid=None, label="", maxitems=5, majmin=.5, minmaj=.5, minmin=.3):
         maxitems = float(maxitems)
         majmin = float(majmin)
         minmaj = float(minmaj)
+        minmin = float(minmin)
         if not label:
-            label = "Similarity profile (maxitems=%.02f/majmin=%.02f/minmaj=%.02f)" % (maxitems, majmin, minmaj)
+            label = "Similarity profile (maxitems=%.02f/majmin=%.02f/minmaj=%.02f/minmin=%.02f)" % (maxitems, majmin, minmaj, minmin)
         if profileid is None:
             # List existing profiles
             self.stdout.write("List of profiles")
@@ -237,7 +238,7 @@ class Command(BaseCommand):
                 cell = SimilarityMatrix(origin=w,
                                         destination=d,
                                         profile=profileid,
-                                        value=w.similarity(d, maxitems, majmin, minmaj))
+                                        value=w.similarity(d, maxitems, majmin, minmaj, minmin))
                 cell.save()
                 self.stderr.write("  %d / %d / %d %f - %s\r" % (ind, i, total, cell.value, unicode(d)))
 
