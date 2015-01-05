@@ -210,12 +210,13 @@ class Command(BaseCommand):
             # List existing profiles
             self.stdout.write("List of profiles")
             for p in ProfileData.objects.all():
-                self.stdout.write("#%s - MAXITEMS = %d - MAJMIN = %f - MINMAJ = %f - %d items\n" % (
+                self.stdout.write("#%s %s - MAXITEMS = %d - MAJMIN = %f - MINMAJ = %f - %d items\n" % (
                         p.profile,
+                        p.name,
                         p.maxitems,
                         p.majmin,
                         p.minmaj,
-                        SimilarityMatrix.objects.filter(profile=profileid).count()))
+                        SimilarityMatrix.objects.filter(profile=p.profile).count()))
             return
 
         # Delete previous data with the same profile
