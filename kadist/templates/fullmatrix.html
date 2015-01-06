@@ -92,6 +92,13 @@
       var size = 1.5 * (width - margin.left - margin.right);
       // Scales
       var x, value_scale;
+      // Default aggregate limit
+      var aggregate_limit = 10;
+      {
+          var m = window.location.hash.match(/slice=(\d+)/);
+          if (m)
+              aggregate_limit = Number(m[1]);
+      }
 
       // Add tooltip div
       var tooltip = d3.select('body').append('div')
@@ -145,7 +152,14 @@
               d.min = extent[0];
               d.max = extent[1];
               d.nonnull = d.similar.filter(function (n) { return n.value > 0; }).length;
-              d.sum = d.similar.map(function (n) { return n.value }).reduce(function(prev, current) { return current + prev; });
+              // Aggregate similarity
+              var vals = d.similar.filter(function (n) { return n.destination != d.work.pk }).map(function (n) { return n.value });
+              // Sort in decreasing order
+              vals.sort(function (a, b) { return b - a });
+              // Keep only the aggregate_limit higher values
+              if (aggregate_limit > 0)
+                  vals = vals.slice(0, aggregate_limit);
+              d.sum = vals.reduce(function(prev, current) { return current + prev; });
           });
 
           // Compute similarity values extent
