@@ -105,11 +105,29 @@
           .append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-      var histogram = svg.append("g")
+      var dist_values = svg.append("g")
           .attr("class", "histogram")
           .attr("width", margin.left)
-          .attr("height", margin.top)
+          .attr("height", margin.top / 2)
           .attr("transform", "translate(-" + margin.left + ",-" + margin.top + ")");
+
+      dist_values.append("text")
+      .attr("x", margin.left)
+      .attr("y", 10)
+      .attr("text-anchor", "end")
+      .text("Similarity distribution");
+
+      var dist_sums = svg.append("g")
+          .attr("class", "histogram")
+          .attr("width", margin.left)
+          .attr("height", margin.top / 2)
+          .attr("transform", "translate(-" + margin.left + ",-" + margin.top / 2 + ")");
+
+      dist_sums.append("text")
+      .attr("x", margin.left)
+      .attr("y", 10)
+      .attr("text-anchor", "end")
+      .text("Aggregate sim. distribution");
 
       function disp(f) {
           return Number(f).toPrecision(4);
@@ -202,6 +220,11 @@
               .on("mouseout", mouseout)
               .on("mousemove", mousemove);
 
+          // Values distribution
+          draw_frequency(dist_values, values, databounds);
+          // Sum distributions
+          draw_frequency(dist_sums, json.map(function (d) { return d.sum }));
+
           function mouseover(d) {
               var text = "";
               if (this.attributes !== undefined && this.attributes.getNamedItem("data-title")) {
@@ -261,15 +284,16 @@
                   .on("mouseout", mouseout)
                   .on("mousemove", mousemove)
                   .on("click", details);
-
-              draw_frequency(values, databounds);
           }
 
-          function draw_frequency(values, databounds) {
-              var width = margin.left;
-              var height = margin.top / 2;
+          function draw_frequency(container, values, databounds) {
+              var width = container.attr("width") * 1.0;
+              var height = container.attr("height") * .6;
               var nbins = 20;
-              
+
+              if (databounds === null || databounds === undefined)
+                  databounds = d3.extent(values);
+
               // A formatter for counts.
               var formatCount = d3.format(",.f");
               
@@ -290,7 +314,7 @@
                   .scale(nx)
                   .orient("bottom");
 
-              var bar = histogram.selectAll(".bar")
+              var bar = container.selectAll(".bar")
                   .data(data)
                   .enter().append("g")
                   .attr("class", "bar")
@@ -312,7 +336,7 @@
               //    .attr("text-anchor", "middle")
               //    .text(function(d) { return formatCount(d.y); });
               
-              histogram.append("g")
+              container.append("g")
                   .attr("class", "x axis")
                   .attr("transform", "translate(0," + height + ")")
                   .call(xAxis);
