@@ -270,7 +270,7 @@ def survey_as_html(request, profiles=None):
     if profiles is None or profiles == '':
         profiles = dict(list(ProfileData.objects.order_by('profile').values_list('profile', 'name'))[-3:])
     else:
-        profiles = dict( (long(p), ProfileData.objects.get(pk=long(p))) for p in profiles.split(",") )
+        profiles = dict( (long(p), ProfileData.objects.get(profile=long(p))) for p in profiles.split(",") )
     return render_to_response('survey.html', {
             'works': works,
             'profiles': profiles,
@@ -311,7 +311,7 @@ def similaritymatrix_as_html(request, origin, destination):
 def matrix_as_html(request, profile):
     return render_to_response('fullmatrix.html', {
         'profile': profile,
-        'profiledata': ProfileData.objects.get(pk=long(profile))
+        'profiledata': ProfileData.objects.get(profile=long(profile))
     }, context_instance=RequestContext(request))
 
 @api_view(['GET'])
