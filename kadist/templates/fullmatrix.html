@@ -80,8 +80,8 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.mousewheel.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/d3.v3.min.js"></script>
     <script type="text/javascript">
-      Array.prototype.flatten = function() {
-          return this.reduce(function(a, b) {
+      function flatten_array(array) {
+          return array.reduce(function(a, b) {
               return a.concat(b);
           }, []);
       };
@@ -132,7 +132,7 @@
 
           // Compute similarity values extent
           var n = json.length;
-          var values = json.map( function (n) { return n.similar.map( function (s) { return s.value; }); }).flatten();
+          var values = flatten_array(json.map( function (n) { return n.similar.map( function (s) { return s.value; }); }));
           var databounds = d3.extent(values)
           window.databounds = databounds;
           var info = {};
