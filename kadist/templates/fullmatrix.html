@@ -123,16 +123,26 @@
               d.min = extent[0];
               d.max = extent[1];
               d.nonnull = d.similar.filter(function (n) { return n.value > 0; }).length;
+              d.sum = d.similar.map(function (n) { return n.value }).reduce(function(prev, current) { return current + prev; });
           });
-          
+
           // Compute similarity values extent
           var n = json.length;
           var values = json.map( function (n) { return n.similar.map( function (s) { return s.value; }); }).flatten();
           var databounds = d3.extent(values)
           window.databounds = databounds;
+          var info = {};
+
+          // Reverse sort against sum and store title/index info in hash table
+          json.sort(function (a, b) { return b.sum - a.sum });
+          for (i = 0; i < json.length; i++) {
+              json[i].index = i;
+              info[json[i].work.pk] = { title: json[i].work.title,
+                                        index: i }
+          }
           
           var worktitle = function(pk) {
-              return json.filter(function (n) { return n.work.pk == pk; })[0].work.title;
+              return info[pk].title;
           }
           
           // Initialize scales
