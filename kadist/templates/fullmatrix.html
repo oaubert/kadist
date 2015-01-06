@@ -158,7 +158,7 @@
               .data(json)
               .enter().append("g")
               .attr("class", "row")
-              .attr("transform", function(d, i) { return "translate(0," + x(i) + ")"; })
+              .attr("transform", function(d, i) { return "translate(0," + x(d.index) + ")"; })
               .each(cells);
 
           row.append("line")
@@ -181,7 +181,7 @@
               .enter().append("g")
               .attr("class", "column")
               .attr("data-id", function(d, i) { return d.work.pk; })
-              .attr("transform", function(d, i) { return "translate(" + x(i) + ")rotate(-90)"; });
+              .attr("transform", function(d, i) { return "translate(" + x(d.index) + ")rotate(-90)"; });
 
           column.append("line")
               .attr("x1", -size);
@@ -244,7 +244,7 @@
                       d.origin_title = worktitle(d.origin);
                       d.destination_title = worktitle(d.destination);
                   })
-                  .attr("x", function(d, i) { return x(i); })
+                  .attr("x", function(d, i) { return x(info[d.destination].index); })
                   .attr("width", x.rangeBand())
                   .attr("height", x.rangeBand())
                   .attr("data-origin", function(d) { return d.origin; })
