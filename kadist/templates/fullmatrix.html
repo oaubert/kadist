@@ -110,7 +110,11 @@
           .attr("width", margin.left)
           .attr("height", margin.top)
           .attr("transform", "translate(-" + margin.left + ",-" + margin.top + ")");
-          
+
+      function disp(f) {
+          return Number(f).toPrecision(4);
+      }
+
       $("#loading").show();
       d3.json("/kadist/api/profile/{{ profile }}", function(json) {
           $("#loading").hide();
@@ -171,7 +175,7 @@
               .attr("text-anchor", "end")
               .attr("data-id", function(d, i) { return d.work.pk; })
               .text(function(d, i) { return d.work.title; })
-              .attr("data-title", function (d) { return "<p><strong>" + d.work.title + "</strong><br>Min = " + d.min + "<br>Max = " + d.max + "<br>Non-null values = " + d.nonnull + "</p>"; })
+              .attr("data-title", function (d) { return "<p><strong>" + d.work.title + "</strong><br>Min = " + disp(d.min) + "<br>Max = " + disp(d.max) + "<br>Sum = " + disp(d.sum) + "<br>Non-null values = " + d.nonnull + "</p>"; })
               .on("mouseover", mouseover)
               .on("mouseout", mouseout)
               .on("mousemove", mousemove)
@@ -193,7 +197,7 @@
               .attr("text-anchor", "start")
               .attr("data-id", function(d, i) { return d.work.pk; })
               .text(function(d, i) { return d.work.title; })
-              .attr("data-title", function (d) { return "<p><strong>" + d.work.title + "</strong><br>Min = " + d.min + "<br>Max = " + d.max + "<br>Non-null values = " + d.nonnull + "</p>"; })
+              .attr("data-title", function (d) { return "<p><strong>" + d.work.title + "</strong><br>Min = " + disp(d.min) + "<br>Max = " + disp(d.max) + "<br>Sum = " + disp(d.sum) + "<br>Non-null values = " + d.nonnull + "</p>"; })
               .on("mouseover", mouseover)
               .on("mouseout", mouseout)
               .on("mousemove", mousemove);
@@ -296,7 +300,7 @@
                   .attr("x", 1)
                   .attr("width", nx(databounds[0] + data[0].dx))
                   .attr("height", function(d) { return height - ny(d.y); })
-                  .attr("data-title", function(d) { return Number(d.x).toPrecision(4) + " - " + Number(d.x + d.dx).toPrecision(4) + " - " + d.y + " items"; })
+                  .attr("data-title", function(d) { return disp(d.x) + " - " + disp(d.x + d.dx) + " - " + d.y + " items"; })
                   .on("mouseover", mouseover)
                   .on("mouseout", mouseout)
                   .on("mousemove", mousemove);
