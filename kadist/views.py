@@ -302,6 +302,8 @@ def similaritymatrix_as_html(request, origin, destination):
 
 @login_required
 def matrix_as_html(request, profile):
+    if profile == '':
+        return HttpResponseRedirect('/kadist/')
     return render_to_response('fullmatrix.html', {
         'profile': profile,
         'profiledata': ProfileData.objects.get(profile=long(profile))
