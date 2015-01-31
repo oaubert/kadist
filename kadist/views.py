@@ -266,7 +266,9 @@ def majortaglist_as_html(request):
 
 @login_required
 def survey_as_html(request, profiles=None):
-    works = [ Work.objects.get(pk=i) for i in SURVEY_WORKS ]
+    w = request.REQUEST.get('works', '')
+    worklist = [ int(i) for i in w.split(",") ] if w else SURVEY_WORKS
+    works = [ Work.objects.get(pk=i) for i in worklist ]
     if profiles is None or profiles == '':
         profiles = dict(list(ProfileData.objects.order_by('profile').values_list('profile', 'name'))[-3:])
     else:
