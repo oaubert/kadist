@@ -288,25 +288,16 @@ def similaritymatrix_as_html(request, origin, destination):
     originminortags = list(origin.tags.values_list('name', flat=True))
     destmajortags = list(destination.major_tags.values_list('name', flat=True))
     destminortags = list(destination.tags.values_list('name', flat=True))
-    origintags = originmajortags + originminortags
-    desttags = destmajortags + destminortags
+    origintags = [ (tag, 'major') for tag in originmajortags ] + [ (tag, 'minor') for tag in originminortags ]
 
-    category = {}
-    for t in itertools.chain(originmajortags, destmajortags):
-        category[t] = 'major'
-    for t in itertools.chain(originminortags, destminortags):
-        category[t] = 'minor'
-
-
-    cols = desttags
-    data = [ (t, [ compare(t, d) for d in desttags ])
-    for t in origintags ]
+    cols = [ (tag, 'major') for tag in destmajortags ] + [ (tag, 'minor') for tag in destminortags ]
+    data = [ (t[0], t[1], [ compare(t[0], d[0]) for d in cols ])
+             for t in origintags ]
     return render_to_response('matrix.html', {
             'origin': origin,
             'destination': destination,
             'cols': cols,
             'data': data,
-            'category': category
             }, context_instance=RequestContext(request))
 
 @login_required

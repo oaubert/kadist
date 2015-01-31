@@ -7,17 +7,17 @@
     }
   </style>
   <h1>Similarity matrix</h1>
-  <p class="matrix_tip_title">Between <em>{{ origin }}</em> and <em>{{ destination }}</em> :</p>
+  <p class="matrix_tip_title">Between <em><a href="../../work/{{ origin.pk }}">{{ origin }}</a></em> and <em><a href="../../work/{{ destination.pk }}">{{ destination }}</a></em> :</p>
 <table>
   <th>
     {% for c in cols %}
-    <td><a class="tag {{ category|get_item:c }} tagref" href="../tag/{{ c }}">{{ c }}</a></td>
+    <td><a class="tag {{ c.1 }} tagref" href="../../tag/{{ c.0 }}">{{ c.0 }}</a></td>
     {% endfor %}
   </th>
   {% for i in data %}
   <tr>
-    <td><a class="tag {{ category|get_item:i.0 }} tagref" href="../tag/{{ i.0 }}">{{ i.0 }}</a></td>
-    {% for c in i.1 %}
+    <td><a class="tag {{ i.1 }} tagref" href="../../tag/{{ i.0 }}">{{ i.0 }}</a></td>
+    {% for c in i.2 %}
     <td class="similar{{ c|similarity_index }}">{{ c|floatformat:2 }}</td>
     {% endfor %}
   </tr>
