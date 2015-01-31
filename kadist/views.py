@@ -280,6 +280,11 @@ def survey_as_html(request, profiles=None):
             }, context_instance=RequestContext(request))
 
 @login_required
+def surveyresult(request):
+    data = "\n".join( "%s: %s" % (k, v) for k, v in request.REQUEST.iteritems())
+    return HttpResponse(data, content_type='text/plain')
+
+@login_required
 def similaritymatrix_as_html(request, origin, destination):
     origin = Work.objects.get(pk=origin)
     destination = Work.objects.get(pk=destination)

@@ -19,6 +19,8 @@
     {% endfor %}
   </div>
 </p>
+<form action="../surveyresult">
+  <input value="" name="name" placeholder="Enter your name">
 <ol class="surveylist">
   {% for work in works %}
   <li class="surveywork"><strong>Reference</strong>: <a data-work="{{ work.pk }}" href="{{ work.get_absolute_url }}">{{ work.title }}</a> by <a href="/kadist/artist/{{ work.creator.pk }}">{{ work.creator }}</a> ({{ work.year }}).
@@ -35,7 +37,9 @@
       {% for s in work|similar:profile %}
       <li>
         <img class="tooltipimg" src="{{ s.work.imgurl }}" alt="" />
-        <a data-work="{{ s.work.pk }}" title="{{ s.work.description }}" target="_blank" href="{{ s.work.url }}">{{ s.work }}</a> <a class="matrix similar{{ s.similarity|similarity_index }}" target="_blank" href="/kadist/matrix/{{ work.pk }}/{{ s.work.pk }}">{{ s.similarity|floatformat:2 }}</a>
+        <a data-work="{{ s.work.pk }}" title="{{ s.work.description }}" target="_blank" href="{{ s.work.url }}">{{ s.work }}</a> <a class="matrix similar{{ s.similarity|similarity_index }}" target="_blank" href="/kadist/matrix/{{ work.pk }}/{{ s.work.pk }}">{{ s.similarity|floatformat:2 }}<br></a> <input type="radio" name="survey-{{profile}}-{{ work.pk }}-{{ s.work.pk }}" value='0'>Weak
+        <input type="radio" name="survey-{{profile}}-{{ work.pk }}-{{ s.work.pk }}" value='1'>Good
+        <input type="radio" name="survey-{{profile}}-{{ work.pk }}-{{ s.work.pk }}" value='0'>Superior
       </li>
       {% endfor %}
     </ol>
@@ -46,6 +50,8 @@
   </li>
   {% endfor %}
 </ol>
+<input type="submit" value="Submit">
+</form>
 
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
 <script type="text/javascript">
