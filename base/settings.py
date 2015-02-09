@@ -7,8 +7,15 @@ TEMPLATE_DEBUG = DEBUG
 import os
 APPROOT = os.path.dirname(os.path.dirname(__file__)) + os.sep
 
+# local_settings should define a 'options' dictionary with
+# configuration values.
+try:
+    from local_settings import options
+except ImportError:
+    options = {}
+
 ADMINS = (
-    ('Olivier Aubert', 'admin@olivieraubert.net'),
+ (options.get('admin_name', 'Olivier Aubert'), options.get('admin_mail', 'contact@olivieraubert.net'))
 )
 
 SERVER_EMAIL = ADMINS[0][1]
@@ -17,12 +24,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': APPROOT + 'db.sqlite',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': options.get('db_engine', 'django.db.backends.sqlite3'), # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': options.get('db_name', APPROOT + 'db.sqlite3'),  # Or path to database file if using sqlite3.
+        'USER': options.get('db_user', ''),                      # Not used with sqlite3.
+        'PASSWORD': options.get('db_password', ''),                  # Not used with sqlite3.
+        'HOST': options.get('db_host', ''),                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': options.get('db_port', ''),                      # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -84,7 +91,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'x3v*hb38-itu(m_3t)=-i+*9891l*gf&amp;x)t$9xba15!_tgyd(5'
+SECRET_KEY = options.get('secret_key', 'no_secret_at_all_key')
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (

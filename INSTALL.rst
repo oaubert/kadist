@@ -5,7 +5,9 @@ INSTALL instruction
   `import nltk`
   `nltk.download()`
 ** Configure the download path to `/usr/local/share/nltk_data`
-** Download `wordnet`
+** Download `wordnet` 
+
+** Configure django by creating a `base/local_settings.py` module that defines an `options` dict. See `base/settings.py` for necessary options (`secret_key` at least).
 
 * jquery-autosuggest customization
 
